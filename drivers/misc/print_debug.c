@@ -16,7 +16,7 @@ void print_debug(const char* fmt, ...){
     #if DEBUG_PRINT_ENABLED
     va_list args;
     va_start(args, fmt);
-    vprintf(fmt, args); // test ceedling thing
+    vprintf(fmt, args);
     va_end(args);
     #endif
 }
