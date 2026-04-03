@@ -3,6 +3,7 @@
 
 #include <stdint.h>
 #include <stdbool.h>
+#include <stddef.h>
 
 bool timer_calc_pwm(uint32_t freq_hz,
                     uint8_t duty_percent,
