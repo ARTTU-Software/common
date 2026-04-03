@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.16)
 
 option(BUILD_COMMON_LIBRARY "Build a static library from common sources" ON)
 
-option(BUILD_COMMON_TESTS "Build and run tests" ON)
+option(BUILD_COMMON_TESTS "Build and run tests" OFF)
 
 # Function to recursively find all directories containing .h files and collect them
 function(collect_header_dirs out_var)
@@ -15,6 +15,35 @@ function(collect_header_dirs out_var)
     if(HEADER_DIRS)
         list(REMOVE_DUPLICATES HEADER_DIRS)
         set(${out_var} ${HEADER_DIRS} PARENT_SCOPE)
+    endif()
+endfunction()
+
+# Recursively add header directories from specified source and mock paths
+function(recursively_add_header_dirs target)
+    if(NOT TARGET ${target})
+        message(FATAL_ERROR "recursively_add_header_dirs: target '${target}' does not exist")
+    endif()
+
+    set(HEADER_DIRS "")
+    foreach(HEADER_ROOT IN LISTS ARGN)
+        if(NOT IS_ABSOLUTE "${HEADER_ROOT}")
+            set(HEADER_ROOT "${CMAKE_CURRENT_LIST_DIR}/${HEADER_ROOT}")
+        endif()
+
+        if(EXISTS "${HEADER_ROOT}")
+            file(GLOB_RECURSE _HEADERS "${HEADER_ROOT}/*.h")
+            foreach(_HEADER IN LISTS _HEADERS)
+                get_filename_component(_HEADER_DIR "${_HEADER}" DIRECTORY)
+                list(APPEND HEADER_DIRS "${_HEADER_DIR}")
+            endforeach()
+        else()
+            message(WARNING "recursively_add_header_dirs: path '${HEADER_ROOT}' does not exist")
+        endif()
+    endforeach()
+
+    if(HEADER_DIRS)
+        list(REMOVE_DUPLICATES HEADER_DIRS)
+        target_include_directories(${target} INTERFACE ${HEADER_DIRS})
     endif()
 endfunction()
 
@@ -31,9 +60,6 @@ if(EXISTS "${CMAKE_CURRENT_LIST_DIR}/build/vendor/unity/src")
 endif()
 if(EXISTS "${CMAKE_CURRENT_LIST_DIR}/build/vendor/cmock/src")
     list(APPEND COMMON_VENDOR_INCLUDE_DIRS "${CMAKE_CURRENT_LIST_DIR}/build/vendor/cmock/src")
-endif()
-if(EXISTS "${CMAKE_CURRENT_LIST_DIR}/build/test/mocks")
-    list(APPEND COMMON_VENDOR_INCLUDE_DIRS "${CMAKE_CURRENT_LIST_DIR}/build/test/mocks")
 endif()
 
 foreach(_dir ${COMMON_VENDOR_INCLUDE_DIRS})
