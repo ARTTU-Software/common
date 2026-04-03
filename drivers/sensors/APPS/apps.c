@@ -8,7 +8,7 @@ void APPS_init(Generic_Linear_Sensor_t* s, uint16_t min_adc, uint16_t max_adc, u
     s->min_real = 0.0f;
     s->max_real = 25.0f;                 // range in mm
     s->generic_sensor.port = port;
-    s->generic_sensor.kalman_settings = k;
+    s->generic_sensor.kalman_settings = k; // change this so labeler works?
 }
 
 uint16_t APPS_encode(float real_value) {
