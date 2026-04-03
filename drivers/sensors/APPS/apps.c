@@ -18,8 +18,8 @@ uint16_t APPS_encode(float real_value) {
     return (uint16_t)(encoded + 0.5f);
 }
 
-void APPS_update(Generic_Linear_Sensor_t* s, uint16_t filtered_value) {
-    generic_linear_update(s, filtered_value);
+void APPS_update(Generic_Linear_Sensor_t* s, uint16_t raw_adc) {
+    generic_linear_update(s, raw_adc);
 }
 
 

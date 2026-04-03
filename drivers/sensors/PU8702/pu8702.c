@@ -18,8 +18,8 @@ uint16_t pu8702_encode(float value) {
     return (uint16_t)(encoded + 0.5f);
 }
 
-void pu8702_update(Generic_Linear_Sensor_t* s, uint16_t filtered_adc) {
-    generic_linear_update(s, filtered_adc);
+void pu8702_update(Generic_Linear_Sensor_t* s, uint16_t raw_adc) {
+    generic_linear_update(s, raw_adc);
 }
 
 

@@ -100,10 +100,12 @@
     - +:test/**
     - -:test/support
   :source:
-    - drivers/**
+    - drivers/sensors/**
+    - drivers/misc/**
     - math/**
   :include:
-    - drivers/**
+    - drivers/sensors/**
+    - drivers/misc/**
     - math/**
   :support:
     - test/support
@@ -115,6 +117,7 @@
 :files:
   :test: []
   :source:
+    - drivers/sensors/Generic/generic_linear_sensor.c
 
 # Compilation symbols to be injected into builds
 # See documentation for advanced options:

@@ -1,5 +1,7 @@
+#include "generic_sensor.h"
 #include "unity.h"
 #include "apps.h"
+#include "generic_linear_sensor.h"
 #include <string.h> // For memset
 
 void setUp(void)
@@ -45,15 +47,16 @@ void test_APPS_update_should_calculate_voltage_and_displacement(void)
 {
     // 1. Setup
     Generic_Linear_Sensor_t sensor;
-    APPS_init(&sensor, 410, 3686, 1, (Generic_Kalman_Settings_t){0}); // Min/Max for 10-90% of 12-bit ADC
+    Generic_Kalman_Settings_t kalman_settings = {0}; // Kalman settings are not used in this test
+    APPS_init(&sensor, 410, 3686, 1, kalman_settings); // Min/Max for 10-90% of 12-bit ADC
 
-    uint16_t filtered_value = 2048; // A value in the middle (approx 50%)
+    uint16_t raw = 2048; // A value in the middle (approx 50%)
 
     // 2. Action
-    APPS_update(&sensor, filtered_value);
+    APPS_update(&sensor, raw);
 
     // 3. Assertion
-    TEST_ASSERT_EQUAL_UINT16(filtered_value, sensor.generic_sensor.filtered_value);
+    TEST_ASSERT_EQUAL_UINT16(12.5, sensor.generic_sensor.raw_value);
 
     // Voltage = 2048 * (3.3 / 4095) = 1.651...
     TEST_ASSERT_FLOAT_WITHIN(0.001f, 1.651f, sensor.voltage);
