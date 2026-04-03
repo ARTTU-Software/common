@@ -11,7 +11,7 @@ jobs:
       - name: Fetch central config
         uses: actions/checkout@v4
         with:
-          repository: ARTTU-Software-2026/.github
+          repository: ARTTU-Software/.github
           path: central-repo
 
       - uses: actions/labeler@v5
