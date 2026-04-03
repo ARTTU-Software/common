@@ -1,24 +1,14 @@
 cmake_minimum_required(VERSION 3.16)
+project(common C)
 
 option(BUILD_COMMON_LIBRARY "Build a static library from common sources" ON)
+option(BUILD_COMMON_TESTS   "Build and run tests"                        OFF)
 
-option(BUILD_COMMON_TESTS "Build and run tests" OFF)
-
-# Function to recursively find all directories containing .h files and collect them
-function(collect_header_dirs out_var)
-    set(HEADER_DIRS "")
-    file(GLOB_RECURSE HEADERS "${CMAKE_CURRENT_LIST_DIR}/*.h")
-    foreach(HEADER ${HEADERS})
-        get_filename_component(HEADER_DIR ${HEADER} DIRECTORY)
-        list(APPEND HEADER_DIRS ${HEADER_DIR})
-    endforeach()
-    if(HEADER_DIRS)
-        list(REMOVE_DUPLICATES HEADER_DIRS)
-        set(${out_var} ${HEADER_DIRS} PARENT_SCOPE)
-    endif()
-endfunction()
-
-# Recursively add header directories from specified source and mock paths
+# ---------------------------------------------------------------------------
+# Recursively collect all directories containing .h files under a given root
+# and add them as INTERFACE include directories on a target.
+# Usage: recursively_add_header_dirs(<target> <dir1> [dir2 ...])
+# ---------------------------------------------------------------------------
 function(recursively_add_header_dirs target)
     if(NOT TARGET ${target})
         message(FATAL_ERROR "recursively_add_header_dirs: target '${target}' does not exist")
@@ -33,8 +23,8 @@ function(recursively_add_header_dirs target)
         if(EXISTS "${HEADER_ROOT}")
             file(GLOB_RECURSE _HEADERS "${HEADER_ROOT}/*.h")
             foreach(_HEADER IN LISTS _HEADERS)
-                get_filename_component(_HEADER_DIR "${_HEADER}" DIRECTORY)
-                list(APPEND HEADER_DIRS "${_HEADER_DIR}")
+                get_filename_component(_DIR "${_HEADER}" DIRECTORY)
+                list(APPEND HEADER_DIRS "${_DIR}")
             endforeach()
         else()
             message(WARNING "recursively_add_header_dirs: path '${HEADER_ROOT}' does not exist")
@@ -47,46 +37,51 @@ function(recursively_add_header_dirs target)
     endif()
 endfunction()
 
-# Create INTERFACE library for headers (always available)
-add_library(common INTERFACE)
-
-# Collect header directories automatically
-collect_header_dirs(COMMON_INCLUDE_DIRS)
-
-# If Ceedling has generated test vendors/mocks, include their headers too
-set(COMMON_VENDOR_INCLUDE_DIRS "")
-if(EXISTS "${CMAKE_CURRENT_LIST_DIR}/build/vendor/unity/src")
-    list(APPEND COMMON_VENDOR_INCLUDE_DIRS "${CMAKE_CURRENT_LIST_DIR}/build/vendor/unity/src")
-endif()
-if(EXISTS "${CMAKE_CURRENT_LIST_DIR}/build/vendor/cmock/src")
-    list(APPEND COMMON_VENDOR_INCLUDE_DIRS "${CMAKE_CURRENT_LIST_DIR}/build/vendor/cmock/src")
-endif()
-
-foreach(_dir ${COMMON_VENDOR_INCLUDE_DIRS})
-    list(APPEND COMMON_INCLUDE_DIRS ${_dir})
+# ---------------------------------------------------------------------------
+# Collect project header dirs
+# NOTE: if you add new .h files, re-run CMake to pick them up (GLOB caveat)
+# ---------------------------------------------------------------------------
+file(GLOB_RECURSE _ALL_HEADERS "${CMAKE_CURRENT_LIST_DIR}/*.h")
+set(COMMON_INCLUDE_DIRS "")
+foreach(_H IN LISTS _ALL_HEADERS)
+    get_filename_component(_D "${_H}" DIRECTORY)
+    list(APPEND COMMON_INCLUDE_DIRS "${_D}")
 endforeach()
+
+# Optionally include Ceedling vendor headers if present
+foreach(_vendor_dir
+    "${CMAKE_CURRENT_LIST_DIR}/build/vendor/unity/src"
+    "${CMAKE_CURRENT_LIST_DIR}/build/vendor/cmock/src"
+)
+    if(EXISTS "${_vendor_dir}")
+        list(APPEND COMMON_INCLUDE_DIRS "${_vendor_dir}")
+    endif()
+endforeach()
+
 list(REMOVE_DUPLICATES COMMON_INCLUDE_DIRS)
 
+# ---------------------------------------------------------------------------
+# INTERFACE library — always available, carries all include dirs
+# ---------------------------------------------------------------------------
+add_library(common INTERFACE)
 target_include_directories(common INTERFACE ${COMMON_INCLUDE_DIRS})
 
-# Always build the static library from C sources
+# ---------------------------------------------------------------------------
+# Static library
+# NOTE: if you add new .c files, re-run CMake to pick them up (GLOB caveat)
+# ---------------------------------------------------------------------------
 if(BUILD_COMMON_LIBRARY)
-    # Collect all .c files recursively, excluding test/ unless building tests
-    if(BUILD_COMMON_TESTS)
-        file(GLOB_RECURSE COMMON_SOURCES "${CMAKE_CURRENT_LIST_DIR}/*.c")
-    else()
-        file(GLOB_RECURSE COMMON_SOURCES "${CMAKE_CURRENT_LIST_DIR}/*.c")
-        # Exclude test sources
-        list(FILTER COMMON_SOURCES EXCLUDE REGEX ".*/test/.*")
-    endif()
+    file(GLOB_RECURSE COMMON_SOURCES "${CMAKE_CURRENT_LIST_DIR}/*.c")
+    list(FILTER COMMON_SOURCES EXCLUDE REGEX ".*/test/.*")
 
     add_library(common_static STATIC ${COMMON_SOURCES})
     target_include_directories(common_static PUBLIC ${COMMON_INCLUDE_DIRS})
-    # Link to common INTERFACE for consistency
     target_link_libraries(common_static PUBLIC common)
 endif()
 
-# If building tests (requires the static library)
-if(BUILD_COMMON_TESTS AND BUILD_COMMON_LIBRARY)
+# ---------------------------------------------------------------------------
+# Tests
+# ---------------------------------------------------------------------------
+if(BUILD_COMMON_TESTS)
     enable_testing()
 endif()
