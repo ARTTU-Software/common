@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.16)
 
 option(BUILD_COMMON_LIBRARY "Build a static library from common sources" ON)
 
-option(BUILD_COMMON_TESTS "Build and run tests" OFF)
+option(BUILD_COMMON_TESTS "Build and run tests" ON)
 
 # Function to recursively find all directories containing .h files and collect them
 function(collect_header_dirs out_var)
@@ -23,6 +23,24 @@ add_library(common INTERFACE)
 
 # Collect header directories automatically
 collect_header_dirs(COMMON_INCLUDE_DIRS)
+
+# If Ceedling has generated test vendors/mocks, include their headers too
+set(COMMON_VENDOR_INCLUDE_DIRS "")
+if(EXISTS "${CMAKE_CURRENT_LIST_DIR}/build/vendor/unity/src")
+    list(APPEND COMMON_VENDOR_INCLUDE_DIRS "${CMAKE_CURRENT_LIST_DIR}/build/vendor/unity/src")
+endif()
+if(EXISTS "${CMAKE_CURRENT_LIST_DIR}/build/vendor/cmock/src")
+    list(APPEND COMMON_VENDOR_INCLUDE_DIRS "${CMAKE_CURRENT_LIST_DIR}/build/vendor/cmock/src")
+endif()
+if(EXISTS "${CMAKE_CURRENT_LIST_DIR}/build/test/mocks")
+    list(APPEND COMMON_VENDOR_INCLUDE_DIRS "${CMAKE_CURRENT_LIST_DIR}/build/test/mocks")
+endif()
+
+foreach(_dir ${COMMON_VENDOR_INCLUDE_DIRS})
+    list(APPEND COMMON_INCLUDE_DIRS ${_dir})
+endforeach()
+list(REMOVE_DUPLICATES COMMON_INCLUDE_DIRS)
+
 target_include_directories(common INTERFACE ${COMMON_INCLUDE_DIRS})
 
 # Always build the static library from C sources
