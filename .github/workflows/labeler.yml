@@ -8,7 +8,14 @@ jobs:
       contents: read
       pull-requests: write
     steps:
+      - name: Fetch central config
+        uses: actions/checkout@v4
+        with:
+          repository: ARTTU-Software-2026/.github
+          path: central-repo
+
       - uses: actions/labeler@v5
         with:
+          configuration-path: 'central-repo/.github/labeler.yml'
           repo-token: "${{ secrets.GITHUB_TOKEN }}"
           sync-labels: true
