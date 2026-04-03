@@ -1,0 +1,6 @@
+name: CI Tests
+on: [push, pull_request]
+
+jobs:
+  run-tests:
+    uses: ARTTU-Software/.github/.github/workflows/ceedling-test.yml@main
