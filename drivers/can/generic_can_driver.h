@@ -16,13 +16,22 @@ typedef struct {
     uint8_t payload[8];
     uint32_t msg_id;
     uint8_t num_values;
-} CAN_Message_Frame_t;
+} CAN_Tx_Message_Frame_t;
+
+/**
+ * @brief Structure representing a received CAN message.
+ */
+typedef struct {
+    uint8_t payload[8];
+    uint32_t msg_id;
+    uint8_t num_values;
+} CAN_Rx_Message_Frame_t;
 
 /**
  * @brief Circular buffer for storing received CAN messages.
  */
 typedef struct {
-    CAN_Message_Frame_t* frame;
+    CAN_Rx_Message_Frame_t* frame;
     uint16_t size; // Size of the ring buffer (number of frames it can hold)
     volatile uint16_t head; // Index for the next incoming frame
     volatile uint16_t tail; // Index for the next frame to process
@@ -41,7 +50,7 @@ typedef struct {
  * @brief Main driver structure holding state and buffers.
  */
 typedef struct {
-    CAN_Message_Frame_t* message_frames_tx;
+    CAN_Tx_Message_Frame_t* message_frames_tx;
     CAN_Rx_Ring_Buffer_t rx_ring_buffer;
 
     uint8_t tx_frame_number;
@@ -71,10 +80,9 @@ void CAN_set_structures(CAN_Driver_t* driver, CanTxFn_t add_to_fifo_fn, void* hf
  * @brief Callback for RX interrupts to store data in ring buffer.
  * @param driver Driver instance.
  * @param data Payload data.
- * @param hdr_rx RX header.
  * @param msg_id Message ID.
  */
-void CAN_driver_rx_callback(CAN_Driver_t* driver, uint8_t* data, void* hdr_rx, uint32_t msg_id, uint8_t num_values);
+void CAN_driver_rx_callback(CAN_Driver_t* driver, uint8_t* data, uint32_t msg_id, uint8_t num_values);
 
 /**
  * @brief Periodic task to send scheduled CAN frames.
@@ -89,6 +97,6 @@ void CAN_send_frames(CAN_Driver_t* driver, uint32_t current_tick);
  * @param frame Frame to send.
  * @return Status code.
  */
-uint32_t CAN_send_single_frame(CAN_Driver_t* driver, CAN_Message_Frame_t* frame);
+uint32_t CAN_send_single_frame(CAN_Driver_t* driver, CAN_Tx_Message_Frame_t* frame);
 
 #endif /* INC_GENERIC_CAN_DRIVER_H */
