@@ -22,19 +22,24 @@ void CAN_set_structures(CAN_Driver_t* driver,
 }
 
 void CAN_driver_rx_callback(CAN_Driver_t* driver, uint8_t* data, void* hdr_rx, uint32_t msg_id, uint8_t num_values) {
-    // Uses the ring buffer in the driver structure to store incoming messages
-    // hdr_rx points to a transient stack variable, so we cannot store the pointer.
     if (driver == NULL || driver->rx_ring_buffer.frame == NULL || driver->rx_ring_buffer.size == 0)
         return;
+
+    uint16_t next_head = (driver->rx_ring_buffer.head + 1) % driver->rx_ring_buffer.size;
+
+    // overflow check
+    if (next_head == driver->rx_ring_buffer.tail) {
+        // buffer is full, so drop message
+        return; 
+    }
+
+    // safe to write
     driver->rx_ring_buffer.frame[driver->rx_ring_buffer.head].hdr = NULL;
     memcpy(driver->rx_ring_buffer.frame[driver->rx_ring_buffer.head].payload, data, num_values);
     driver->rx_ring_buffer.frame[driver->rx_ring_buffer.head].msg_id = msg_id;
     driver->rx_ring_buffer.frame[driver->rx_ring_buffer.head].num_values = num_values;
 
-    // Increment head in ring buffer
-    driver->rx_ring_buffer.head = (driver->rx_ring_buffer.head + 1) % driver->rx_ring_buffer.size;
-
-    // Set flag to indicate a new message has been received
+    driver->rx_ring_buffer.head = next_head;
     driver->can_new_message_flag = 1;
 }
 
@@ -42,7 +47,9 @@ void CAN_send_frames(CAN_Driver_t* driver, uint32_t current_tick) {
     for(uint16_t i = 0; i < driver->tx_frame_number; i++){
         if(current_tick - driver->tx_scheduler_prev_tick[i] >= driver->tx_frame_configs[i].scheduler_timer_value){
             driver->tx_scheduler_prev_tick[i] = current_tick;
-            driver->add_to_fifo_fn(driver->hfdcan, driver->message_frames_tx[i].hdr, driver->message_frames_tx[i].payload);
+            driver->add_to_fifo_fn(driver->hfdcan, 
+                driver->message_frames_tx[i].hdr, 
+                driver->message_frames_tx[i].payload);
         }
     }
 }
