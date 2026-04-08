@@ -3,6 +3,8 @@
 
 #include <stdint.h>
 
+#define CAN_DRIVER_NON_PERIODIC_FRAME 0xFFFF
+
 /**
  * @brief Function pointer for transmitting CAN messages.
  */

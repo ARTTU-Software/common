@@ -51,6 +51,9 @@ void CAN_driver_rx_callback(CAN_Driver_t* driver, uint8_t* data, uint32_t msg_id
 
 void CAN_send_frames(CAN_Driver_t* driver, uint32_t current_tick) {
     for(uint16_t i = 0; i < driver->tx_frame_number; i++){
+        if(driver->tx_frame_configs[i].scheduler_timer_value == CAN_DRIVER_NON_PERIODIC_FRAME) {
+            continue; // skip non periodic frames
+        }
         if(current_tick - driver->tx_scheduler_prev_tick[i] >= driver->tx_frame_configs[i].scheduler_timer_value){
             driver->tx_scheduler_prev_tick[i] = current_tick;
             driver->add_to_fifo_fn(driver->hfdcan, 
