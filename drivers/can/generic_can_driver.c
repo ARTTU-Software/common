@@ -2,6 +2,10 @@
 #include <stdint.h>
 #include <string.h>
 
+#ifdef CAN_DRIVER_DEBUG
+volatile CAN_Rx_Debug_t can_rx_debug;
+#endif
+
 void CAN_set_structures(CAN_Driver_t* driver, 
     CanTxFn_t add_to_fifo_fn, 
     void* hfdcan_instance)
@@ -21,20 +25,38 @@ void CAN_set_structures(CAN_Driver_t* driver,
     }
 }
 
-void CAN_driver_rx_callback(CAN_Driver_t* driver, uint8_t* data, uint32_t msg_id, uint8_t num_values) {
+void CAN_driver_rx_callback(CAN_Driver_t* driver, uint8_t* data, uint32_t msg_id, uint8_t num_values, uint32_t rx_tick_ms) {
     if (driver == NULL || driver->rx_ring_buffer.frame == NULL || driver->rx_ring_buffer.size == 0)
         return;
+
+#ifdef CAN_DRIVER_DEBUG
+    can_rx_debug.rx_total_frames++;
+    can_rx_debug.rx_last_msg_id = msg_id;
+    can_rx_debug.rx_last_len = num_values;
+    can_rx_debug.rx_last_tick_ms = rx_tick_ms;
+    memset((void*)can_rx_debug.rx_last_payload, 0, sizeof(can_rx_debug.rx_last_payload));
+    if (data != NULL) {
+        uint8_t copy_len = (num_values > 8U) ? 8U : num_values;
+        memcpy((void*)can_rx_debug.rx_last_payload, data, copy_len);
+    }
+#endif
 
     uint16_t next_head = (driver->rx_ring_buffer.head + 1) % driver->rx_ring_buffer.size;
 
     // overflow check
     if (next_head == driver->rx_ring_buffer.tail) {
         // buffer is full, so drop message
+#ifdef CAN_DRIVER_DEBUG
+        can_rx_debug.rx_dropped_overflow++;
+#endif
         return; 
     }
 
     // drop invalid length messages
     if (num_values > (uint8_t)sizeof(driver->rx_ring_buffer.frame[driver->rx_ring_buffer.head].payload)) {
+#ifdef CAN_DRIVER_DEBUG
+        can_rx_debug.rx_dropped_invalid_len++;
+#endif
         return;
     }
     uint8_t rx_len_bytes = num_values;
@@ -44,6 +66,7 @@ void CAN_driver_rx_callback(CAN_Driver_t* driver, uint8_t* data, uint32_t msg_id
     memcpy(driver->rx_ring_buffer.frame[driver->rx_ring_buffer.head].payload, data, rx_len_bytes);
     driver->rx_ring_buffer.frame[driver->rx_ring_buffer.head].msg_id = msg_id;
     driver->rx_ring_buffer.frame[driver->rx_ring_buffer.head].num_values = rx_len_bytes;
+    driver->rx_ring_buffer.frame[driver->rx_ring_buffer.head].rx_tick_ms = rx_tick_ms;
 
     driver->rx_ring_buffer.head = next_head;
     driver->can_new_message_flag = 1;
