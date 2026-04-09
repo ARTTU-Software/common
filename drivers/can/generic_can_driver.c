@@ -2,22 +2,25 @@
 #include <stdint.h>
 #include <string.h>
 
-#ifdef CAN_DRIVER_DEBUG
-volatile CAN_Rx_Debug_t can_rx_debug;
-#endif
-
 void CAN_set_structures(CAN_Driver_t* driver, 
     CanTxFn_t add_to_fifo_fn, 
+    CanFifoFreeLevelFn_t get_fifo_free_level_fn,
     void* hfdcan_instance)
 {
     driver->add_to_fifo_fn = add_to_fifo_fn;
+    driver->get_fifo_free_level_fn = get_fifo_free_level_fn;
     driver->hfdcan = hfdcan_instance;
     driver->can_new_message_flag = 0;
 
-    // Init ring buffer values
+    // Init RX ring buffer values
     driver->rx_ring_buffer.size = driver->rx_frame_number;
     driver->rx_ring_buffer.head = 0;
     driver->rx_ring_buffer.tail = 0;
+
+    // Init TX ring buffer values
+    driver->tx_ring_buffer.size = driver->tx_frame_number;
+    driver->tx_ring_buffer.head = 0;
+    driver->tx_ring_buffer.tail = 0;
 
     for(uint32_t i = 0; i < driver->tx_frame_number; i++){
         driver->message_frames_tx[i].msg_id = driver->tx_frame_configs[i].id;
@@ -29,34 +32,16 @@ void CAN_driver_rx_callback(CAN_Driver_t* driver, uint8_t* data, uint32_t msg_id
     if (driver == NULL || driver->rx_ring_buffer.frame == NULL || driver->rx_ring_buffer.size == 0)
         return;
 
-#ifdef CAN_DRIVER_DEBUG
-    can_rx_debug.rx_total_frames++;
-    can_rx_debug.rx_last_msg_id = msg_id;
-    can_rx_debug.rx_last_len = num_values;
-    can_rx_debug.rx_last_tick_ms = rx_tick_ms;
-    memset((void*)can_rx_debug.rx_last_payload, 0, sizeof(can_rx_debug.rx_last_payload));
-    if (data != NULL) {
-        uint8_t copy_len = (num_values > 8U) ? 8U : num_values;
-        memcpy((void*)can_rx_debug.rx_last_payload, data, copy_len);
-    }
-#endif
-
     uint16_t next_head = (driver->rx_ring_buffer.head + 1) % driver->rx_ring_buffer.size;
 
     // overflow check
     if (next_head == driver->rx_ring_buffer.tail) {
         // buffer is full, so drop message
-#ifdef CAN_DRIVER_DEBUG
-        can_rx_debug.rx_dropped_overflow++;
-#endif
         return; 
     }
 
     // drop invalid length messages
     if (num_values > (uint8_t)sizeof(driver->rx_ring_buffer.frame[driver->rx_ring_buffer.head].payload)) {
-#ifdef CAN_DRIVER_DEBUG
-        can_rx_debug.rx_dropped_invalid_len++;
-#endif
         return;
     }
     uint8_t rx_len_bytes = num_values;
@@ -72,16 +57,64 @@ void CAN_driver_rx_callback(CAN_Driver_t* driver, uint8_t* data, uint32_t msg_id
     driver->can_new_message_flag = 1;
 }
 
+/**
+ * @brief Internal helper: Enqueues a TX frame to the ring buffer.
+ * @return 1 if successfully enqueued, 0 if buffer is full.
+ */
+static uint32_t CAN_enqueue_tx_frame(CAN_Driver_t* driver, const CAN_Tx_Message_Frame_t* frame) {
+    if (driver == NULL || driver->tx_ring_buffer.frame == NULL || driver->tx_ring_buffer.size == 0)
+        return 0;
+
+    uint16_t next_tail = (driver->tx_ring_buffer.tail + 1) % driver->tx_ring_buffer.size;
+
+    // Overflow check: buffer is full
+    if (next_tail == driver->tx_ring_buffer.head) {
+        return 0;
+    }
+
+    // Copy frame to buffer
+    driver->tx_ring_buffer.frame[driver->tx_ring_buffer.tail] = *frame;
+    driver->tx_ring_buffer.tail = next_tail;
+
+    return 1;
+}
+
 void CAN_send_frames(CAN_Driver_t* driver, uint32_t current_tick) {
+    // Step 1: Enqueue periodic frames that are due to the TX ring buffer
     for(uint16_t i = 0; i < driver->tx_frame_number; i++){
+        
         if(driver->tx_frame_configs[i].scheduler_timer_value == CAN_DRIVER_NON_PERIODIC_FRAME) {
             continue; // skip non periodic frames
         }
-        if(current_tick - driver->tx_scheduler_prev_tick[i] >= driver->tx_frame_configs[i].scheduler_timer_value){
-            driver->tx_scheduler_prev_tick[i] = current_tick;
-            driver->add_to_fifo_fn(driver->hfdcan, 
-                driver->message_frames_tx[i].hdr, 
-                driver->message_frames_tx[i].payload);
+        
+        if(current_tick - driver->tx_frame_configs[i].scheduler_timer_prev_tick >= driver->tx_frame_configs[i].scheduler_timer_value){
+            // Enqueue frame to TX buffer; if buffer is full, skip and retry next cycle
+            if(CAN_enqueue_tx_frame(driver, &driver->message_frames_tx[i])) {
+                driver->tx_frame_configs[i].scheduler_timer_prev_tick = current_tick;
+            }
+        }
+    }
+
+    // Step 2: Flush TX ring buffer to hardware FIFO (non-blocking)
+    // Pull frames from the buffer and send to hardware until either:
+    // - Buffer is empty, or
+    // - Hardware FIFO is full
+    while(driver->tx_ring_buffer.head != driver->tx_ring_buffer.tail) {
+        // Check if hardware FIFO has space
+        if(driver->get_tx_fifo_free_level_fn(driver->hfdcan) == 0) {
+            break;  // Stop if FIFO is full; resume next cycle
+        }
+
+        // Send frame from buffer to hardware FIFO
+        if(driver->add_to_fifo_fn(driver->hfdcan,
+            driver->tx_ring_buffer.frame[driver->tx_ring_buffer.head].hdr,
+            driver->tx_ring_buffer.frame[driver->tx_ring_buffer.head].payload) == 0) {
+            
+            // Advance to next frame in buffer
+            driver->tx_ring_buffer.head = (driver->tx_ring_buffer.head + 1) % driver->tx_ring_buffer.size;
+        } else {
+            // Hardware rejected frame; stop attempting to send this cycle
+            break;
         }
     }
 }
