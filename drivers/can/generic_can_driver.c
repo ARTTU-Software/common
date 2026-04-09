@@ -4,21 +4,21 @@
 
 void CAN_set_structures(CAN_Driver_t* driver, 
     CanTxFn_t add_to_fifo_fn, 
-    CanFifoFreeLevelFn_t get_fifo_free_level_fn,
+    CanFifoFreeLevelFn_t get_tx_fifo_free_level_fn,
     void* hfdcan_instance)
 {
     driver->add_to_fifo_fn = add_to_fifo_fn;
-    driver->get_fifo_free_level_fn = get_fifo_free_level_fn;
+    driver->get_tx_fifo_free_level_fn = get_tx_fifo_free_level_fn;
     driver->hfdcan = hfdcan_instance;
     driver->can_new_message_flag = 0;
 
     // Init RX ring buffer values
-    driver->rx_ring_buffer.size = driver->rx_frame_number;
+    driver->rx_ring_buffer.size = driver->rx_ring_buffer_size;
     driver->rx_ring_buffer.head = 0;
     driver->rx_ring_buffer.tail = 0;
 
     // Init TX ring buffer values
-    driver->tx_ring_buffer.size = driver->tx_frame_number;
+    driver->tx_ring_buffer.size = driver->tx_ring_buffer_size;
     driver->tx_ring_buffer.head = 0;
     driver->tx_ring_buffer.tail = 0;
 
@@ -80,7 +80,17 @@ static uint32_t CAN_enqueue_tx_frame(CAN_Driver_t* driver, const CAN_Tx_Message_
 }
 
 void CAN_send_frames(CAN_Driver_t* driver, uint32_t current_tick) {
-    // Step 1: Enqueue periodic frames that are due to the TX ring buffer
+    if (driver == NULL ||
+        driver->tx_frame_configs == NULL ||
+        driver->message_frames_tx == NULL ||
+        driver->tx_ring_buffer.frame == NULL ||
+        driver->tx_ring_buffer.size == 0 ||
+        driver->add_to_fifo_fn == NULL ||
+        driver->get_tx_fifo_free_level_fn == NULL) {
+        return;
+    }
+
+    // enqueue periodic frames that are due to the TX ring buffer
     for(uint16_t i = 0; i < driver->tx_frame_number; i++){
         
         if(driver->tx_frame_configs[i].scheduler_timer_value == CAN_DRIVER_NON_PERIODIC_FRAME) {
@@ -95,25 +105,20 @@ void CAN_send_frames(CAN_Driver_t* driver, uint32_t current_tick) {
         }
     }
 
-    // Step 2: Flush TX ring buffer to hardware FIFO (non-blocking)
-    // Pull frames from the buffer and send to hardware until either:
-    // - Buffer is empty, or
-    // - Hardware FIFO is full
+    // flush TX ring buffer to hardware FIFO
+    // pull frames until either buffer is empty or hardware FIFO is full
     while(driver->tx_ring_buffer.head != driver->tx_ring_buffer.tail) {
-        // Check if hardware FIFO has space
         if(driver->get_tx_fifo_free_level_fn(driver->hfdcan) == 0) {
-            break;  // Stop if FIFO is full; resume next cycle
+            break;  // resume sending next cycle if hardware FIFO is full
         }
 
-        // Send frame from buffer to hardware FIFO
         if(driver->add_to_fifo_fn(driver->hfdcan,
             driver->tx_ring_buffer.frame[driver->tx_ring_buffer.head].hdr,
             driver->tx_ring_buffer.frame[driver->tx_ring_buffer.head].payload) == 0) {
             
-            // Advance to next frame in buffer
             driver->tx_ring_buffer.head = (driver->tx_ring_buffer.head + 1) % driver->tx_ring_buffer.size;
         } else {
-            // Hardware rejected frame; stop attempting to send this cycle
+            // hardware rejected frame; stop attempting to send this cycle
             break;
         }
     }

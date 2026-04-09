@@ -70,11 +70,13 @@ typedef struct {
  */
 typedef struct {
     CAN_Tx_Message_Frame_t* message_frames_tx;
+
     CAN_Rx_Ring_Buffer_t rx_ring_buffer;
     CAN_Tx_Ring_Buffer_t tx_ring_buffer;
 
     uint8_t tx_frame_number;
-    uint8_t rx_frame_number;
+    uint8_t tx_ring_buffer_size;
+    uint8_t rx_ring_buffer_size;
 
     void* hfdcan;
 
@@ -84,7 +86,7 @@ typedef struct {
     volatile uint8_t can_new_message_flag; // Flag to indicate a new message has been received
 
     CanTxFn_t add_to_fifo_fn; // Function pointer for adding messages to the CAN Tx FIFO
-    CanFifoFreeLevelFn_t get_fifo_free_level_fn; // Function pointer for checking CAN FIFO free level
+    CanFifoFreeLevelFn_t get_tx_fifo_free_level_fn; // Function pointer for checking CAN FIFO free level
 } CAN_Driver_t;
 
 
@@ -93,9 +95,13 @@ typedef struct {
  * @brief Initializes the driver with hardware handle and TX function.
  * @param driver Driver instance.
  * @param add_to_fifo_fn TX function pointer.
+ * @param get_tx_fifo_free_level_fn Function pointer for checking CAN FIFO free level.
  * @param hfdcan_instance Hardware handle.
  */
-void CAN_set_structures(CAN_Driver_t* driver, CanTxFn_t add_to_fifo_fn, CanFifoFreeLevelFn_t get_fifo_free_level_fn, void* hfdcan_instance);
+void CAN_set_structures(CAN_Driver_t* driver, 
+    CanTxFn_t add_to_fifo_fn, 
+    CanFifoFreeLevelFn_t get_tx_fifo_free_level_fn, 
+    void* hfdcan_instance);
 
 /**
  * @brief Callback for RX interrupts to store data in ring buffer.
