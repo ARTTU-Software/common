@@ -78,9 +78,8 @@ BO_ 229 ECU_Software_Data: 8 ECU
  SG_ PRECH_State : 5|1@0+ (1.0,0) [0.0|1.0] "bool" Vector__XXX
  SG_ AIR_Neg_State : 6|1@0+ (1.0,0) [0.0|1.0] "bool" Vector__XXX
  SG_ AIR_Pos_State : 7|1@0+ (1.0,0) [0.0|1.0] "bool" Vector__XXX
- SG_ Brake_LED_Status : 13|1@0+ (1.0,0) [0.0|1.0] "bool" Vector__XXX
- SG_ Fan_State : 14|1@0+ (1.0,0) [0.0|1.0] "bool" Vector__XXX
- SG_ Pump_State : 15|1@0+ (1.0,0) [0.0|1.0] "bool" Vector__XXX
+ SG_ Fan_State : 8|1@0+ (1.0,0) [0.0|1.0] "bool" Vector__XXX
+ SG_ Pump_State : 9|1@0+ (1.0,0) [0.0|1.0] "bool" Vector__XXX
  SG_ ECU_Code_State : 23|8@0+ (1.0,0) [0.0|255.0] "enum" Vector__XXX
 BO_ 179 ECU_Rear_NMOS: 8 ECU
  SG_ R2D_Buzzer_On_Off : 7|8@0+ (1.0,0) [0.0|1.0] "bool" Vector__XXX
@@ -112,7 +111,7 @@ BO_ 16 BMS_Errors_Temps: 8 BMS
  SG_ DTC_P0A80_Weak_Cell_Fault : 28|1@1+ (1.0,0) [0.0|1.0] "Bool" Vector__XXX
  SG_ MultiPurpose_Output_2 : 29|1@1+ (1.0,0) [0.0|1.0] "Bool" Vector__XXX
  SG_ Blank : 30|1@1+ (1.0,0) [0.0|1.0] "Bool" Vector__XXX
- SG_ Blank : 31|1@1+ (1.0,0) [0.0|1.0] "Bool" Vector__XXX
+ SG_ Blank2 : 31|1@1+ (1.0,0) [0.0|1.0] "Bool" Vector__XXX
  SG_ Low_Temperature : 39|8@0+ (0.333333,0) [0.0|85.0] "C" Vector__XXX
  SG_ High_Temperature : 47|8@0+ (0.333333,0) [0.0|85.0] "C" Vector__XXX
  SG_ High_Thermistor_ID : 55|8@0+ (1.0,0) [0.0|255.0] "ID" Vector__XXX
@@ -157,28 +156,28 @@ BO_ 54 BMS_Data_Random: 8 BMS
  SG_ CellBalancing : 31|1@1+ (1.0,0) [0.0|1.0] "" Vector__XXX
 
 BO_ 32 GIL_Inv_Data_1: 8 GI_Left
- SG_ PWM_L : 7|16@0+ (1.0,0) [0.0|65535.0] "raw" Vector__XXX
- SG_ Input_Voltage_L : 23|16@0+ (0.1,0) [0.0|6553.5] "V" Vector__XXX
- SG_ Phase_Current_L : 39|16@0+ (0.1,0) [0.0|6553.5] "A" Vector__XXX
+ SG_ PWM_L : 7|16@0+ (1.0,0) [0.0|1000.0] "raw" Vector__XXX
+ SG_ Input_Voltage_L : 23|16@0+ (0.1,0) [0.0|410.0] "V" Vector__XXX
+ SG_ Phase_Current_L : 39|16@0+ (0.1,0) [0.0|511.0] "A" Vector__XXX
  SG_ RPM_L : 55|16@0+ (1.0,0) [0.0|65535.0] "rpm" Vector__XXX
 BO_ 33 GIL_Inv_Data_2: 8 GI_Left
- SG_ Motor_Temp_L : 7|16@0+ (0.1,0) [0.0|6553.5] "degC" Vector__XXX
- SG_ Inverter_Temp_L : 23|16@0+ (0.1,0) [0.0|6553.5] "degC" Vector__XXX
- SG_ Aux_Input_L : 39|16@0+ (1.0,0) [0.0|65535.0] "raw" Vector__XXX
- SG_ Throttle_Input_L : 55|16@0+ (1.0,0) [0.0|65535.0] "raw" Vector__XXX
+ SG_ Motor_Temp_L : 7|16@0+ (1.0,0) [-100.0|155.0] "degC" Vector__XXX
+ SG_ Inverter_Temp_L : 23|16@0+ (1.0,0) [-100.0|155.0] "degC" Vector__XXX
+ SG_ Aux_Brake_Input_L : 39|16@0+ (0.001,0) [0.0|5.0] "V" Vector__XXX
+ SG_ Throttle_Input_L : 55|16@0+ (0.001,0) [0.0|5.0] "V" Vector__XXX
 BO_ 34 GIL_Software: 8 GI_Left
  SG_ Software_Status : 7|16@0+ (1.0,0) [0.0|255.0] "enum" Vector__XXX
 
 BO_ 48 GIR_Inv_Data_1: 8 GI_Right
- SG_ PWM_R : 7|16@0+ (1.0,0) [0.0|65535.0] "raw" Vector__XXX
- SG_ Input_Voltage_R : 23|16@0+ (0.1,0) [0.0|6553.5] "V" Vector__XXX
- SG_ Phase_Current_R : 39|16@0+ (0.1,0) [0.0|6553.5] "A" Vector__XXX
+ SG_ PWM_R : 7|16@0+ (1.0,0) [0.0|1000.0] "raw" Vector__XXX
+ SG_ Input_Voltage_R : 23|16@0+ (0.1,0) [0.0|410.0] "V" Vector__XXX
+ SG_ Phase_Current_R : 39|16@0+ (0.1,0) [0.0|511.0] "A" Vector__XXX
  SG_ RPM_R : 55|16@0+ (1.0,0) [0.0|65535.0] "rpm" Vector__XXX
 BO_ 49 GIR_Inv_Data_2: 8 GI_Right
- SG_ Motor_Temp_R : 7|16@0+ (0.1,0) [0.0|6553.5] "degC" Vector__XXX
- SG_ Inverter_Temp_R : 23|16@0+ (0.1,0) [0.0|6553.5] "degC" Vector__XXX
- SG_ Aux_Input_R : 39|16@0+ (1.0,0) [0.0|65535.0] "raw" Vector__XXX
- SG_ Throttle_Input_R : 55|16@0+ (1.0,0) [0.0|65535.0] "raw" Vector__XXX
+ SG_ Motor_Temp_R : 7|16@0+ (1.0,0) [-100.0|155.0] "degC" Vector__XXX
+ SG_ Inverter_Temp_R : 23|16@0+ (1.0,0) [-100.0|155.0] "degC" Vector__XXX
+ SG_ Aux_Input_R : 39|16@0+ (0.001,0) [0.0|5.0] "V" Vector__XXX
+ SG_ Throttle_Input_R : 55|16@0+ (0.001,0) [0.0|5.0] "V" Vector__XXX
 BO_ 50 GIR_Software: 8 GI_Right
  SG_ Software_Status : 7|16@0+ (1.0,0) [0.0|255.0] "enum" Vector__XXX
 
@@ -187,6 +186,9 @@ BO_ 208 DASH_Buttons: 8 Dashboard
  SG_ Log_SD_Toggle : 15|8@0+ (1.0,0) [0.0|1.0] "bool" Vector__XXX
  SG_ Log_LTE_Toggle : 23|8@0+ (1.0,0) [0.0|1.0] "bool" Vector__XXX
 
+ SG_ Gps_speed : 7|16@0+ (0.01,0) [0.0|326.0] "m/s" ECU
+ SG_ Gps_course : 23|16@0- (0.0001,0) [0.0|0.0] "rad [UW]" ECU
+ SG_ Gps_yaw_angle : 39|16@0- (0.0001,0) [0.0|0.0] "rad [UW]" ECU
 
 BO_ 80 IMU_Data: 8 IMU
  SG_ IMU_Header : 7|8@0+ (1.0,0) [0.0|255.0] "const_0x55" Vector__XXX
@@ -200,7 +202,7 @@ BO_ 80 IMU_Data: 8 IMU
  SG_ Angle_Roll m83 : 23|16@0- (0.0054931640625,0) [-180.0|180.0] "deg" Vector__XXX
  SG_ Angle_Pitch m83 : 39|16@0- (0.0054931640625,0) [-180.0|180.0] "deg" Vector__XXX
  SG_ Angle_Yaw m83 : 55|16@0- (0.0054931640625,0) [-180.0|180.0] "deg" Vector__XXX
-BO_ 80 DASH_IMU_Recal: 8 IMU
+BO_ 80 IMU_Recal: 8 IMU
  SG_ Protocol_Header_1 : 7|8@0+ (1.0,0) [0.0|255.0] "const_0xff" Vector__XXX
  SG_ Protocol_Header_2 : 15|8@0+ (1.0,0) [0.0|255.0] "const_0xaa" Vector__XXX
  SG_ Address M : 23|8@0+ (1.0,0) [0.0|255.0] "hex" Vector__XXX
@@ -211,8 +213,17 @@ BO_ 80 DASH_IMU_Recal: 8 IMU
  SG_ SAVE_Low m0 : 31|8@0+ (1.0,0) [0.0|255.0] "hex" Vector__XXX
  SG_ SAVE_High m0 : 39|8@0+ (1.0,0) [0.0|255.0] "hex" Vector__XXX
 
-BO_ 1264 PROGRAMMING: 8 Programming
+BO_ 1264 PRG_Bootloader: 8 Programming
  SG_ MCU_ID : 7|8@0+ (1.0,0) [0.0|255.0] "id" Vector__XXX
+BO_ 1265 PRG_Inverter: 8 Programming
+ SG_ Prg_Inv_Byte0 : 7|8@0+ (1.0,0) [0.0|255.0] "hex" Vector__XXX
+ SG_ Prg_Inv_Byte1 : 15|8@0+ (1.0,0) [0.0|255.0] "hex" Vector__XXX
+ SG_ Prg_Inv_Byte2 : 23|8@0+ (1.0,0) [0.0|255.0] "hex" Vector__XXX
+ SG_ Prg_Inv_Byte3 : 31|8@0+ (1.0,0) [0.0|255.0] "hex" Vector__XXX
+ SG_ Prg_Inv_Byte4 : 39|8@0+ (1.0,0) [0.0|255.0] "hex" Vector__XXX
+ SG_ Prg_Inv_Byte5 : 47|8@0+ (1.0,0) [0.0|255.0] "hex" Vector__XXX
+ SG_ Prg_Inv_Byte6 : 55|8@0+ (1.0,0) [0.0|255.0] "hex" Vector__XXX
+ SG_ Prg_Inv_Byte7 : 63|8@0+ (1.0,0) [0.0|255.0] "hex" Vector__XXX
 
 BA_DEF_ BO_  "GenMsgCycleTime" INT 0 65535;
 BA_DEF_DEF_  "GenMsgCycleTime" 0;
