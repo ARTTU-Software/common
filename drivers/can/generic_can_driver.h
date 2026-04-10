@@ -119,6 +119,12 @@ void CAN_driver_rx_callback(CAN_Driver_t* driver, uint8_t* data, uint32_t msg_id
 void CAN_send_frames(CAN_Driver_t* driver, uint32_t current_tick);
 
 /**
+ * @brief Callback for TX FIFO empty interrupt to flush pending TX frames.
+ * @param driver Driver instance.
+ */
+void CAN_driver_tx_fifo_empty_callback(CAN_Driver_t* driver);
+
+/**
  * @brief Sends a single CAN frame immediately.
  * @param driver Driver instance.
  * @param frame Frame to send.
