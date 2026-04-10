@@ -79,7 +79,44 @@ static uint32_t CAN_enqueue_tx_frame(CAN_Driver_t* driver, const CAN_Tx_Message_
     return 1;
 }
 
+/**
+ * @brief Internal helper: Flushes pending TX frames into hardware FIFO.
+ * @param max_frames_to_send 0 to send until FIFO full/queue empty, otherwise send at most this many.
+ */
+static void CAN_flush_tx_ring_buffer(CAN_Driver_t* driver, uint16_t max_frames_to_send) {
+    uint16_t sent_frames = 0;
+
+    if (driver == NULL ||
+        driver->tx_ring_buffer.frame == NULL ||
+        driver->tx_ring_buffer.size == 0 ||
+        driver->add_to_fifo_fn == NULL ||
+        driver->get_tx_fifo_free_level_fn == NULL) {
+        return;
+    }
+
+    while(driver->tx_ring_buffer.head != driver->tx_ring_buffer.tail) {
+        if (max_frames_to_send != 0U && sent_frames >= max_frames_to_send) {
+            break;
+        }
+
+        if(driver->get_tx_fifo_free_level_fn(driver->hfdcan) == 0) {
+            break;
+        }
+
+        if(driver->add_to_fifo_fn(driver->hfdcan,
+            driver->tx_ring_buffer.frame[driver->tx_ring_buffer.head].hdr,
+            driver->tx_ring_buffer.frame[driver->tx_ring_buffer.head].payload) == 0) {
+            driver->tx_ring_buffer.head = (driver->tx_ring_buffer.head + 1) % driver->tx_ring_buffer.size;
+            sent_frames++;
+        } else {
+            break;
+        }
+    }
+}
+
 void CAN_send_frames(CAN_Driver_t* driver, uint32_t current_tick) {
+    uint8_t queue_was_empty;
+
     if (driver == NULL ||
         driver->tx_frame_configs == NULL ||
         driver->message_frames_tx == NULL ||
@@ -89,6 +126,8 @@ void CAN_send_frames(CAN_Driver_t* driver, uint32_t current_tick) {
         driver->get_tx_fifo_free_level_fn == NULL) {
         return;
     }
+
+    queue_was_empty = (driver->tx_ring_buffer.head == driver->tx_ring_buffer.tail);
 
     // enqueue periodic frames that are due to the TX ring buffer
     for(uint16_t i = 0; i < driver->tx_frame_number; i++){
@@ -105,23 +144,15 @@ void CAN_send_frames(CAN_Driver_t* driver, uint32_t current_tick) {
         }
     }
 
-    // flush TX ring buffer to hardware FIFO
-    // pull frames until either buffer is empty or hardware FIFO is full
-    while(driver->tx_ring_buffer.head != driver->tx_ring_buffer.tail) {
-        if(driver->get_tx_fifo_free_level_fn(driver->hfdcan) == 0) {
-            break;  // resume sending next cycle if hardware FIFO is full
-        }
-
-        if(driver->add_to_fifo_fn(driver->hfdcan,
-            driver->tx_ring_buffer.frame[driver->tx_ring_buffer.head].hdr,
-            driver->tx_ring_buffer.frame[driver->tx_ring_buffer.head].payload) == 0) {
-            
-            driver->tx_ring_buffer.head = (driver->tx_ring_buffer.head + 1) % driver->tx_ring_buffer.size;
-        } else {
-            // hardware rejected frame; stop attempting to send this cycle
-            break;
-        }
+    // Kickstart transmission once when queue transitions from empty to non-empty.
+    // The TX FIFO empty interrupt callback continues draining after this.
+    if (queue_was_empty && (driver->tx_ring_buffer.head != driver->tx_ring_buffer.tail)) {
+        CAN_flush_tx_ring_buffer(driver, 1U);
     }
+}
+
+void CAN_driver_tx_fifo_empty_callback(CAN_Driver_t* driver) {
+    CAN_flush_tx_ring_buffer(driver, 0U);
 }
 
 uint32_t CAN_send_single_frame(CAN_Driver_t* driver, CAN_Tx_Message_Frame_t* frame) {
