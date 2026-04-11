@@ -2,6 +2,10 @@
 #include <stdint.h>
 #include <string.h>
 
+#ifdef CAN_DRIVER_DEBUG
+volatile CAN_Rx_Debug_t can_rx_debug;
+#endif
+
 void CAN_set_structures(CAN_Driver_t* driver, 
     CanTxFn_t add_to_fifo_fn, 
     void* hfdcan_instance)
@@ -21,30 +25,67 @@ void CAN_set_structures(CAN_Driver_t* driver,
     }
 }
 
-void CAN_driver_rx_callback(CAN_Driver_t* driver, uint8_t* data, void* hdr_rx, uint32_t msg_id, uint8_t num_values) {
-    // Uses the ring buffer in the driver structure to store incoming messages
-    // hdr_rx points to a transient stack variable, so we cannot store the pointer.
-    driver->rx_ring_buffer.frame[driver->rx_ring_buffer.head].hdr = NULL;
-    memcpy(driver->rx_ring_buffer.frame[driver->rx_ring_buffer.head].payload, data, num_values);
+void CAN_driver_rx_callback(CAN_Driver_t* driver, uint8_t* data, uint32_t msg_id, uint8_t num_values, uint32_t rx_tick_ms) {
+    if (driver == NULL || driver->rx_ring_buffer.frame == NULL || driver->rx_ring_buffer.size == 0)
+        return;
+
+#ifdef CAN_DRIVER_DEBUG
+    can_rx_debug.rx_total_frames++;
+    can_rx_debug.rx_last_msg_id = msg_id;
+    can_rx_debug.rx_last_len = num_values;
+    can_rx_debug.rx_last_tick_ms = rx_tick_ms;
+    memset((void*)can_rx_debug.rx_last_payload, 0, sizeof(can_rx_debug.rx_last_payload));
+    if (data != NULL) {
+        uint8_t copy_len = (num_values > 8U) ? 8U : num_values;
+        memcpy((void*)can_rx_debug.rx_last_payload, data, copy_len);
+    }
+#endif
+
+    uint16_t next_head = (driver->rx_ring_buffer.head + 1) % driver->rx_ring_buffer.size;
+
+    // overflow check
+    if (next_head == driver->rx_ring_buffer.tail) {
+        // buffer is full, so drop message
+#ifdef CAN_DRIVER_DEBUG
+        can_rx_debug.rx_dropped_overflow++;
+#endif
+        return; 
+    }
+
+    // drop invalid length messages
+    if (num_values > (uint8_t)sizeof(driver->rx_ring_buffer.frame[driver->rx_ring_buffer.head].payload)) {
+#ifdef CAN_DRIVER_DEBUG
+        can_rx_debug.rx_dropped_invalid_len++;
+#endif
+        return;
+    }
+    uint8_t rx_len_bytes = num_values;
+
+    // always clear payload so missing bytes cannot leak stale values.
+    memset(driver->rx_ring_buffer.frame[driver->rx_ring_buffer.head].payload, 0, sizeof(driver->rx_ring_buffer.frame[driver->rx_ring_buffer.head].payload));
+    memcpy(driver->rx_ring_buffer.frame[driver->rx_ring_buffer.head].payload, data, rx_len_bytes);
     driver->rx_ring_buffer.frame[driver->rx_ring_buffer.head].msg_id = msg_id;
-    driver->rx_ring_buffer.frame[driver->rx_ring_buffer.head].num_values = num_values;
+    driver->rx_ring_buffer.frame[driver->rx_ring_buffer.head].num_values = rx_len_bytes;
+    driver->rx_ring_buffer.frame[driver->rx_ring_buffer.head].rx_tick_ms = rx_tick_ms;
 
-    // Increment head in ring buffer
-    driver->rx_ring_buffer.head = (driver->rx_ring_buffer.head + 1) % driver->rx_ring_buffer.size;
-
-    // Set flag to indicate a new message has been received
+    driver->rx_ring_buffer.head = next_head;
     driver->can_new_message_flag = 1;
 }
 
 void CAN_send_frames(CAN_Driver_t* driver, uint32_t current_tick) {
     for(uint16_t i = 0; i < driver->tx_frame_number; i++){
+        if(driver->tx_frame_configs[i].scheduler_timer_value == CAN_DRIVER_NON_PERIODIC_FRAME) {
+            continue; // skip non periodic frames
+        }
         if(current_tick - driver->tx_scheduler_prev_tick[i] >= driver->tx_frame_configs[i].scheduler_timer_value){
             driver->tx_scheduler_prev_tick[i] = current_tick;
-            driver->add_to_fifo_fn(driver->hfdcan, driver->message_frames_tx[i].hdr, driver->message_frames_tx[i].payload);
+            driver->add_to_fifo_fn(driver->hfdcan, 
+                driver->message_frames_tx[i].hdr, 
+                driver->message_frames_tx[i].payload);
         }
     }
 }
 
-uint32_t CAN_send_single_frame(CAN_Driver_t* driver, CAN_Message_Frame_t* frame) {
+uint32_t CAN_send_single_frame(CAN_Driver_t* driver, CAN_Tx_Message_Frame_t* frame) {
     return driver->add_to_fifo_fn(driver->hfdcan, frame->hdr, frame->payload);
 }

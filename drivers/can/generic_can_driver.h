@@ -3,6 +3,8 @@
 
 #include <stdint.h>
 
+#define CAN_DRIVER_NON_PERIODIC_FRAME 0xFFFF
+
 /**
  * @brief Function pointer for transmitting CAN messages.
  */
@@ -16,16 +18,26 @@ typedef struct {
     uint8_t payload[8];
     uint32_t msg_id;
     uint8_t num_values;
-} CAN_Message_Frame_t;
+} CAN_Tx_Message_Frame_t;
+
+/**
+ * @brief Structure representing a received CAN message.
+ */
+typedef struct {
+    uint8_t payload[8];
+    uint32_t msg_id;
+    uint8_t num_values;
+    uint32_t rx_tick_ms;
+} CAN_Rx_Message_Frame_t;
 
 /**
  * @brief Circular buffer for storing received CAN messages.
  */
 typedef struct {
-    CAN_Message_Frame_t* frame;
+    CAN_Rx_Message_Frame_t* frame;
     uint16_t size; // Size of the ring buffer (number of frames it can hold)
-    uint16_t head; // Index for the next incoming frame
-    uint16_t tail; // Index for the next frame to process
+    volatile uint16_t head; // Index for the next incoming frame
+    volatile uint16_t tail; // Index for the next frame to process
 } CAN_Rx_Ring_Buffer_t;
 
 /**
@@ -41,7 +53,7 @@ typedef struct {
  * @brief Main driver structure holding state and buffers.
  */
 typedef struct {
-    CAN_Message_Frame_t* message_frames_tx;
+    CAN_Tx_Message_Frame_t* message_frames_tx;
     CAN_Rx_Ring_Buffer_t rx_ring_buffer;
 
     uint8_t tx_frame_number;
@@ -59,6 +71,23 @@ typedef struct {
     CanTxFn_t add_to_fifo_fn; // Function pointer for adding messages to the CAN Tx FIFO
 } CAN_Driver_t;
 
+#ifdef CAN_DRIVER_DEBUG
+/**
+ * @brief Runtime RX trace data for debugging in LiveWatch.
+ */
+typedef struct {
+    uint32_t rx_total_frames;
+    uint32_t rx_dropped_overflow;
+    uint32_t rx_dropped_invalid_len;
+    uint32_t rx_last_msg_id;
+    uint8_t rx_last_len;
+    uint32_t rx_last_tick_ms;
+    uint8_t rx_last_payload[8];
+} CAN_Rx_Debug_t;
+
+extern volatile CAN_Rx_Debug_t can_rx_debug;
+#endif
+
 /**
  * @brief Initializes the driver with hardware handle and TX function.
  * @param driver Driver instance.
@@ -71,10 +100,9 @@ void CAN_set_structures(CAN_Driver_t* driver, CanTxFn_t add_to_fifo_fn, void* hf
  * @brief Callback for RX interrupts to store data in ring buffer.
  * @param driver Driver instance.
  * @param data Payload data.
- * @param hdr_rx RX header.
  * @param msg_id Message ID.
  */
-void CAN_driver_rx_callback(CAN_Driver_t* driver, uint8_t* data, void* hdr_rx, uint32_t msg_id, uint8_t num_values);
+void CAN_driver_rx_callback(CAN_Driver_t* driver, uint8_t* data, uint32_t msg_id, uint8_t num_values, uint32_t rx_tick_ms);
 
 /**
  * @brief Periodic task to send scheduled CAN frames.
@@ -89,6 +117,6 @@ void CAN_send_frames(CAN_Driver_t* driver, uint32_t current_tick);
  * @param frame Frame to send.
  * @return Status code.
  */
-uint32_t CAN_send_single_frame(CAN_Driver_t* driver, CAN_Message_Frame_t* frame);
+uint32_t CAN_send_single_frame(CAN_Driver_t* driver, CAN_Tx_Message_Frame_t* frame);
 
 #endif /* INC_GENERIC_CAN_DRIVER_H */

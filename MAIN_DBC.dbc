@@ -1,0 +1,248 @@
+VERSION ""
+
+NS_ :
+	BA_
+	BA_DEF_
+	BA_DEF_DEF_
+	BA_DEF_DEF_REL_
+	BA_DEF_REL_
+	BA_DEF_SGTYPE_
+	BA_REL_
+	BA_SGTYPE_
+	BO_TX_BU_
+	BU_BO_REL_
+	BU_EV_REL_
+	BU_SG_REL_
+	CAT_
+	CAT_DEF_
+	CM_
+	ENVVAR_DATA_
+	EV_DATA_
+	FILTER
+	NS_DESC_
+	SGTYPE_
+	SGTYPE_VAL_
+	SG_MUL_VAL_
+	SIGTYPE_VALTYPE_
+	SIG_GROUP_
+	SIG_TYPE_REF_
+	SIG_VALTYPE_
+	VAL_
+	VAL_TABLE_
+
+BS_:
+
+BU_: Gateway_Front Gateway_Rear ECU BMS GI_Left GI_Right Dashboard Telemetry IMU Programming
+
+BO_ 160 GF_Wheel_Sensors: 8 Gateway_Front
+ SG_ Wheel_Speed_FR : 7|16@0+ (1.0,0) [0.0|8000.0] "rpm" Vector__XXX
+ SG_ Wheel_Speed_FL : 23|16@0+ (1.0,0) [0.0|8000.0] "rpm" Vector__XXX
+ SG_ Susp_Travel_FR : 39|16@0+ (0.001,0) [0.0|65.535] "mm" Vector__XXX
+ SG_ Susp_Travel_FL : 55|16@0+ (0.001,0) [0.0|65.535] "mm" Vector__XXX
+BO_ 161 GF_Misc_Sensors: 8 Gateway_Front
+ SG_ APPS1 : 7|8@0+ (0.001,0) [0.0|100.0] "%" Vector__XXX
+ SG_ APPS2 : 15|8@0+ (0.001,0) [0.0|100.0] "%" Vector__XXX
+ SG_ Steering : 23|16@0- (0.01,0) [-290.0|290.0] "deg" Vector__XXX
+ SG_ R2D_BTN : 39|8@0+ (1.0,0) [0.0|1.0] "bool" Vector__XXX
+ SG_ Software_Status : 47|8@0+ (1.0,0) [0.0|255.0] "enum" Vector__XXX
+
+BO_ 176 GR_Wheel_Sensors: 8 Gateway_Rear
+ SG_ Wheel_Speed_RR : 7|16@0+ (1.0,0) [0.0|8000.0] "rpm" Vector__XXX
+ SG_ Wheel_Speed_RL : 23|16@0+ (1.0,0) [0.0|8000.0] "rpm" Vector__XXX
+ SG_ Susp_Travel_RR : 39|16@0+ (0.001,0) [0.0|65.535] "mm" Vector__XXX
+ SG_ Susp_Travel_RL : 55|16@0+ (0.001,0) [0.0|65.535] "mm" Vector__XXX
+BO_ 177 GR_Misc_Sensors: 8 Gateway_Rear
+ SG_ Brake : 7|16@0+ (0.01,0) [0.0|100.0] "bar" Vector__XXX
+ SG_ JB_50A : 23|16@0- (0.01,0) [-70.0|70.0] "A" Vector__XXX
+ SG_ JB_200A : 39|16@0- (0.01,0) [-300.0|300.0] "A" Vector__XXX
+ SG_ SDC : 55|8@0+ (1.0,0) [0.0|1.0] "Bool" Vector__XXX
+ SG_ Software_Status : 63|8@0+ (1.0,0) [0.0|255.0] "enum" Vector__XXX
+BO_ 178 GR_Liquid_Sensors: 8 Gateway_Rear
+ SG_ Flow_Sensor : 7|16@0+ (1.0,0) [0.0|100.0] "L/m" Vector__XXX
+ SG_ Temp_1 : 23|16@0- (0.001,0) [-10.0|100.0] "degC" Vector__XXX
+ SG_ Temp_2 : 39|16@0- (0.001,0) [-10.0|100.0] "degC" Vector__XXX
+
+BO_ 224 ECU_Inverter_Sig: 8 ECU
+ SG_ Motor_EN_DIS_Regen : 7|8@0+ (1.0,0) [0.0|2.0] "enum" Vector__XXX
+ SG_ Inverter_L_Regen_Percentage : 15|8@0+ (1.0,0) [0.0|100.0] "%" Vector__XXX
+ SG_ Inverter_R_Regen_Percentage : 23|8@0+ (1.0,0) [0.0|100.0] "%" Vector__XXX
+ SG_ Inverter_L_Speed_Percentage : 31|8@0+ (1.0,0) [0.0|100.0] "%" Vector__XXX
+ SG_ Inverter_R_Speed_Percentage : 39|8@0+ (1.0,0) [0.0|100.0] "%" Vector__XXX
+ SG_ Calculated_Speed : 47|16@0+ (0.01,0) [0.0|200.0] "km/h" Vector__XXX
+BO_ 229 ECU_Software_Data: 8 ECU
+ SG_ Regen_Enable : 0|1@0+ (1.0,0) [0.0|1.0] "bool" Vector__XXX
+ SG_ Motor_Enable : 1|1@0+ (1.0,0) [0.0|1.0] "bool" Vector__XXX
+ SG_ R2D_State : 2|1@0+ (1.0,0) [0.0|1.0] "bool" Vector__XXX
+ SG_ TS_ON : 3|1@0+ (1.0,0) [0.0|1.0] "bool" Vector__XXX
+ SG_ inPrecharge : 4|1@0+ (1.0,0) [0.0|1.0] "bool" Vector__XXX
+ SG_ PRECH_State : 5|1@0+ (1.0,0) [0.0|1.0] "bool" Vector__XXX
+ SG_ AIR_Neg_State : 6|1@0+ (1.0,0) [0.0|1.0] "bool" Vector__XXX
+ SG_ AIR_Pos_State : 7|1@0+ (1.0,0) [0.0|1.0] "bool" Vector__XXX
+ SG_ Fan_State : 8|1@0+ (1.0,0) [0.0|1.0] "bool" Vector__XXX
+ SG_ Pump_State : 9|1@0+ (1.0,0) [0.0|1.0] "bool" Vector__XXX
+ SG_ ECU_Code_State : 23|8@0+ (1.0,0) [0.0|255.0] "enum" Vector__XXX
+BO_ 179 ECU_Rear_NMOS: 8 ECU
+ SG_ R2D_Buzzer_On_Off : 7|8@0+ (1.0,0) [0.0|1.0] "bool" Vector__XXX
+BO_ 162 ECU_Front_NMOS: 8 ECU
+ SG_ R2D_LED_Delay : 7|8@0+ (1.0,0) [0.0|255.0] "Hz" Vector__XXX
+
+BO_ 16 BMS_Errors_Temps: 8 BMS
+ SG_ Total_Pack_Capacity : 7|8@0+ (0.2,0) [0.0|50.0] "Ahr" Vector__XXX
+ SG_ DTC_P0AFA_Low_Cell_Voltage_Fault : 8|1@1+ (1.0,0) [0.0|1.0] "Bool" Vector__XXX
+ SG_ DTC_P0A04_Cell_Open_Wiring_Fault : 9|1@1+ (1.0,0) [0.0|1.0] "Bool" Vector__XXX
+ SG_ DTC_P0A0F_Cell_Bank_Fault : 10|1@1+ (1.0,0) [0.0|1.0] "Bool" Vector__XXX
+ SG_ DTC_U0100_CAN_Communication_Fault : 11|1@1+ (1.0,0) [0.0|1.0] "Bool" Vector__XXX
+ SG_ DTC_P0A10_Pack_Too_Hot_Fault : 12|1@1+ (1.0,0) [0.0|1.0] "Bool" Vector__XXX
+ SG_ DTC_P0A0B_Internal_Logic_Fault : 13|1@1+ (1.0,0) [0.0|1.0] "Bool" Vector__XXX
+ SG_ DTC_P0A12_Cell_Balancing_Stuck_Off_Fault : 14|1@1+ (1.0,0) [0.0|1.0] "Bool" Vector__XXX
+ SG_ DTC_P0A0E_Lowest_Cell_Voltage_Too_Low_Fault : 15|1@1+ (1.0,0) [0.0|1.0] "Bool" Vector__XXX
+ SG_ MultiPurpose_Output_3 : 16|1@1+ (1.0,0) [0.0|1.0] "Bool" Vector__XXX
+ SG_ MultiPurpose_Enable : 17|1@1+ (1.0,0) [0.0|1.0] "Bool" Vector__XXX
+ SG_ MultiPurpose_Output_4 : 18|1@1+ (1.0,0) [0.0|1.0] "Bool" Vector__XXX
+ SG_ Balancing_Active : 19|1@1+ (1.0,0) [0.0|1.0] "Bool" Vector__XXX
+ SG_ Charge_Power_Signal : 20|1@1+ (1.0,0) [0.0|1.0] "Bool" Vector__XXX
+ SG_ Charge_Mode_Active_CAN : 21|1@1+ (1.0,0) [0.0|1.0] "Bool" Vector__XXX
+ SG_ Voltage_Failsafe : 22|1@1+ (1.0,0) [0.0|1.0] "Bool" Vector__XXX
+ SG_ Current_Failsafe : 23|1@1+ (1.0,0) [0.0|1.0] "Bool" Vector__XXX
+ SG_ DTC_P0A0C_Highest_Cell_Voltage_Too_High_Fault : 24|1@1+ (1.0,0) [0.0|1.0] "Bool" Vector__XXX
+ SG_ DTC_P0A9C_Thermistor_Fault : 25|1@1+ (1.0,0) [0.0|1.0] "Bool" Vector__XXX
+ SG_ DTC_P0AC0_Current_Sensor_Fault : 26|1@1+ (1.0,0) [0.0|1.0] "Bool" Vector__XXX
+ SG_ DTC_P0A04_Cell_Open_Wiring_Fault : 27|1@1+ (1.0,0) [0.0|1.0] "Bool" Vector__XXX
+ SG_ DTC_P0A80_Weak_Cell_Fault : 28|1@1+ (1.0,0) [0.0|1.0] "Bool" Vector__XXX
+ SG_ MultiPurpose_Output_2 : 29|1@1+ (1.0,0) [0.0|1.0] "Bool" Vector__XXX
+ SG_ Blank : 30|1@1+ (1.0,0) [0.0|1.0] "Bool" Vector__XXX
+ SG_ Blank2 : 31|1@1+ (1.0,0) [0.0|1.0] "Bool" Vector__XXX
+ SG_ Low_Temperature : 39|8@0+ (0.333333,0) [0.0|85.0] "C" Vector__XXX
+ SG_ High_Temperature : 47|8@0+ (0.333333,0) [0.0|85.0] "C" Vector__XXX
+ SG_ High_Thermistor_ID : 55|8@0+ (1.0,0) [0.0|255.0] "ID" Vector__XXX
+ SG_ Low_Thermistor_ID : 63|8@0+ (1.0,0) [0.0|255.0] "ID" Vector__XXX
+BO_ 17 BMS_SoC_Voltage: 8 BMS
+ SG_ Pack_Open_Voltage : 7|16@0+ (0.01,0) [0.0|610.0] "V" Vector__XXX
+ SG_ Pack_Inst_Voltage : 23|16@0+ (0.01,0) [0.0|610.0] "V" Vector__XXX
+ SG_ Pack_Health : 39|8@0+ (0.5,0) [0.0|100.0] "%" Vector__XXX
+ SG_ Simulated_SOC : 47|8@0+ (0.5,0) [0.0|100.0] "%" Vector__XXX
+ SG_ Pack_SOC : 55|8@0+ (0.5,0) [0.0|100.0] "%" Vector__XXX
+ SG_ Adaptive_SOC : 63|8@0+ (0.5,0) [0.0|100.0] "%" Vector__XXX
+BO_ 18 BMS_Cell_Data: 8 BMS
+ SG_ Avg_Cell_Resistance : 7|8@0+ (0.5,0) [0.0|127.0] "mOhm" Vector__XXX
+ SG_ Low_Cell_Resistance : 15|8@0+ (0.5,0) [0.0|127.0] "mOhm" Vector__XXX
+ SG_ High_Cell_Resistance : 23|8@0+ (0.5,0) [0.0|127.0] "mOhm" Vector__XXX
+ SG_ Low_Opencell_Voltage : 31|8@0+ (0.02,0) [0.0|5.1] "V" Vector__XXX
+ SG_ High_Opencell_Voltage : 39|8@0+ (0.02,0) [0.0|5.1] "V" Vector__XXX
+ SG_ Avg_Opencell_Voltage : 47|8@0+ (0.02,0) [0.0|5.1] "V" Vector__XXX
+ SG_ Low_Opencell_ID : 55|8@0+ (1.0,0) [0.0|255.0] "ID" Vector__XXX
+ SG_ High_Opencell_ID : 63|8@0+ (1.0,0) [0.0|255.0] "ID" Vector__XXX
+BO_ 19 BMS_Cell_Data_2: 8 BMS
+ SG_ Adaptive_Total_Capacity : 7|8@0+ (0.02,0) [0.0|5.1] "Ahr" Vector__XXX
+ SG_ High_Intres_ID : 15|8@0+ (1.0,0) [0.0|255.0] "ID" Vector__XXX
+ SG_ Low_Intres_ID : 23|8@0+ (1.0,0) [0.0|255.0] "ID" Vector__XXX
+ SG_ Low_Cell_Voltage : 31|8@0+ (0.02,0) [0.0|5.1] "V" Vector__XXX
+ SG_ High_Cell_Voltage : 39|8@0+ (0.02,0) [0.0|5.1] "V" Vector__XXX
+ SG_ Avg_Cell_Voltage : 47|8@0+ (0.02,0) [0.0|5.1] "V" Vector__XXX
+ SG_ Low_Cell_Voltage_ID : 55|8@0+ (1.0,0) [0.0|255.0] "ID" Vector__XXX
+ SG_ High_Cell_Voltage_ID : 63|8@0+ (1.0,0) [0.0|255.0] "ID" Vector__XXX
+BO_ 20 BMS_Current: 8 BMS
+ SG_ Average_Current : 7|16@0- (0.01,0) [-327.0|327.0] "A" Vector__XXX
+ SG_ Pack_Current : 23|16@0- (0.01,0) [-327.0|327.0] "A" Vector__XXX
+ SG_ Pack_DOD : 39|8@0+ (0.5,0) [0.0|100.0] "%" Vector__XXX
+ SG_ Pack_DCL : 47|16@0+ (0.01,0) [0.0|300.0] "A" Vector__XXX
+ SG_ Blank : 63|8@0+ (1.0,0) [0.0|255.0] "const0x0" Vector__XXX
+BO_ 54 BMS_Data_Random: 8 BMS
+ SG_ CellId : 7|8@0+ (1.0,0) [0.0|255.0] "ID" Vector__XXX
+ SG_ CellVoltage : 15|16@0+ (0.0001,0) [0.0|6.5535] "V" Vector__XXX
+ SG_ CellResistance : 30|15@0+ (0.01,0) [0.0|327.67] "mOhms" Vector__XXX
+ SG_ CellOpenVoltage : 47|16@0+ (0.0001,0) [0.0|6.5535] "V" Vector__XXX
+ SG_ Checksum : 63|8@0+ (1.0,0) [0.0|255.0] "" Vector__XXX
+ SG_ CellBalancing : 31|1@1+ (1.0,0) [0.0|1.0] "" Vector__XXX
+
+BO_ 32 GIL_Inv_Data_1: 8 GI_Left
+ SG_ PWM_L : 7|16@0+ (1.0,0) [0.0|1000.0] "raw" Vector__XXX
+ SG_ Input_Voltage_L : 23|16@0+ (0.1,0) [0.0|410.0] "V" Vector__XXX
+ SG_ Phase_Current_L : 39|16@0+ (0.1,0) [0.0|511.0] "A" Vector__XXX
+ SG_ RPM_L : 55|16@0+ (1.0,0) [0.0|65535.0] "rpm" Vector__XXX
+BO_ 33 GIL_Inv_Data_2: 8 GI_Left
+ SG_ Motor_Temp_L : 7|16@0+ (1.0,0) [-100.0|155.0] "degC" Vector__XXX
+ SG_ Inverter_Temp_L : 23|16@0+ (1.0,0) [-100.0|155.0] "degC" Vector__XXX
+ SG_ Aux_Brake_Input_L : 39|16@0+ (0.001,0) [0.0|5.0] "V" Vector__XXX
+ SG_ Throttle_Input_L : 55|16@0+ (0.001,0) [0.0|5.0] "V" Vector__XXX
+BO_ 34 GIL_Software: 8 GI_Left
+ SG_ Software_Status : 7|16@0+ (1.0,0) [0.0|255.0] "enum" Vector__XXX
+
+BO_ 48 GIR_Inv_Data_1: 8 GI_Right
+ SG_ PWM_R : 7|16@0+ (1.0,0) [0.0|1000.0] "raw" Vector__XXX
+ SG_ Input_Voltage_R : 23|16@0+ (0.1,0) [0.0|410.0] "V" Vector__XXX
+ SG_ Phase_Current_R : 39|16@0+ (0.1,0) [0.0|511.0] "A" Vector__XXX
+ SG_ RPM_R : 55|16@0+ (1.0,0) [0.0|65535.0] "rpm" Vector__XXX
+BO_ 49 GIR_Inv_Data_2: 8 GI_Right
+ SG_ Motor_Temp_R : 7|16@0+ (1.0,0) [-100.0|155.0] "degC" Vector__XXX
+ SG_ Inverter_Temp_R : 23|16@0+ (1.0,0) [-100.0|155.0] "degC" Vector__XXX
+ SG_ Aux_Input_R : 39|16@0+ (0.001,0) [0.0|5.0] "V" Vector__XXX
+ SG_ Throttle_Input_R : 55|16@0+ (0.001,0) [0.0|5.0] "V" Vector__XXX
+BO_ 50 GIR_Software: 8 GI_Right
+ SG_ Software_Status : 7|16@0+ (1.0,0) [0.0|255.0] "enum" Vector__XXX
+
+BO_ 208 DASH_Buttons: 8 Dashboard
+ SG_ APPS_Recal : 7|8@0+ (1.0,0) [0.0|1.0] "bool" Vector__XXX
+ SG_ Log_SD_Toggle : 15|8@0+ (1.0,0) [0.0|1.0] "bool" Vector__XXX
+ SG_ Log_LTE_Toggle : 23|8@0+ (1.0,0) [0.0|1.0] "bool" Vector__XXX
+
+ SG_ Gps_speed : 7|16@0+ (0.01,0) [0.0|326.0] "m/s" ECU
+ SG_ Gps_course : 23|16@0- (0.0001,0) [0.0|0.0] "rad [UW]" ECU
+ SG_ Gps_yaw_angle : 39|16@0- (0.0001,0) [0.0|0.0] "rad [UW]" ECU
+
+BO_ 80 IMU_Data: 8 IMU
+ SG_ IMU_Header : 7|8@0+ (1.0,0) [0.0|255.0] "const_0x55" Vector__XXX
+ SG_ IMU_Msg_Type M : 15|8@0+ (1.0,0) [0.0|255.0] "hex" Vector__XXX
+ SG_ Accel_X m81 : 23|16@0- (0.00048828125,0) [-16.0|16.0] "g" Vector__XXX
+ SG_ Accel_Y m81 : 39|16@0- (0.00048828125,0) [-16.0|16.0] "g" Vector__XXX
+ SG_ Accel_Z m81 : 55|16@0- (0.00048828125,0) [-16.0|16.0] "g" Vector__XXX
+ SG_ Gyro_X m82 : 23|16@0- (0.06103515625,0) [-2000.0|200.0] "deg/s" Vector__XXX
+ SG_ Gyro_Y m82 : 39|16@0- (0.06103515625,0) [-2000.0|200.0] "deg/s" Vector__XXX
+ SG_ Gyro_Z m82 : 55|16@0- (0.06103515625,0) [-2000.0|200.0] "deg/s" Vector__XXX
+ SG_ Angle_Roll m83 : 23|16@0- (0.0054931640625,0) [-180.0|180.0] "deg" Vector__XXX
+ SG_ Angle_Pitch m83 : 39|16@0- (0.0054931640625,0) [-180.0|180.0] "deg" Vector__XXX
+ SG_ Angle_Yaw m83 : 55|16@0- (0.0054931640625,0) [-180.0|180.0] "deg" Vector__XXX
+BO_ 80 IMU_Recal: 8 IMU
+ SG_ Protocol_Header_1 : 7|8@0+ (1.0,0) [0.0|255.0] "const_0xff" Vector__XXX
+ SG_ Protocol_Header_2 : 15|8@0+ (1.0,0) [0.0|255.0] "const_0xaa" Vector__XXX
+ SG_ Address M : 23|8@0+ (1.0,0) [0.0|255.0] "hex" Vector__XXX
+ SG_ KEY_Low m105 : 31|8@0+ (1.0,0) [0.0|255.0] "hex" Vector__XXX
+ SG_ KEY_High m105 : 39|8@0+ (1.0,0) [0.0|255.0] "hex" Vector__XXX
+ SG_ CALSW_Low m1 : 31|8@0+ (1.0,0) [0.0|255.0] "hex" Vector__XXX
+ SG_ CALSW_High m1 : 39|8@0+ (1.0,0) [0.0|255.0] "hex" Vector__XXX
+ SG_ SAVE_Low m0 : 31|8@0+ (1.0,0) [0.0|255.0] "hex" Vector__XXX
+ SG_ SAVE_High m0 : 39|8@0+ (1.0,0) [0.0|255.0] "hex" Vector__XXX
+
+BO_ 1264 PRG_Bootloader: 8 Programming
+ SG_ MCU_ID : 7|8@0+ (1.0,0) [0.0|255.0] "id" Vector__XXX
+BO_ 1265 PRG_Inverter: 8 Programming
+ SG_ Prg_Inv_Byte0 : 7|8@0+ (1.0,0) [0.0|255.0] "hex" Vector__XXX
+ SG_ Prg_Inv_Byte1 : 15|8@0+ (1.0,0) [0.0|255.0] "hex" Vector__XXX
+ SG_ Prg_Inv_Byte2 : 23|8@0+ (1.0,0) [0.0|255.0] "hex" Vector__XXX
+ SG_ Prg_Inv_Byte3 : 31|8@0+ (1.0,0) [0.0|255.0] "hex" Vector__XXX
+ SG_ Prg_Inv_Byte4 : 39|8@0+ (1.0,0) [0.0|255.0] "hex" Vector__XXX
+ SG_ Prg_Inv_Byte5 : 47|8@0+ (1.0,0) [0.0|255.0] "hex" Vector__XXX
+ SG_ Prg_Inv_Byte6 : 55|8@0+ (1.0,0) [0.0|255.0] "hex" Vector__XXX
+ SG_ Prg_Inv_Byte7 : 63|8@0+ (1.0,0) [0.0|255.0] "hex" Vector__XXX
+
+BA_DEF_ BO_  "GenMsgCycleTime" INT 0 65535;
+BA_DEF_DEF_  "GenMsgCycleTime" 0;
+BA_ "GenMsgCycleTime" BO_ 160 7;
+BA_ "GenMsgCycleTime" BO_ 161 7;
+BA_ "GenMsgCycleTime" BO_ 176 7;
+BA_ "GenMsgCycleTime" BO_ 177 7;
+BA_ "GenMsgCycleTime" BO_ 178 200;
+BA_ "GenMsgCycleTime" BO_ 224 12;
+BA_ "GenMsgCycleTime" BO_ 229 50;
+BA_ "GenMsgCycleTime" BO_ 16 16;
+BA_ "GenMsgCycleTime" BO_ 17 16;
+BA_ "GenMsgCycleTime" BO_ 18 16;
+BA_ "GenMsgCycleTime" BO_ 19 16;
+BA_ "GenMsgCycleTime" BO_ 20 16;
+BA_ "GenMsgCycleTime" BO_ 32 9;
+BA_ "GenMsgCycleTime" BO_ 33 9;
+BA_ "GenMsgCycleTime" BO_ 34 8;
+BA_ "GenMsgCycleTime" BO_ 48 9;
+BA_ "GenMsgCycleTime" BO_ 49 9;
+BA_ "GenMsgCycleTime" BO_ 50 8;
+BA_ "GenMsgCycleTime" BO_ 80 5;
