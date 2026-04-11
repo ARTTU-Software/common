@@ -63,6 +63,7 @@ typedef struct {
     FSM_Reason_t last_reason;
     uint32_t transition_count;
     uint8_t fault_latched;  // Once set, remains set until hard reset (for safety-critical faults)
+    uint8_t bootloader_requested;
 } FSM_State_Tracking_t;
 
 /**
@@ -139,5 +140,10 @@ uint8_t FSM_is_fault_latched(const FSM_Driver_t* driver);
  * @brief Reset fault latch (typically only on power-on or explicit hard reset).
  */
 void FSM_reset_fault_latch(FSM_Driver_t* driver);
+
+/**
+ * @brief Request bootloader mode on next FSM cycle.
+ */
+void FSM_request_bootloader(FSM_Driver_t* driver);
 
 #endif /* INC_GENERIC_FSM_DRIVER_H */

@@ -18,6 +18,7 @@ void FSM_init(FSM_Driver_t* driver,
     driver->tracking.last_reason = 0U;
     driver->tracking.transition_count = 0U;
     driver->tracking.fault_latched = 0U;
+    driver->tracking.bootloader_requested = 0U;
 
     driver->decide_next_state_fn = decide_fn;
     driver->build_event_snapshot_fn = build_snapshot_fn;
@@ -122,4 +123,12 @@ void FSM_reset_fault_latch(FSM_Driver_t* driver)
         return;
     }
     driver->tracking.fault_latched = 0U;
+}
+
+void FSM_request_bootloader(FSM_Driver_t* driver)
+{
+    if (driver == NULL) {
+        return;
+    }
+    driver->tracking.bootloader_requested = 1U;
 }
