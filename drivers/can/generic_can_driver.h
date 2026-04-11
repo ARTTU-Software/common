@@ -132,4 +132,18 @@ void CAN_driver_tx_fifo_empty_callback(CAN_Driver_t* driver);
  */
 uint32_t CAN_send_single_frame(CAN_Driver_t* driver, CAN_Tx_Message_Frame_t* frame);
 
+/**
+ * @brief Converts a payload size in bytes to the corresponding FDCAN DLC value.
+ * @param payload_size Size of the payload in bytes (0-8).
+ * @return Corresponding FDCAN DLC value.
+ */
+uint32_t CAN_payload_size_to_dlc(uint8_t payload_size);
+
+/**
+ * @brief Converts an FDCAN DLC value to the corresponding payload size in bytes.
+ * @param dlc FDCAN DLC value.
+ * @return Corresponding payload size in bytes.
+ */
+uint8_t CAN_dlc_to_payload_size(uint32_t dlc);
+
 #endif /* INC_GENERIC_CAN_DRIVER_H */

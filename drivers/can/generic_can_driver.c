@@ -2,6 +2,72 @@
 #include <stdint.h>
 #include <string.h>
 
+/*
+    * HAL DLC to payload mapping
+*/
+#define FDCAN_DLC_BYTES_0  ((uint32_t)0x00000000U) /*!< 0 bytes data field  */
+#define FDCAN_DLC_BYTES_1  ((uint32_t)0x00000001U) /*!< 1 bytes data field  */
+#define FDCAN_DLC_BYTES_2  ((uint32_t)0x00000002U) /*!< 2 bytes data field  */
+#define FDCAN_DLC_BYTES_3  ((uint32_t)0x00000003U) /*!< 3 bytes data field  */
+#define FDCAN_DLC_BYTES_4  ((uint32_t)0x00000004U) /*!< 4 bytes data field  */
+#define FDCAN_DLC_BYTES_5  ((uint32_t)0x00000005U) /*!< 5 bytes data field  */
+#define FDCAN_DLC_BYTES_6  ((uint32_t)0x00000006U) /*!< 6 bytes data field  */
+#define FDCAN_DLC_BYTES_7  ((uint32_t)0x00000007U) /*!< 7 bytes data field  */
+#define FDCAN_DLC_BYTES_8  ((uint32_t)0x00000008U) /*!< 8 bytes data field  */
+#define FDCAN_DLC_BYTES_12 ((uint32_t)0x00000009U) /*!< 12 bytes data field */
+#define FDCAN_DLC_BYTES_16 ((uint32_t)0x0000000AU) /*!< 16 bytes data field */
+#define FDCAN_DLC_BYTES_20 ((uint32_t)0x0000000BU) /*!< 20 bytes data field */
+#define FDCAN_DLC_BYTES_24 ((uint32_t)0x0000000CU) /*!< 24 bytes data field */
+#define FDCAN_DLC_BYTES_32 ((uint32_t)0x0000000DU) /*!< 32 bytes data field */
+#define FDCAN_DLC_BYTES_48 ((uint32_t)0x0000000EU) /*!< 48 bytes data field */
+#define FDCAN_DLC_BYTES_64 ((uint32_t)0x0000000FU) /*!< 64 bytes data field */
+
+uint32_t CAN_payload_size_to_dlc(uint8_t payload_size){
+    switch(payload_size){
+        case 0: return FDCAN_DLC_BYTES_0;
+        case 1: return FDCAN_DLC_BYTES_1;
+        case 2: return FDCAN_DLC_BYTES_2;
+        case 3: return FDCAN_DLC_BYTES_3;
+        case 4: return FDCAN_DLC_BYTES_4;
+        case 5: return FDCAN_DLC_BYTES_5;
+        case 6: return FDCAN_DLC_BYTES_6;
+        case 7: return FDCAN_DLC_BYTES_7;
+        case 8:
+        default:
+            return FDCAN_DLC_BYTES_8;
+        case 12: return FDCAN_DLC_BYTES_12;
+        case 16: return FDCAN_DLC_BYTES_16;
+        case 20: return FDCAN_DLC_BYTES_20;
+        case 24: return FDCAN_DLC_BYTES_24;
+        case 32: return FDCAN_DLC_BYTES_32;
+        case 48: return FDCAN_DLC_BYTES_48;
+        case 64: return FDCAN_DLC_BYTES_64;
+    }
+}
+
+uint8_t CAN_dlc_to_payload_size(uint32_t dlc){
+    switch(dlc){
+        case FDCAN_DLC_BYTES_0: return 0U;
+        case FDCAN_DLC_BYTES_1: return 1U;
+        case FDCAN_DLC_BYTES_2: return 2U;
+        case FDCAN_DLC_BYTES_3: return 3U;
+        case FDCAN_DLC_BYTES_4: return 4U;
+        case FDCAN_DLC_BYTES_5: return 5U;
+        case FDCAN_DLC_BYTES_6: return 6U;
+        case FDCAN_DLC_BYTES_7: return 7U;
+        case FDCAN_DLC_BYTES_8:
+        default:
+            return 8U;
+        case FDCAN_DLC_BYTES_12: return 12U;
+        case FDCAN_DLC_BYTES_16: return 16U;
+        case FDCAN_DLC_BYTES_20: return 20U;
+        case FDCAN_DLC_BYTES_24: return 24U;
+        case FDCAN_DLC_BYTES_32: return 32U;
+        case FDCAN_DLC_BYTES_48: return 48U;
+        case FDCAN_DLC_BYTES_64: return 64U;
+    }
+}
+
 void CAN_set_structures(CAN_Driver_t* driver, 
     CanTxFn_t add_to_fifo_fn, 
     CanFifoFreeLevelFn_t get_tx_fifo_free_level_fn,
