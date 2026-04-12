@@ -222,5 +222,5 @@ void CAN_driver_tx_fifo_empty_callback(CAN_Driver_t* driver) {
 }
 
 uint32_t CAN_send_single_frame(CAN_Driver_t* driver, CAN_Tx_Message_Frame_t* frame) {
-    return driver->add_to_fifo_fn(driver->hfdcan, frame->hdr, frame->payload);
+    return CAN_enqueue_tx_frame(driver, frame);
 }
