@@ -6,7 +6,7 @@ void APPS_init(Generic_Linear_Sensor_t* s, uint16_t min_adc, uint16_t max_adc, u
     s->max_adc = max_adc;
     s->min_adc = min_adc;
     s->min_real = 0.0f;
-    s->max_real = 100.0f; // percentage
+    s->max_real = 100.0f // percentage
     s->generic_sensor.port = port;
     s->generic_sensor.kalman_settings = k;
 }
