@@ -5,6 +5,12 @@
 
 #define CAN_DRIVER_NON_PERIODIC_FRAME 0xFFFF
 
+// Macros for byte extraction and operations
+#define LOW_BYTE(x) ((uint8_t)((x) & 0xFF))
+#define HIGH_BYTE(x) ((uint8_t)(((x) >> 8) & 0xFF))
+#define COMBINE_16_BIT(high, low) ((uint16_t)(((high) << 8) | (low)))
+#define COMBINE_32_BIT(b3, b2, b1, b0) ((uint32_t)(((b3) << 24) | ((b2) << 16) | ((b1) << 8) | (b0)))
+
 /**
  * @brief Function pointer for transmitting CAN messages.
  */
@@ -131,5 +137,19 @@ void CAN_driver_tx_fifo_empty_callback(CAN_Driver_t* driver);
  * @return Status code.
  */
 uint32_t CAN_send_single_frame(CAN_Driver_t* driver, CAN_Tx_Message_Frame_t* frame);
+
+/**
+ * @brief Converts a payload size in bytes to the corresponding FDCAN DLC value.
+ * @param payload_size Size of the payload in bytes (0-8).
+ * @return Corresponding FDCAN DLC value.
+ */
+uint32_t CAN_payload_size_to_dlc(uint8_t payload_size);
+
+/**
+ * @brief Converts an FDCAN DLC value to the corresponding payload size in bytes.
+ * @param dlc FDCAN DLC value.
+ * @return Corresponding payload size in bytes.
+ */
+uint8_t CAN_dlc_to_payload_size(uint32_t dlc);
 
 #endif /* INC_GENERIC_CAN_DRIVER_H */
