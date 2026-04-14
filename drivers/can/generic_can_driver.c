@@ -149,7 +149,7 @@ static uint32_t CAN_enqueue_tx_frame(CAN_Driver_t* driver, const CAN_Tx_Message_
  * @brief Internal helper: Flushes pending TX frames into hardware FIFO.
  * @param max_frames_to_send 0 to send until FIFO full/queue empty, otherwise send at most this many.
  */
-static void CAN_flush_tx_ring_buffer(CAN_Driver_t* driver, uint16_t max_frames_to_send) {
+void CAN_flush_tx_ring_buffer(CAN_Driver_t* driver, uint16_t max_frames_to_send) {
     uint16_t sent_frames = 0;
 
     if (driver == NULL ||
@@ -181,8 +181,6 @@ static void CAN_flush_tx_ring_buffer(CAN_Driver_t* driver, uint16_t max_frames_t
 }
 
 void CAN_send_frames(CAN_Driver_t* driver, uint32_t current_tick) {
-    uint8_t queue_was_empty;
-
     if (driver == NULL ||
         driver->tx_frame_configs == NULL ||
         driver->message_frames_tx == NULL ||
@@ -192,8 +190,6 @@ void CAN_send_frames(CAN_Driver_t* driver, uint32_t current_tick) {
         driver->get_tx_fifo_free_level_fn == NULL) {
         return;
     }
-
-    queue_was_empty = (driver->tx_ring_buffer.head == driver->tx_ring_buffer.tail);
 
     // enqueue periodic frames that are due to the TX ring buffer
     for(uint16_t i = 0; i < driver->tx_frame_number; i++){
