@@ -46,10 +46,22 @@ typedef struct {
 } CAN_Rx_Ring_Buffer_t;
 
 /**
+ * @brief Circular buffer for storing queued TX CAN messages.
+ */
+typedef struct {
+    CAN_Tx_Message_Frame_t* frame;
+    uint16_t size; // Size of the ring buffer (number of frames it can hold)
+    uint16_t head; // Index for the next frame to enqueue
+    uint16_t tail; // Index for the next frame to transmit
+    uint16_t count; // Number of frames currently queued
+} CAN_Tx_Ring_Buffer_t;
+
+/**
  * @brief Main driver structure holding state and buffers.
  */
 typedef struct {
     CAN_Tx_Message_Frame_t* tx_message_frames;
+    CAN_Tx_Ring_Buffer_t tx_ring_buffer;
     CAN_Rx_Ring_Buffer_t rx_ring_buffer;
 
     uint8_t tx_frame_number;
@@ -58,6 +70,7 @@ typedef struct {
     void* hfdcan;
 
     volatile uint8_t can_new_message_flag; // Flag to indicate a new message has been received
+    volatile uint8_t tx_queue_drain_requested; // Flag to request TX queue draining from main context
 
     CanTxFn_t add_to_fifo_fn; // Function pointer for adding messages to the CAN Tx FIFO
 } CAN_Driver_t;
@@ -86,6 +99,12 @@ void CAN_driver_rx_callback(CAN_Driver_t* driver, uint8_t* data, void* hdr_rx, u
  * @param current_tick Current system time.
  */
 void CAN_send_frames(CAN_Driver_t* driver, uint32_t current_tick);
+
+/**
+ * @brief Drains queued TX frames into the hardware FIFO while space is available.
+ * @param driver Driver instance.
+ */
+void CAN_process_tx_queue(CAN_Driver_t* driver);
 
 /**
  * @brief Sends a single CAN frame immediately.
