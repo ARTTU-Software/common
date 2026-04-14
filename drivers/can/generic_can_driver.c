@@ -7,8 +7,6 @@ volatile uint32_t can_dbg_tx_processed_count = 0U;
 volatile uint16_t can_dbg_tx_queue_high_watermark = 0U;
 volatile uint32_t can_dbg_tx_catchup_count = 0U;
 volatile uint32_t can_dbg_tx_phase_resync_count = 0U;
-volatile uint32_t can_dbg_rx_ring_overflow_count = 0U;
-volatile uint16_t can_dbg_rx_ring_high_watermark = 0U;
 
 #define CAN_TX_MAX_CATCHUP_PER_CALL 2U
 
@@ -58,8 +56,6 @@ void CAN_set_structures(CAN_Driver_t* driver,
 }
 
 void CAN_driver_rx_callback(CAN_Driver_t* driver, uint8_t* data, void* hdr_rx, uint32_t msg_id, uint8_t num_values, uint32_t timestamp) {
-    uint16_t rx_count;
-
     if (driver == NULL || driver->rx_ring_buffer.frame == NULL || driver->rx_ring_buffer.size == 0)
         return;
 
@@ -68,7 +64,6 @@ void CAN_driver_rx_callback(CAN_Driver_t* driver, uint8_t* data, void* hdr_rx, u
 
     if (next_head == driver->rx_ring_buffer.tail) {
         // buffer is full, so drop message
-        can_dbg_rx_ring_overflow_count++;
         return; 
     }
 
@@ -79,14 +74,6 @@ void CAN_driver_rx_callback(CAN_Driver_t* driver, uint8_t* data, void* hdr_rx, u
 
     // Increment head in ring buffer
     driver->rx_ring_buffer.head = (driver->rx_ring_buffer.head + 1) % driver->rx_ring_buffer.size;
-
-    rx_count = (driver->rx_ring_buffer.head >= driver->rx_ring_buffer.tail)
-        ? (uint16_t)(driver->rx_ring_buffer.head - driver->rx_ring_buffer.tail)
-        : (uint16_t)((driver->rx_ring_buffer.size - driver->rx_ring_buffer.tail) + driver->rx_ring_buffer.head);
-
-    if (rx_count > can_dbg_rx_ring_high_watermark) {
-        can_dbg_rx_ring_high_watermark = rx_count;
-    }
 
     // Set timestamp
     driver->rx_ring_buffer.frame[driver->rx_ring_buffer.head].previous_tick = timestamp;
