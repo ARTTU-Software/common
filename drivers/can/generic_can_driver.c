@@ -210,11 +210,7 @@ void CAN_send_frames(CAN_Driver_t* driver, uint32_t current_tick) {
         }
     }
 
-    // Kickstart transmission once when queue transitions from empty to non-empty.
-    // The TX FIFO empty interrupt callback continues draining after this.
-    if (queue_was_empty && (driver->tx_ring_buffer.head != driver->tx_ring_buffer.tail)) {
-        CAN_flush_tx_ring_buffer(driver, 1U);
-    }
+    CAN_flush_tx_ring_buffer(driver, 1U);
 }
 
 void CAN_driver_tx_fifo_empty_callback(CAN_Driver_t* driver) {
