@@ -103,8 +103,9 @@ void CAN_send_frames(CAN_Driver_t* driver, uint32_t current_tick);
 /**
  * @brief Drains queued TX frames into the hardware FIFO while space is available.
  * @param driver Driver instance.
+ * @param ammount_to_process Number of frames to process.
  */
-void CAN_process_tx_queue(CAN_Driver_t* driver);
+void CAN_process_tx_queue(CAN_Driver_t* drive, uint32_t ammount_to_process);
 
 /**
  * @brief Sends a single CAN frame immediately.

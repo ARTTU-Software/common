@@ -83,13 +83,17 @@ void CAN_send_frames(CAN_Driver_t* driver, uint32_t current_tick) {
     }
 }
 
-void CAN_process_tx_queue(CAN_Driver_t* driver)
+void CAN_process_tx_queue(CAN_Driver_t* driver, uint32_t ammount_to_process)
 {
     if (driver == NULL || driver->tx_ring_buffer.frame == NULL || driver->tx_ring_buffer.size == 0U) {
         return;
     }
 
-    while (driver->tx_ring_buffer.count > 0U) {
+    uint8_t processed = 0;
+    if(ammount_to_process == 0U){
+        ammount_to_process = driver->tx_ring_buffer.count; // Process all if ammount_to_process is 0
+    }
+    while (driver->tx_ring_buffer.count > 0U && processed < ammount_to_process) {
         CAN_Tx_Message_Frame_t* queued_frame = &driver->tx_ring_buffer.frame[driver->tx_ring_buffer.tail];
         uint32_t status = driver->add_to_fifo_fn(driver->hfdcan, queued_frame->hdr, queued_frame->payload);
 
@@ -99,6 +103,7 @@ void CAN_process_tx_queue(CAN_Driver_t* driver)
 
         driver->tx_ring_buffer.tail = (uint16_t)((driver->tx_ring_buffer.tail + 1U) % driver->tx_ring_buffer.size);
         driver->tx_ring_buffer.count--;
+        processed++;
     }
 
     driver->tx_queue_drain_requested = (driver->tx_ring_buffer.count > 0U) ? 1U : 0U;
