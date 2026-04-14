@@ -3,17 +3,33 @@
 #include <string.h>
 
 volatile uint32_t can_dbg_tx_enqueue_full_count = 0U;
+volatile uint32_t can_dbg_tx_id_replace_count = 0U;
 volatile uint32_t can_dbg_tx_processed_count = 0U;
 volatile uint16_t can_dbg_tx_queue_high_watermark = 0U;
 volatile uint32_t can_dbg_tx_catchup_count = 0U;
 volatile uint32_t can_dbg_tx_phase_resync_count = 0U;
+static volatile uint8_t can_tx_drain_in_progress = 0U;
 
 #define CAN_TX_MAX_CATCHUP_PER_CALL 2U
 
 static uint32_t CAN_enqueue_tx_frame(CAN_Driver_t* driver, const CAN_Tx_Message_Frame_t* frame)
 {
+    uint16_t offset;
+
     if (driver == NULL || frame == NULL || driver->tx_ring_buffer.frame == NULL || driver->tx_ring_buffer.size == 0U) {
         return 1U;
+    }
+
+    // Keep only the freshest queued frame per CAN ID.
+    for (offset = 0U; offset < driver->tx_ring_buffer.count; offset++) {
+        uint16_t index = (uint16_t)((driver->tx_ring_buffer.tail + offset) % driver->tx_ring_buffer.size);
+
+        if (driver->tx_ring_buffer.frame[index].msg_id == frame->msg_id) {
+            driver->tx_ring_buffer.frame[index] = *frame;
+            can_dbg_tx_id_replace_count++;
+            driver->tx_queue_drain_requested = 1;
+            return 0U;
+        }
     }
 
     if (driver->tx_ring_buffer.count == driver->tx_ring_buffer.size) {
@@ -135,6 +151,12 @@ uint16_t CAN_process_tx_queue(CAN_Driver_t* driver, uint16_t amount)
         return 0U;
     }
 
+    if (can_tx_drain_in_progress != 0U) {
+        return 0U;
+    }
+
+    can_tx_drain_in_progress = 1U;
+
     max_to_process = (amount == 0U || amount > driver->tx_ring_buffer.count) ? driver->tx_ring_buffer.count : amount;
 
     while (driver->tx_ring_buffer.count > 0U && processed_count < max_to_process) {
@@ -152,6 +174,7 @@ uint16_t CAN_process_tx_queue(CAN_Driver_t* driver, uint16_t amount)
     }
 
     driver->tx_queue_drain_requested = (driver->tx_ring_buffer.count > 0U) ? 1U : 0U;
+    can_tx_drain_in_progress = 0U;
 
     return processed_count;
 }
