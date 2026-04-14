@@ -5,6 +5,12 @@
 
 #define CAN_DRIVER_NON_PERIODIC_FRAME 0xFFFF
 
+// Macros for byte extraction and operations
+#define LOW_BYTE(x) ((uint8_t)((x) & 0xFF))
+#define HIGH_BYTE(x) ((uint8_t)(((x) >> 8) & 0xFF))
+#define COMBINE_16_BIT(high, low) ((uint16_t)(((high) << 8) | (low)))
+#define COMBINE_32_BIT(b3, b2, b1, b0) ((uint32_t)(((b3) << 24) | ((b2) << 16) | ((b1) << 8) | (b0)))
+
 /**
  * @brief Function pointer for transmitting CAN messages.
  */
@@ -117,6 +123,13 @@ void CAN_driver_rx_callback(CAN_Driver_t* driver, uint8_t* data, uint32_t msg_id
  * @param current_tick Current system time.
  */
 void CAN_send_frames(CAN_Driver_t* driver, uint32_t current_tick);
+
+/**
+ * @brief Internal helper: Flushes pending TX frames into hardware FIFO.
+ * @param driver Driver instance.
+ * @param max_frames_to_send 0 to send until FIFO full/queue empty, otherwise send at most this many.
+ */
+void CAN_flush_tx_ring_buffer(CAN_Driver_t* driver, uint16_t max_frames_to_send);
 
 /**
  * @brief Callback for TX FIFO empty interrupt to flush pending TX frames.
