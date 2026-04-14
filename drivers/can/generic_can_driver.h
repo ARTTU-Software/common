@@ -5,6 +5,12 @@
 
 #define CAN_DRIVER_NON_PERIODIC_FRAME 0xFFFF
 
+#define LOW_BYTE(x) ((uint8_t)((x) & 0xFF))
+#define HIGH_BYTE(x) ((uint8_t)(((x) >> 8) & 0xFF))
+#define CAN_COMBINE_16(high, low) ((uint16_t)(((high) << 8) | (low)))
+#define CAN_COMBINE_32(b3, b2, b1, b0) ((uint32_t)(((b3) << 24) | ((b2) << 16) | ((b1) << 8) | (b0)))
+
+
 /**
  * @brief Function pointer for transmitting CAN messages.
  */

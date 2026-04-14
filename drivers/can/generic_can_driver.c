@@ -21,6 +21,17 @@ void CAN_set_structures(CAN_Driver_t* driver,
 }
 
 void CAN_driver_rx_callback(CAN_Driver_t* driver, uint8_t* data, void* hdr_rx, uint32_t msg_id, uint8_t num_values, uint32_t timestamp) {
+    if (driver == NULL || driver->rx_ring_buffer.frame == NULL || driver->rx_ring_buffer.size == 0)
+        return;
+
+    // overflow check
+    uint16_t next_head = (driver->rx_ring_buffer.head + 1) % driver->rx_ring_buffer.size;
+
+    if (next_head == driver->rx_ring_buffer.tail) {
+        // buffer is full, so drop message
+        return; 
+    }
+
     // Uses the ring buffer in the driver structure to store incoming messages
     memcpy(driver->rx_ring_buffer.frame[driver->rx_ring_buffer.head].payload, data, num_values);
     driver->rx_ring_buffer.frame[driver->rx_ring_buffer.head].msg_id = msg_id;
@@ -37,6 +48,9 @@ void CAN_driver_rx_callback(CAN_Driver_t* driver, uint8_t* data, void* hdr_rx, u
 }
 
 void CAN_send_frames(CAN_Driver_t* driver, uint32_t current_tick) {
+    if(driver == NULL || driver->tx_message_frames == NULL)
+        return;
+
     for(uint16_t i = 0; i < driver->tx_frame_number; i++){
         if(driver->tx_message_frames[i].scheduler_timer_value == CAN_DRIVER_NON_PERIODIC_FRAME){
             continue; // Skip non-periodic frames
