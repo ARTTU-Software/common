@@ -72,6 +72,8 @@ void CAN_set_structures(CAN_Driver_t* driver,
 }
 
 void CAN_driver_rx_callback(CAN_Driver_t* driver, uint8_t* data, void* hdr_rx, uint32_t msg_id, uint8_t num_values, uint32_t timestamp) {
+    uint16_t write_index;
+
     if (driver == NULL || driver->rx_ring_buffer.frame == NULL || driver->rx_ring_buffer.size == 0)
         return;
 
@@ -84,15 +86,14 @@ void CAN_driver_rx_callback(CAN_Driver_t* driver, uint8_t* data, void* hdr_rx, u
     }
 
     // Uses the ring buffer in the driver structure to store incoming messages
-    memcpy(driver->rx_ring_buffer.frame[driver->rx_ring_buffer.head].payload, data, num_values);
-    driver->rx_ring_buffer.frame[driver->rx_ring_buffer.head].msg_id = msg_id;
-    driver->rx_ring_buffer.frame[driver->rx_ring_buffer.head].num_values = num_values;
+    write_index = driver->rx_ring_buffer.head;
+    memcpy(driver->rx_ring_buffer.frame[write_index].payload, data, num_values);
+    driver->rx_ring_buffer.frame[write_index].msg_id = msg_id;
+    driver->rx_ring_buffer.frame[write_index].num_values = num_values;
+    driver->rx_ring_buffer.frame[write_index].previous_tick = timestamp;
 
     // Increment head in ring buffer
     driver->rx_ring_buffer.head = (driver->rx_ring_buffer.head + 1) % driver->rx_ring_buffer.size;
-
-    // Set timestamp
-    driver->rx_ring_buffer.frame[driver->rx_ring_buffer.head].previous_tick = timestamp;
 
     // Set flag to indicate a new message has been received
     driver->can_new_message_flag = 1;

@@ -41,8 +41,8 @@ typedef struct {
 typedef struct {
     CAN_Rx_Message_Frame_t* frame;
     uint16_t size; // Size of the ring buffer (number of frames it can hold)
-    uint16_t head; // Index for the next incoming frame
-    uint16_t tail; // Index for the next frame to process
+    volatile uint16_t head; // Index for the next incoming frame (ISR producer)
+    volatile uint16_t tail; // Index for the next frame to process (thread consumer)
 } CAN_Rx_Ring_Buffer_t;
 
 /**
