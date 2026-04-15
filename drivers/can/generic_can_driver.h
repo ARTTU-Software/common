@@ -41,8 +41,8 @@ typedef struct {
 typedef struct {
     CAN_Rx_Message_Frame_t* frame;
     uint16_t size; // Size of the ring buffer (number of frames it can hold)
-    uint16_t head; // Index for the next incoming frame
-    uint16_t tail; // Index for the next frame to process
+    volatile uint16_t head; // Index for the next incoming frame (ISR producer)
+    volatile uint16_t tail; // Index for the next frame to process (thread consumer)
 } CAN_Rx_Ring_Buffer_t;
 
 /**
@@ -71,6 +71,7 @@ typedef struct {
 
     volatile uint8_t can_new_message_flag; // Flag to indicate a new message has been received
     volatile uint8_t tx_queue_drain_requested; // Flag to request TX queue draining from main context
+    uint8_t tx_scheduler_start_index; // Rotating start index to avoid fixed-priority scheduling bias
 
     CanTxFn_t add_to_fifo_fn; // Function pointer for adding messages to the CAN Tx FIFO
 } CAN_Driver_t;
@@ -103,15 +104,16 @@ void CAN_send_frames(CAN_Driver_t* driver, uint32_t current_tick);
 /**
  * @brief Drains queued TX frames into the hardware FIFO while space is available.
  * @param driver Driver instance.
- * @param ammount_to_process Number of frames to process.
+ * @param amount Max queued frames to drain. Use 0 to drain all queued frames.
+ * @return Number of frames moved into hardware FIFO.
  */
-void CAN_process_tx_queue(CAN_Driver_t* drive, uint32_t ammount_to_process);
+uint16_t CAN_process_tx_queue(CAN_Driver_t* driver, uint16_t amount);
 
 /**
  * @brief Sends a single CAN frame immediately.
  * @param driver Driver instance.
  * @param frame Frame to send.
- * @return Status code.
+ * @return 0 when queued, 1 when TX buffer is full or inputs are invalid.
  */
 uint32_t CAN_send_single_frame(CAN_Driver_t* driver, CAN_Tx_Message_Frame_t* frame);
 
