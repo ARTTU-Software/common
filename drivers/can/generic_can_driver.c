@@ -165,8 +165,15 @@ uint16_t CAN_process_tx_queue(CAN_Driver_t* driver, uint16_t amount)
 
     while (driver->tx_ring_buffer.count > 0U && processed_count < max_to_process) {
         CAN_Tx_Message_Frame_t* queued_frame = &driver->tx_ring_buffer.frame[driver->tx_ring_buffer.tail];
+
+        if (driver->get_tx_fifo_level_fn != NULL) {
+            uint32_t tx_fifo_free_level = driver->get_tx_fifo_level_fn(driver->hfdcan);
+            if (tx_fifo_free_level == 0U) {
+                break;
+            }
+        }
+
         volatile uint32_t status = driver->add_to_fifo_fn(driver->hfdcan, queued_frame->hdr, queued_frame->payload);
-        volatile uint16_t debug_fifo_level = driver->get_tx_fifo_level_fn(driver->hfdcan);
 
         if (status != 0U) {
             break;
