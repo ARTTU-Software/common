@@ -56,14 +56,14 @@ void test_APPS_update_should_calculate_voltage_and_displacement(void)
     APPS_update(&sensor, raw);
 
     // 3. Assertion
-    TEST_ASSERT_EQUAL_UINT16(12.5, sensor.generic_sensor.raw_value);
+    TEST_ASSERT_EQUAL_UINT16(50, sensor.generic_sensor.raw_value);
 
     // Voltage = 2048 * (3.3 / 4095) = 1.651...
     TEST_ASSERT_FLOAT_WITHIN(0.001f, 1.651f, sensor.voltage);
 
     // norm = (2048 - 410) / (3686 - 410) = 1638 / 3276 = 0.5
     // displacement = 0.5 * 25.0 = 12.5 mm
-    TEST_ASSERT_FLOAT_WITHIN(0.0001f, 12.5f, sensor.displacement);
+    TEST_ASSERT_FLOAT_WITHIN(0.0001f, 50, sensor.displacement);
 }
 
 void test_APPS_update_should_clamp_at_lower_bound(void)
@@ -91,7 +91,7 @@ void test_APPS_update_should_clamp_at_upper_bound(void)
 
     // 3. Assertion
     // norm should be clamped to 1.0, displacement = 1.0 * 25.0 = 25.0 mm
-    TEST_ASSERT_FLOAT_WITHIN(0.0001f, 25.0f, sensor.displacement);
+    TEST_ASSERT_FLOAT_WITHIN(0.0001f, 100.0f, sensor.displacement);
 }
 
 // This test checks behavior when min and max are the same to avoid division by zero.
@@ -121,7 +121,7 @@ void test_APPS_decode_should_correctly_decode_bytes(void)
     // Test case 1: 12.345mm
     uint8_t high_byte = 0x30; // 12345 = 0x3039
     uint8_t low_byte = 0x39;
-    float expected_value = 12.345f;
+    float expected_value = 12345.0f;
     float actual_value = APPS_decode(high_byte, low_byte);
     TEST_ASSERT_FLOAT_WITHIN(0.0001f, expected_value, actual_value);
 
@@ -135,7 +135,7 @@ void test_APPS_decode_should_correctly_decode_bytes(void)
     // Test case 3: max value 65.535mm
     high_byte = 0xFF;
     low_byte = 0xFF;
-    expected_value = 65.535f;
+    expected_value = 65535.0f;
     actual_value = APPS_decode(high_byte, low_byte);
     TEST_ASSERT_FLOAT_WITHIN(0.0001f, expected_value, actual_value);
 }

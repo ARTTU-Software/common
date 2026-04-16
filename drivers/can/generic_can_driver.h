@@ -5,6 +5,12 @@
 
 #define CAN_DRIVER_NON_PERIODIC_FRAME 0xFFFF
 
+#define LOW_BYTE(x) ((uint8_t)((x) & 0xFF))
+#define HIGH_BYTE(x) ((uint8_t)(((x) >> 8) & 0xFF))
+#define CAN_COMBINE_16(high, low) ((uint16_t)(((high) << 8) | (low)))
+#define CAN_COMBINE_32(b3, b2, b1, b0) ((uint32_t)(((b3) << 24) | ((b2) << 16) | ((b1) << 8) | (b0)))
+
+
 /**
  * @brief Function pointer for transmitting CAN messages.
  */
@@ -18,16 +24,15 @@ typedef struct {
     uint8_t payload[8];
     uint32_t msg_id;
     uint8_t num_values;
+    uint32_t previous_tick; // For timestamping or scheduling purposes
+    uint32_t scheduler_timer_value; // For periodic transmission scheduling
 } CAN_Tx_Message_Frame_t;
 
-/**
- * @brief Structure representing a received CAN message.
- */
 typedef struct {
     uint8_t payload[8];
     uint32_t msg_id;
     uint8_t num_values;
-    uint32_t rx_tick_ms;
+    uint32_t previous_tick; // For timestamping or scheduling purposes
 } CAN_Rx_Message_Frame_t;
 
 /**
@@ -36,24 +41,27 @@ typedef struct {
 typedef struct {
     CAN_Rx_Message_Frame_t* frame;
     uint16_t size; // Size of the ring buffer (number of frames it can hold)
-    volatile uint16_t head; // Index for the next incoming frame
-    volatile uint16_t tail; // Index for the next frame to process
+    volatile uint16_t head; // Index for the next incoming frame (ISR producer)
+    volatile uint16_t tail; // Index for the next frame to process (thread consumer)
 } CAN_Rx_Ring_Buffer_t;
 
 /**
- * @brief Configuration settings for a TX CAN frame.
+ * @brief Circular buffer for storing queued TX CAN messages.
  */
 typedef struct {
-    uint32_t payload_size;
-    uint16_t id;
-    uint16_t scheduler_timer_value;
-} CAN_tx_frame_configs_t;
+    CAN_Tx_Message_Frame_t* frame;
+    uint16_t size; // Size of the ring buffer (number of frames it can hold)
+    uint16_t head; // Index for the next frame to enqueue
+    uint16_t tail; // Index for the next frame to transmit
+    uint16_t count; // Number of frames currently queued
+} CAN_Tx_Ring_Buffer_t;
 
 /**
  * @brief Main driver structure holding state and buffers.
  */
 typedef struct {
-    CAN_Tx_Message_Frame_t* message_frames_tx;
+    CAN_Tx_Message_Frame_t* tx_message_frames;
+    CAN_Tx_Ring_Buffer_t tx_ring_buffer;
     CAN_Rx_Ring_Buffer_t rx_ring_buffer;
 
     uint8_t tx_frame_number;
@@ -61,32 +69,12 @@ typedef struct {
 
     void* hfdcan;
 
-    // Array to hold configurations for each CAN frame to be transmitted
-    CAN_tx_frame_configs_t* tx_frame_configs;
-
     volatile uint8_t can_new_message_flag; // Flag to indicate a new message has been received
-
-    uint32_t* tx_scheduler_prev_tick; // Array to store previous tick for each CAN frame
+    volatile uint8_t tx_queue_drain_requested; // Flag to request TX queue draining from main context
+    uint8_t tx_scheduler_start_index; // Rotating start index to avoid fixed-priority scheduling bias
 
     CanTxFn_t add_to_fifo_fn; // Function pointer for adding messages to the CAN Tx FIFO
 } CAN_Driver_t;
-
-#ifdef CAN_DRIVER_DEBUG
-/**
- * @brief Runtime RX trace data for debugging in LiveWatch.
- */
-typedef struct {
-    uint32_t rx_total_frames;
-    uint32_t rx_dropped_overflow;
-    uint32_t rx_dropped_invalid_len;
-    uint32_t rx_last_msg_id;
-    uint8_t rx_last_len;
-    uint32_t rx_last_tick_ms;
-    uint8_t rx_last_payload[8];
-} CAN_Rx_Debug_t;
-
-extern volatile CAN_Rx_Debug_t can_rx_debug;
-#endif
 
 /**
  * @brief Initializes the driver with hardware handle and TX function.
@@ -100,9 +88,11 @@ void CAN_set_structures(CAN_Driver_t* driver, CanTxFn_t add_to_fifo_fn, void* hf
  * @brief Callback for RX interrupts to store data in ring buffer.
  * @param driver Driver instance.
  * @param data Payload data.
+ * @param hdr_rx RX header.
  * @param msg_id Message ID.
+ * @param timestamp Timestamp for the received message.
  */
-void CAN_driver_rx_callback(CAN_Driver_t* driver, uint8_t* data, uint32_t msg_id, uint8_t num_values, uint32_t rx_tick_ms);
+void CAN_driver_rx_callback(CAN_Driver_t* driver, uint8_t* data, void* hdr_rx, uint32_t msg_id, uint8_t num_values, uint32_t timestamp);
 
 /**
  * @brief Periodic task to send scheduled CAN frames.
@@ -112,10 +102,18 @@ void CAN_driver_rx_callback(CAN_Driver_t* driver, uint8_t* data, uint32_t msg_id
 void CAN_send_frames(CAN_Driver_t* driver, uint32_t current_tick);
 
 /**
+ * @brief Drains queued TX frames into the hardware FIFO while space is available.
+ * @param driver Driver instance.
+ * @param amount Max queued frames to drain. Use 0 to drain all queued frames.
+ * @return Number of frames moved into hardware FIFO.
+ */
+uint16_t CAN_process_tx_queue(CAN_Driver_t* driver, uint16_t amount);
+
+/**
  * @brief Sends a single CAN frame immediately.
  * @param driver Driver instance.
  * @param frame Frame to send.
- * @return Status code.
+ * @return 0 when queued, 1 when TX buffer is full or inputs are invalid.
  */
 uint32_t CAN_send_single_frame(CAN_Driver_t* driver, CAN_Tx_Message_Frame_t* frame);
 

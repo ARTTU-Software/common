@@ -36,15 +36,37 @@ typedef struct {
 
 #define CAN_MSG_GF_MISC_SENSORS_SIG_R2D_BTN_FACTOR 1.0f
 
-#define CAN_MSG_GF_MISC_SENSORS_SIG_SOFTWARE_STATUS_FACTOR 1.0f
-
 typedef struct {
     float APPS1; /* start_bit=7; length=8; factor=0.001; offset=0.0; unit="%" */
     float APPS2; /* start_bit=15; length=8; factor=0.001; offset=0.0; unit="%" */
     float Steering; /* start_bit=23; length=16; factor=0.01; offset=0.0; unit="deg" */
     uint8_t R2D_BTN; /* start_bit=39; length=8; factor=1.0; offset=0.0; unit="bool" */
-    uint8_t Software_Status; /* start_bit=47; length=8; factor=1.0; offset=0.0; unit="enum" */
 } can_msg_GF_Misc_Sensors_t;
+
+#define CAN_MSG_GF_SOFTWARE_STATUS_ID 175U
+#define CAN_MSG_GF_SOFTWARE_STATUS_DLC 8U
+#define CAN_MSG_GF_SOFTWARE_STATUS_CYCLE_TIME_MS 0U
+
+#define CAN_MSG_GF_SOFTWARE_STATUS_SIG_GF_CURRENT_STATE_FACTOR 1.0f
+
+#define CAN_MSG_GF_SOFTWARE_STATUS_SIG_GF_PREVIOUS_REASON_FACTOR 1.0f
+
+#define CAN_MSG_GF_SOFTWARE_STATUS_SIG_GF_NEXT_STATE_FACTOR 1.0f
+
+#define CAN_MSG_GF_SOFTWARE_STATUS_SIG_GF_APPS_RECAL_STEP_FACTOR 1.0f
+
+#define CAN_MSG_GF_SOFTWARE_STATUS_SIG_GF_BOARD_IS_STARTING_FACTOR 1.0f
+
+#define CAN_MSG_GF_SOFTWARE_STATUS_SIG_GF_ADC_READY_FACTOR 1.0f
+
+typedef struct {
+    uint8_t GF_Current_State; /* start_bit=7; length=8; factor=1.0; offset=0.0; unit="hex" */
+    uint8_t GF_Previous_Reason; /* start_bit=15; length=8; factor=1.0; offset=0.0; unit="hex" */
+    uint8_t GF_Next_State; /* start_bit=23; length=8; factor=1.0; offset=0.0; unit="hex" */
+    uint8_t GF_APPS_Recal_Step; /* start_bit=31; length=8; factor=1.0; offset=0.0; unit="hex" */
+    uint8_t GF_Board_Is_Starting; /* start_bit=39; length=8; factor=1.0; offset=0.0; unit="bool" */
+    uint8_t GF_ADC_Ready; /* start_bit=47; length=8; factor=1.0; offset=0.0; unit="bool" */
+} can_msg_GF_Software_Status_t;
 
 #define CAN_MSG_GR_WHEEL_SENSORS_ID 176U
 #define CAN_MSG_GR_WHEEL_SENSORS_DLC 8U
@@ -77,14 +99,11 @@ typedef struct {
 
 #define CAN_MSG_GR_MISC_SENSORS_SIG_SDC_FACTOR 1.0f
 
-#define CAN_MSG_GR_MISC_SENSORS_SIG_SOFTWARE_STATUS_FACTOR 1.0f
-
 typedef struct {
     float Brake; /* start_bit=7; length=16; factor=0.01; offset=0.0; unit="bar" */
     float JB_50A; /* start_bit=23; length=16; factor=0.01; offset=0.0; unit="A" */
     float JB_200A; /* start_bit=39; length=16; factor=0.01; offset=0.0; unit="A" */
     uint8_t SDC; /* start_bit=55; length=8; factor=1.0; offset=0.0; unit="Bool" */
-    uint8_t Software_Status; /* start_bit=63; length=8; factor=1.0; offset=0.0; unit="enum" */
 } can_msg_GR_Misc_Sensors_t;
 
 #define CAN_MSG_GR_LIQUID_SENSORS_ID 178U
@@ -102,6 +121,31 @@ typedef struct {
     float Temp_1; /* start_bit=23; length=16; factor=0.001; offset=0.0; unit="degC" */
     float Temp_2; /* start_bit=39; length=16; factor=0.001; offset=0.0; unit="degC" */
 } can_msg_GR_Liquid_Sensors_t;
+
+#define CAN_MSG_GR_SOFTWARE_STATUS_ID 191U
+#define CAN_MSG_GR_SOFTWARE_STATUS_DLC 8U
+#define CAN_MSG_GR_SOFTWARE_STATUS_CYCLE_TIME_MS 0U
+
+#define CAN_MSG_GR_SOFTWARE_STATUS_SIG_GR_CURRENT_STATE_FACTOR 1.0f
+
+#define CAN_MSG_GR_SOFTWARE_STATUS_SIG_GR_PREVIOUS_REASON_FACTOR 1.0f
+
+#define CAN_MSG_GR_SOFTWARE_STATUS_SIG_GR_NEXT_STATE_FACTOR 1.0f
+
+#define CAN_MSG_GR_SOFTWARE_STATUS_SIG_GR_APPS_RECAL_STEP_FACTOR 1.0f
+
+#define CAN_MSG_GR_SOFTWARE_STATUS_SIG_GR_BOARD_IS_STARTING_FACTOR 1.0f
+
+#define CAN_MSG_GR_SOFTWARE_STATUS_SIG_GR_ADC_READY_FACTOR 1.0f
+
+typedef struct {
+    uint8_t GR_Current_State; /* start_bit=7; length=8; factor=1.0; offset=0.0; unit="hex" */
+    uint8_t GR_Previous_Reason; /* start_bit=15; length=8; factor=1.0; offset=0.0; unit="hex" */
+    uint8_t GR_Next_State; /* start_bit=23; length=8; factor=1.0; offset=0.0; unit="hex" */
+    uint8_t GR_APPS_Recal_Step; /* start_bit=31; length=8; factor=1.0; offset=0.0; unit="hex" */
+    uint8_t GR_Board_Is_Starting; /* start_bit=39; length=8; factor=1.0; offset=0.0; unit="bool" */
+    uint8_t GR_ADC_Ready; /* start_bit=47; length=8; factor=1.0; offset=0.0; unit="bool" */
+} can_msg_GR_Software_Status_t;
 
 #define CAN_MSG_ECU_INVERTER_SIG_ID 224U
 #define CAN_MSG_ECU_INVERTER_SIG_DLC 8U
@@ -381,14 +425,17 @@ typedef struct {
 
 #define CAN_MSG_BMS_CURRENT_SIG_PACK_DCL_FACTOR 0.01f
 
-#define CAN_MSG_BMS_CURRENT_SIG_BLANK_FACTOR 1.0f
+#define CAN_MSG_BMS_CURRENT_SIG_CHARGER_SAFETY_FACTOR 1.0f
+
+#define CAN_MSG_BMS_CURRENT_SIG_CHARGE_RELAY_FACTOR 1.0f
 
 typedef struct {
     float Average_Current; /* start_bit=7; length=16; factor=0.01; offset=0.0; unit="A" */
     float Pack_Current; /* start_bit=23; length=16; factor=0.01; offset=0.0; unit="A" */
     float Pack_DOD; /* start_bit=39; length=8; factor=0.5; offset=0.0; unit="%" */
     float Pack_DCL; /* start_bit=47; length=16; factor=0.01; offset=0.0; unit="A" */
-    uint8_t Blank; /* start_bit=63; length=8; factor=1.0; offset=0.0; unit="const0x0" */
+    uint8_t Charger_Safety; /* start_bit=63; length=1; factor=1.0; offset=0.0; unit="bool" */
+    uint8_t Charge_Relay; /* start_bit=64; length=1; factor=1.0; offset=0.0; unit="bool" */
 } can_msg_BMS_Current_t;
 
 #define CAN_MSG_BMS_DATA_RANDOM_ID 54U
@@ -448,20 +495,41 @@ typedef struct {
 #define CAN_MSG_GIL_INV_DATA_2_SIG_THROTTLE_INPUT_L_FACTOR 0.001f
 
 typedef struct {
-    uint16_t Motor_Temp_L; /* start_bit=7; length=16; factor=1.0; offset=0.0; unit="degC" */
-    uint16_t Inverter_Temp_L; /* start_bit=23; length=16; factor=1.0; offset=0.0; unit="degC" */
-    float Aux_Brake_Input_L; /* start_bit=39; length=16; factor=0.001; offset=0.0; unit="V" */
-    float Throttle_Input_L; /* start_bit=55; length=16; factor=0.001; offset=0.0; unit="V" */
+    int8_t Motor_Temp_L; /* start_bit=7; length=8; factor=1.0; offset=0.0; unit="degC" */
+    int8_t Inverter_Temp_L; /* start_bit=15; length=8; factor=1.0; offset=0.0; unit="degC" */
+    float Aux_Brake_Input_L; /* start_bit=23; length=16; factor=0.001; offset=0.0; unit="V" */
+    float Throttle_Input_L; /* start_bit=39; length=16; factor=0.001; offset=0.0; unit="V" */
 } can_msg_GIL_Inv_Data_2_t;
 
 #define CAN_MSG_GIL_SOFTWARE_ID 34U
 #define CAN_MSG_GIL_SOFTWARE_DLC 8U
 #define CAN_MSG_GIL_SOFTWARE_CYCLE_TIME_MS 0U
 
-#define CAN_MSG_GIL_SOFTWARE_SIG_SOFTWARE_STATUS_FACTOR 1.0f
+#define CAN_MSG_GIL_SOFTWARE_SIG_GIL_CURRENT_STATE_FACTOR 1.0f
+
+#define CAN_MSG_GIL_SOFTWARE_SIG_GIL_PREVIOUS_REASON_FACTOR 1.0f
+
+#define CAN_MSG_GIL_SOFTWARE_SIG_GIL_NEXT_STATE_FACTOR 1.0f
+
+#define CAN_MSG_GIL_SOFTWARE_SIG_GIL_FAULT_LATCHED_FACTOR 1.0f
+
+#define CAN_MSG_GIL_SOFTWARE_SIG_GIL_LEFT_PERCENTAGE_FACTOR 1.0f
+
+#define CAN_MSG_GIL_SOFTWARE_SIG_GIL_RIGHT_PERCENTAGE_FACTOR 1.0f
+
+#define CAN_MSG_GIL_SOFTWARE_SIG_GIL_PASS_THROUGH_FLAG_FACTOR 1.0f
+
+#define CAN_MSG_GIL_SOFTWARE_SIG_GIL_PROGRAMMING_MSG_VALID_FACTOR 1.0f
 
 typedef struct {
-    uint16_t Software_Status; /* start_bit=7; length=16; factor=1.0; offset=0.0; unit="enum" */
+    uint8_t GIL_Current_State; /* start_bit=7; length=8; factor=1.0; offset=0.0; unit="hex" */
+    uint8_t GIL_Previous_Reason; /* start_bit=15; length=8; factor=1.0; offset=0.0; unit="hex" */
+    uint8_t GIL_Next_State; /* start_bit=23; length=8; factor=1.0; offset=0.0; unit="hex" */
+    uint8_t GIL_Fault_Latched; /* start_bit=31; length=8; factor=1.0; offset=0.0; unit="bool" */
+    uint8_t GIL_Left_Percentage; /* start_bit=39; length=8; factor=1.0; offset=0.0; unit="%" */
+    uint8_t GIL_Right_Percentage; /* start_bit=47; length=8; factor=1.0; offset=0.0; unit="%" */
+    uint8_t GIL_Pass_Through_Flag; /* start_bit=55; length=8; factor=1.0; offset=0.0; unit="bool" */
+    uint8_t GIL_Programming_Msg_Valid; /* start_bit=63; length=8; factor=1.0; offset=0.0; unit="bool" */
 } can_msg_GIL_Software_t;
 
 #define CAN_MSG_GIR_INV_DATA_1_ID 48U
@@ -496,8 +564,8 @@ typedef struct {
 #define CAN_MSG_GIR_INV_DATA_2_SIG_THROTTLE_INPUT_R_FACTOR 0.001f
 
 typedef struct {
-    uint16_t Motor_Temp_R; /* start_bit=7; length=16; factor=1.0; offset=0.0; unit="degC" */
-    uint16_t Inverter_Temp_R; /* start_bit=23; length=16; factor=1.0; offset=0.0; unit="degC" */
+    int16_t Motor_Temp_R; /* start_bit=7; length=16; factor=1.0; offset=0.0; unit="degC" */
+    int16_t Inverter_Temp_R; /* start_bit=23; length=16; factor=1.0; offset=0.0; unit="degC" */
     float Aux_Input_R; /* start_bit=39; length=16; factor=0.001; offset=0.0; unit="V" */
     float Throttle_Input_R; /* start_bit=55; length=16; factor=0.001; offset=0.0; unit="V" */
 } can_msg_GIR_Inv_Data_2_t;
@@ -506,10 +574,31 @@ typedef struct {
 #define CAN_MSG_GIR_SOFTWARE_DLC 8U
 #define CAN_MSG_GIR_SOFTWARE_CYCLE_TIME_MS 0U
 
-#define CAN_MSG_GIR_SOFTWARE_SIG_SOFTWARE_STATUS_FACTOR 1.0f
+#define CAN_MSG_GIR_SOFTWARE_SIG_GIR_CURRENT_STATE_FACTOR 1.0f
+
+#define CAN_MSG_GIR_SOFTWARE_SIG_GIR_PREVIOUS_REASON_FACTOR 1.0f
+
+#define CAN_MSG_GIR_SOFTWARE_SIG_GIR_NEXT_STATE_FACTOR 1.0f
+
+#define CAN_MSG_GIR_SOFTWARE_SIG_GIR_FAULT_LATCHED_FACTOR 1.0f
+
+#define CAN_MSG_GIR_SOFTWARE_SIG_GIR_LEFT_PERCENTAGE_FACTOR 1.0f
+
+#define CAN_MSG_GIR_SOFTWARE_SIG_GIR_RIGHT_PERCENTAGE_FACTOR 1.0f
+
+#define CAN_MSG_GIR_SOFTWARE_SIG_GIR_PASS_THROUGH_FLAG_FACTOR 1.0f
+
+#define CAN_MSG_GIR_SOFTWARE_SIG_GIR_PROGRAMMING_MSG_VALID_FACTOR 1.0f
 
 typedef struct {
-    uint16_t Software_Status; /* start_bit=7; length=16; factor=1.0; offset=0.0; unit="enum" */
+    uint8_t GIR_Current_State; /* start_bit=7; length=8; factor=1.0; offset=0.0; unit="hex" */
+    uint8_t GIR_Previous_Reason; /* start_bit=15; length=8; factor=1.0; offset=0.0; unit="hex" */
+    uint8_t GIR_Next_State; /* start_bit=23; length=8; factor=1.0; offset=0.0; unit="hex" */
+    uint8_t GIR_Fault_Latched; /* start_bit=31; length=8; factor=1.0; offset=0.0; unit="bool" */
+    uint8_t GIR_Left_Percentage; /* start_bit=39; length=8; factor=1.0; offset=0.0; unit="%" */
+    uint8_t GIR_Right_Percentage; /* start_bit=47; length=8; factor=1.0; offset=0.0; unit="%" */
+    uint8_t GIR_Pass_Through_Flag; /* start_bit=55; length=8; factor=1.0; offset=0.0; unit="bool" */
+    uint8_t GIR_Programming_Msg_Valid; /* start_bit=63; length=8; factor=1.0; offset=0.0; unit="bool" */
 } can_msg_GIR_Software_t;
 
 #define CAN_MSG_DASH_BUTTONS_ID 208U
