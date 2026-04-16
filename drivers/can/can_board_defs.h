@@ -8,12 +8,14 @@
 typedef struct {
     can_msg_GF_Wheel_Sensors_t GF_Wheel_Sensors;
     can_msg_GF_Misc_Sensors_t GF_Misc_Sensors;
+    can_msg_GF_Software_Status_t GF_Software_Status;
 } can_board_Gateway_Front_t;
 
 typedef struct {
     can_msg_GR_Wheel_Sensors_t GR_Wheel_Sensors;
     can_msg_GR_Misc_Sensors_t GR_Misc_Sensors;
     can_msg_GR_Liquid_Sensors_t GR_Liquid_Sensors;
+    can_msg_GR_Software_Status_t GR_Software_Status;
 } can_board_Gateway_Rear_t;
 
 typedef struct {
@@ -54,11 +56,12 @@ typedef struct {
 
 typedef struct {
     can_msg_IMU_Data_t IMU_Data;
-    can_msg_DASH_IMU_Recal_t DASH_IMU_Recal;
+    can_msg_IMU_Recal_t IMU_Recal;
 } can_board_IMU_t;
 
 typedef struct {
-    can_msg_PROGRAMMING_t PROGRAMMING;
+    can_msg_PRG_Bootloader_t PRG_Bootloader;
+    can_msg_PRG_Inverter_t PRG_Inverter;
 } can_board_Programming_t;
 
 #endif /* INC_CAN_BOARD_DEFS_H */

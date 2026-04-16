@@ -100,10 +100,14 @@
     - +:test/**
     - -:test/support
   :source:
+    - drivers/fsm/**
+    - drivers/can/**
     - drivers/sensors/**
     - drivers/misc/**
     - math/**
   :include:
+    - drivers/fsm/**
+    - drivers/can/**
     - drivers/sensors/**
     - drivers/misc/**
     - math/**
@@ -117,6 +121,8 @@
 :files:
   :test: []
   :source:
+    - drivers/fsm/generic_fsm_driver.c
+    - drivers/can/generic_can_driver.c
     - drivers/sensors/Generic/generic_linear_sensor.c
 
 # Compilation symbols to be injected into builds
