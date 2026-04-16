@@ -49,10 +49,13 @@ static uint32_t CAN_enqueue_tx_frame(CAN_Driver_t* driver, const CAN_Tx_Message_
 }
 
 void CAN_set_structures(CAN_Driver_t* driver, 
-    CanTxFn_t add_to_fifo_fn, 
+    CanTxFn_t add_to_fifo_fn,
+    CanTxFifoLevelFn_t get_tx_fifo_level_fn, 
     void* hfdcan_instance)
 {
     driver->add_to_fifo_fn = add_to_fifo_fn;
+    driver->get_tx_fifo_level_fn = get_tx_fifo_level_fn;
+
     driver->hfdcan = hfdcan_instance;
     driver->can_new_message_flag = 0;
     driver->tx_queue_drain_requested = 0;
@@ -162,7 +165,8 @@ uint16_t CAN_process_tx_queue(CAN_Driver_t* driver, uint16_t amount)
 
     while (driver->tx_ring_buffer.count > 0U && processed_count < max_to_process) {
         CAN_Tx_Message_Frame_t* queued_frame = &driver->tx_ring_buffer.frame[driver->tx_ring_buffer.tail];
-        uint32_t status = driver->add_to_fifo_fn(driver->hfdcan, queued_frame->hdr, queued_frame->payload);
+        volatile uint32_t status = driver->add_to_fifo_fn(driver->hfdcan, queued_frame->hdr, queued_frame->payload);
+        volatile uint16_t debug_fifo_level = driver->get_tx_fifo_level_fn(driver->hfdcan);
 
         if (status != 0U) {
             break;

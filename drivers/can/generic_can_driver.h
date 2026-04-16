@@ -17,6 +17,11 @@
 typedef uint32_t (*CanTxFn_t)(void *hfdcan, void *hdr, uint8_t *payload);
 
 /**
+ * @brief Function pointer for checking CAN Tx FIFO level.
+ */
+typedef uint32_t (*CanTxFifoLevelFn_t)(void *hfdcan);
+
+/**
  * @brief Structure representing a CAN message.
  */
 typedef struct {
@@ -74,6 +79,7 @@ typedef struct {
     uint8_t tx_scheduler_start_index; // Rotating start index to avoid fixed-priority scheduling bias
 
     CanTxFn_t add_to_fifo_fn; // Function pointer for adding messages to the CAN Tx FIFO
+    CanTxFifoLevelFn_t get_tx_fifo_level_fn; // Function pointer for checking CAN Tx FIFO level
 } CAN_Driver_t;
 
 /**
@@ -81,8 +87,9 @@ typedef struct {
  * @param driver Driver instance.
  * @param add_to_fifo_fn TX function pointer.
  * @param hfdcan_instance Hardware handle.
+ * @param get_tx_fifo_level_fn Function pointer for checking CAN Tx FIFO level.
  */
-void CAN_set_structures(CAN_Driver_t* driver, CanTxFn_t add_to_fifo_fn, void* hfdcan_instance);
+void CAN_set_structures(CAN_Driver_t* driver, CanTxFn_t add_to_fifo_fn, CanTxFifoLevelFn_t get_tx_fifo_level_fn, void* hfdcan_instance);
 
 /**
  * @brief Callback for RX interrupts to store data in ring buffer.
