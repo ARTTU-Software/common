@@ -11,6 +11,7 @@ static CAN_Rx_Message_Frame_t rx_queue_storage[2];
 
 static uint32_t fifo_add_call_count;
 static uint8_t fifo_should_fail;
+static uint32_t fifo_free_level;
 
 static uint32_t test_add_to_fifo(void *hfdcan, void *hdr, uint8_t *payload)
 {
@@ -25,6 +26,20 @@ static uint32_t test_add_to_fifo(void *hfdcan, void *hdr, uint8_t *payload)
     }
 
     return 0U;
+}
+
+static uint32_t test_get_tx_fifo_free_level(void *hfdcan)
+{
+    uint32_t used_slots;
+
+    (void)hfdcan;
+
+    used_slots = fifo_add_call_count;
+    if (used_slots >= fifo_free_level) {
+        return 0U;
+    }
+
+    return fifo_free_level - used_slots;
 }
 
 static void init_driver(void)
@@ -43,7 +58,7 @@ static void init_driver(void)
 
     test_driver.rx_ring_buffer.frame = rx_queue_storage;
 
-    CAN_set_structures(&test_driver, test_add_to_fifo, (void*)0x1);
+    CAN_set_structures(&test_driver, test_add_to_fifo, test_get_tx_fifo_free_level, (void*)0x1);
 }
 
 static CAN_Tx_Message_Frame_t make_frame(uint32_t msg_id, uint8_t payload0)
@@ -60,6 +75,7 @@ void setUp(void)
 {
     fifo_add_call_count = 0U;
     fifo_should_fail = 0U;
+    fifo_free_level = 3U;
     init_driver();
 }
 
@@ -140,6 +156,38 @@ void test_CAN_process_tx_queue_should_keep_drain_requested_when_fifo_add_fails(v
 
     TEST_ASSERT_EQUAL_UINT32(1U, fifo_add_call_count);
     TEST_ASSERT_EQUAL_UINT16(2U, test_driver.tx_ring_buffer.count);
+    TEST_ASSERT_EQUAL_UINT8(1U, test_driver.tx_queue_drain_requested);
+}
+
+void test_CAN_process_tx_queue_should_not_drain_when_hw_fifo_is_full(void)
+{
+    CAN_Tx_Message_Frame_t frame1 = make_frame(0x501U, 0x12U);
+
+    TEST_ASSERT_EQUAL_UINT32(0U, CAN_send_single_frame(&test_driver, &frame1));
+
+    fifo_free_level = 0U;
+
+    TEST_ASSERT_EQUAL_UINT16(0U, CAN_process_tx_queue(&test_driver, 0U));
+    TEST_ASSERT_EQUAL_UINT32(0U, fifo_add_call_count);
+    TEST_ASSERT_EQUAL_UINT16(1U, test_driver.tx_ring_buffer.count);
+    TEST_ASSERT_EQUAL_UINT8(1U, test_driver.tx_queue_drain_requested);
+}
+
+void test_CAN_process_tx_queue_should_limit_by_hw_fifo_free_level(void)
+{
+    CAN_Tx_Message_Frame_t frame1 = make_frame(0x601U, 0x01U);
+    CAN_Tx_Message_Frame_t frame2 = make_frame(0x602U, 0x02U);
+    CAN_Tx_Message_Frame_t frame3 = make_frame(0x603U, 0x03U);
+
+    TEST_ASSERT_EQUAL_UINT32(0U, CAN_send_single_frame(&test_driver, &frame1));
+    TEST_ASSERT_EQUAL_UINT32(0U, CAN_send_single_frame(&test_driver, &frame2));
+    TEST_ASSERT_EQUAL_UINT32(0U, CAN_send_single_frame(&test_driver, &frame3));
+
+    fifo_free_level = 2U;
+
+    TEST_ASSERT_EQUAL_UINT16(2U, CAN_process_tx_queue(&test_driver, 0U));
+    TEST_ASSERT_EQUAL_UINT32(2U, fifo_add_call_count);
+    TEST_ASSERT_EQUAL_UINT16(1U, test_driver.tx_ring_buffer.count);
     TEST_ASSERT_EQUAL_UINT8(1U, test_driver.tx_queue_drain_requested);
 }
 
