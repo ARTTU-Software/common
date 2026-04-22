@@ -28,10 +28,10 @@ typedef struct {
 typedef struct {
     can_msg_BMS_Errors_Temps_t BMS_Errors_Temps;
     can_msg_BMS_SoC_Voltage_t BMS_SoC_Voltage;
-    can_msg_BMS_Cell_Data_t BMS_Cell_Data;
-    can_msg_BMS_Cell_Data_2_t BMS_Cell_Data_2;
+    can_msg_BMS_Cell_Open_t BMS_Cell_Open;
+    can_msg_BMS_Cell_Voltage_t BMS_Cell_Voltage;
+    can_msg_BMS_Cell_Resistance_t BMS_Cell_Resistance;
     can_msg_BMS_Current_t BMS_Current;
-    can_msg_BMS_Data_Random_t BMS_Data_Random;
 } can_board_BMS_t;
 
 typedef struct {
