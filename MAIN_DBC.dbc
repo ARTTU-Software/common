@@ -40,8 +40,8 @@ BO_ 160 GF_Wheel_Sensors: 8 Gateway_Front
  SG_ Susp_Travel_FR : 39|16@0+ (0.001,0) [0.0|65.535] "mm" Vector__XXX
  SG_ Susp_Travel_FL : 55|16@0+ (0.001,0) [0.0|65.535] "mm" Vector__XXX
 BO_ 161 GF_Misc_Sensors: 8 Gateway_Front
- SG_ APPS1 : 7|8@0+ (0.001,0) [0.0|100.0] "%" Vector__XXX
- SG_ APPS2 : 15|8@0+ (0.001,0) [0.0|100.0] "%" Vector__XXX
+ SG_ APPS1 : 7|8@0+ (1.0,0) [0.0|100.0] "%" Vector__XXX
+ SG_ APPS2 : 15|8@0+ (1.0,0) [0.0|100.0] "%" Vector__XXX
  SG_ Steering : 23|16@0- (0.01,0) [-290.0|290.0] "deg" Vector__XXX
  SG_ R2D_BTN : 39|8@0+ (1.0,0) [0.0|1.0] "bool" Vector__XXX
 BO_ 175 GF_Software_Status: 8 Gateway_Front
@@ -99,65 +99,65 @@ BO_ 162 ECU_Front_NMOS: 8 ECU
  SG_ R2D_LED_Delay : 7|8@0+ (1.0,0) [0.0|255.0] "Hz" Vector__XXX
 
 BO_ 16 BMS_Errors_Temps: 8 BMS
- SG_ Internal_Temperature : 7|8@0- (1.0,0) [0.0|0.0] "Celsius" Vector__XXX
- SG_ DTC_P0AFA_Low_Cell_Voltage_Fault : 8|1@1+ (1.0,0) [0.0|0.0] "Bool" Vector__XXX
- SG_ DTC_P0A04_Cell_Open_Wiring_Fault : 9|1@1+ (1.0,0) [0.0|0.0] "Bool" Vector__XXX
- SG_ DTC_P0A0F_Cell_Bank_Fault : 10|1@1+ (1.0,0) [0.0|0.0] "Bool" Vector__XXX
- SG_ DTC_U0100_CAN_Communication_Fault : 11|1@1+ (1.0,0) [0.0|0.0] "Bool" Vector__XXX
- SG_ DTC_P0A10_Pack_Too_Hot_Fault : 12|1@1+ (1.0,0) [0.0|0.0] "Bool" Vector__XXX
- SG_ DTC_P0A0B_Internal_Logic_Fault : 13|1@1+ (1.0,0) [0.0|0.0] "Bool" Vector__XXX
- SG_ DTC_P0A12_Cell_Balancing_Stuck_Off_Fault : 14|1@1+ (1.0,0) [0.0|0.0] "Bool" Vector__XXX
- SG_ DTC_P0A0E_Lowest_Cell_Voltage_Too_Low_Fault : 15|1@1+ (1.0,0) [0.0|0.0] "Bool" Vector__XXX
- SG_ MultiPurpose_Output_3 : 16|1@1+ (1.0,0) [0.0|0.0] "Bool" Vector__XXX
- SG_ MultiPurpose_Enable : 17|1@1+ (1.0,0) [0.0|0.0] "Bool" Vector__XXX
- SG_ MultiPurpose_Output_4 : 18|1@1+ (1.0,0) [0.0|0.0] "Bool" Vector__XXX
- SG_ Balancing_Active : 19|1@1+ (1.0,0) [0.0|0.0] "Bool" Vector__XXX
- SG_ Charge_Power_Signal : 20|1@1+ (1.0,0) [0.0|0.0] "Bool" Vector__XXX
- SG_ Charge_Mode_Active_CAN : 21|1@1+ (1.0,0) [0.0|0.0] "Bool" Vector__XXX
- SG_ Voltage_Failsafe : 22|1@1+ (1.0,0) [0.0|0.0] "Bool" Vector__XXX
- SG_ Current_Failsafe : 23|1@1+ (1.0,0) [0.0|0.0] "Bool" Vector__XXX
- SG_ DTC_P0A0C_Highest_Cell_Voltage_Too_High_Fault : 24|1@1+ (1.0,0) [0.0|0.0] "Bool" Vector__XXX
- SG_ DTC_P0A9C_Thermistor_Fault : 25|1@1+ (1.0,0) [0.0|0.0] "Bool" Vector__XXX
- SG_ DTC_P0AC0_Current_Sensor_Fault : 26|1@1+ (1.0,0) [0.0|0.0] "Bool" Vector__XXX
- SG_ DTC_P0A04_Cell_Open_Wiring_Fault : 27|1@1+ (1.0,0) [0.0|0.0] "Bool" Vector__XXX
- SG_ DTC_P0A80_Weak_Cell_Fault : 28|1@1+ (1.0,0) [0.0|0.0] "Bool" Vector__XXX
- SG_ MultiPurpose_Output_2 : 29|1@1+ (1.0,0) [0.0|0.0] "Bool" Vector__XXX
- SG_ Low_Temperature : 39|8@0- (1.0,0) [0.0|0.0] "Celsius" Vector__XXX
- SG_ High_Temperature : 47|8@0- (1.0,0) [0.0|0.0] "Celsius" Vector__XXX
- SG_ High_Thermistor_ID : 55|8@0+ (1.0,0) [0.0|0.0] "ID" Vector__XXX
- SG_ Low_Thermistor_ID : 63|8@0+ (1.0,0) [0.0|0.0] "ID" Vector__XXX
+ SG_ Internal_Temperature : 7|8@0- (0.33333,0) [-10.0|100.0] "Celsius" Vector__XXX
+ SG_ DTC_P0AFA_Low_Cell_Voltage_Fault : 8|1@1+ (1.0,0) [0.0|1.0] "Bool" Vector__XXX
+ SG_ DTC_P0A04_Cell_Open_Wiring_Fault : 9|1@1+ (1.0,0) [0.0|1.0] "Bool" Vector__XXX
+ SG_ DTC_P0A0F_Cell_Bank_Fault : 10|1@1+ (1.0,0) [0.0|1.0] "Bool" Vector__XXX
+ SG_ DTC_U0100_CAN_Communication_Fault : 11|1@1+ (1.0,0) [0.0|1.0] "Bool" Vector__XXX
+ SG_ DTC_P0A10_Pack_Too_Hot_Fault : 12|1@1+ (1.0,0) [0.0|1.0] "Bool" Vector__XXX
+ SG_ DTC_P0A0B_Internal_Logic_Fault : 13|1@1+ (1.0,0) [0.0|1.0] "Bool" Vector__XXX
+ SG_ DTC_P0A12_Cell_Balancing_Stuck_Off_Fault : 14|1@1+ (1.0,0) [0.0|1.0] "Bool" Vector__XXX
+ SG_ DTC_P0A0E_Lowest_Cell_Voltage_Too_Low_Fault : 15|1@1+ (1.0,0) [0.0|1.0] "Bool" Vector__XXX
+ SG_ MultiPurpose_Output_3 : 16|1@1+ (1.0,0) [0.0|1.0] "Bool" Vector__XXX
+ SG_ MultiPurpose_Enable : 17|1@1+ (1.0,0) [0.0|1.0] "Bool" Vector__XXX
+ SG_ MultiPurpose_Output_4 : 18|1@1+ (1.0,0) [0.0|1.0] "Bool" Vector__XXX
+ SG_ Balancing_Active : 19|1@1+ (1.0,0) [0.0|1.0] "Bool" Vector__XXX
+ SG_ Charge_Power_Signal : 20|1@1+ (1.0,0) [0.0|1.0] "Bool" Vector__XXX
+ SG_ Charge_Mode_Active_CAN : 21|1@1+ (1.0,0) [0.0|1.0] "Bool" Vector__XXX
+ SG_ Voltage_Failsafe : 22|1@1+ (1.0,0) [0.0|1.0] "Bool" Vector__XXX
+ SG_ Current_Failsafe : 23|1@1+ (1.0,0) [0.0|1.0] "Bool" Vector__XXX
+ SG_ DTC_P0A0C_Highest_Cell_Voltage_Too_High_Fault : 24|1@1+ (1.0,0) [0.0|1.0] "Bool" Vector__XXX
+ SG_ DTC_P0A9C_Thermistor_Fault : 25|1@1+ (1.0,0) [0.0|1.0] "Bool" Vector__XXX
+ SG_ DTC_P0AC0_Current_Sensor_Fault : 26|1@1+ (1.0,0) [0.0|1.0] "Bool" Vector__XXX
+ SG_ DTC_P0A04_Cell_Open_Wiring_Fault : 27|1@1+ (1.0,0) [0.0|1.0] "Bool" Vector__XXX
+ SG_ DTC_P0A80_Weak_Cell_Fault : 28|1@1+ (1.0,0) [0.0|1.0] "Bool" Vector__XXX
+ SG_ MultiPurpose_Output_2 : 29|1@1+ (1.0,0) [0.0|1.0] "Bool" Vector__XXX
+ SG_ Low_Temperature : 39|8@0- (1.0,0) [-10.0|80.0] "Celsius" Vector__XXX
+ SG_ High_Temperature : 47|8@0- (1.0,0) [-10.0|80.0] "Celsius" Vector__XXX
+ SG_ High_Thermistor_ID : 55|8@0+ (1.0,0) [0.0|255.0] "ID" Vector__XXX
+ SG_ Low_Thermistor_ID : 63|8@0+ (1.0,0) [0.0|255.0] "ID" Vector__XXX
 BO_ 17 BMS_SoC_Voltage: 8 BMS
- SG_ Pack_Open_Voltage : 7|16@0+ (0.1,0) [0.0|0.0] "Volts" Vector__XXX
- SG_ Pack_Inst_Voltage : 23|16@0+ (0.1,0) [0.0|0.0] "Volts" Vector__XXX
- SG_ Pack_Health : 39|8@0+ (1.0,0) [0.0|0.0] "Percent" Vector__XXX
- SG_ Simulated_SOC : 47|8@0+ (0.5,0) [0.0|0.0] "Bool" Vector__XXX
- SG_ Pack_SOC : 55|8@0+ (0.5,0) [0.0|0.0] "Percent" Vector__XXX
- SG_ Adaptive_SOC : 63|8@0+ (0.5,0) [0.0|0.0] "Percent" Vector__XXX
+ SG_ Pack_Open_Voltage : 7|16@0+ (0.1,0) [0.0|650.0] "Volts" Vector__XXX
+ SG_ Pack_Inst_Voltage : 23|16@0+ (0.1,0) [0.0|650.0] "Volts" Vector__XXX
+ SG_ Pack_Health : 39|8@0+ (1.0,0) [0.0|100.0] "Percent" Vector__XXX
+ SG_ Simulated_SOC : 47|8@0+ (0.5,0) [0.0|100.0] "Percent" Vector__XXX
+ SG_ Pack_SOC : 55|8@0+ (0.5,0) [0.0|100.0] "Percent" Vector__XXX
+ SG_ Adaptive_SOC : 63|8@0+ (0.5,0) [0.0|100.0] "Percent" Vector__XXX
 BO_ 18 BMS_Cell_Open: 8 BMS
- SG_ Low_Opencell_Voltage : 7|16@0+ (0.0001,0) [0.0|0.0] "Volts" Vector__XXX
- SG_ High_Opencell_Voltage : 23|16@0+ (0.0001,0) [0.0|0.0] "Volts" Vector__XXX
- SG_ Avg_Opencell_Voltage : 39|16@0+ (0.0001,0) [0.0|0.0] "Volts" Vector__XXX
- SG_ Low_Opencell_ID : 55|8@0+ (1.0,0) [0.0|0.0] "ID" Vector__XXX
- SG_ High_Opencell_ID : 63|8@0+ (1.0,0) [0.0|0.0] "ID" Vector__XXX
+ SG_ Low_Opencell_Voltage : 7|16@0+ (0.0001,0) [0.0|5.0] "Volts" Vector__XXX
+ SG_ High_Opencell_Voltage : 23|16@0+ (0.0001,0) [0.0|5.0] "Volts" Vector__XXX
+ SG_ Avg_Opencell_Voltage : 39|16@0+ (0.0001,0) [0.0|5.0] "Volts" Vector__XXX
+ SG_ Low_Opencell_ID : 55|8@0+ (1.0,0) [0.0|255.0] "ID" Vector__XXX
+ SG_ High_Opencell_ID : 63|8@0+ (1.0,0) [0.0|255.0] "ID" Vector__XXX
 BO_ 19 BMS_Cell_Voltage: 8 BMS
- SG_ Low_Cell_Voltage : 7|16@0+ (0.02,0) [0.0|0.0] "Volts" Vector__XXX
- SG_ High_Cell_Voltage : 23|16@0+ (0.02,0) [0.0|0.0] "Volts" Vector__XXX
- SG_ Avg_Cell_Voltage : 39|16@0+ (0.02,0) [0.0|0.0] "Volts" Vector__XXX
- SG_ Low_Cell_Voltage_ID : 55|8@0+ (1.0,0) [0.0|0.0] "ID" Vector__XXX
- SG_ High_Cell_Voltage_ID : 63|8@0+ (1.0,0) [0.0|0.0] "ID" Vector__XXX
+ SG_ Low_Cell_Voltage : 7|16@0+ (0.02,0) [0.0|5.0] "Volts" Vector__XXX
+ SG_ High_Cell_Voltage : 23|16@0+ (0.02,0) [0.0|5.0] "Volts" Vector__XXX
+ SG_ Avg_Cell_Voltage : 39|16@0+ (0.02,0) [0.0|5.0] "Volts" Vector__XXX
+ SG_ Low_Cell_Voltage_ID : 55|8@0+ (1.0,0) [0.0|255.0] "ID" Vector__XXX
+ SG_ High_Cell_Voltage_ID : 63|8@0+ (1.0,0) [0.0|255.0] "ID" Vector__XXX
 BO_ 20 BMS_Cell_Resistance: 8 BMS
- SG_ Low_Cell_Resistance : 23|16@0+ (0.1,0) [0.0|0.0] "mOhm" Vector__XXX
- SG_ High_Cell_Resistance : 39|16@0+ (0.1,0) [0.0|0.0] "mOhm" Vector__XXX
- SG_ Avg_Cell_Resistance : 7|16@0+ (0.1,0) [0.0|0.0] "mOhm" Vector__XXX
- SG_ High_Intres_ID : 15|8@0+ (1.0,0) [0.0|0.0] "ID" Vector__XXX
- SG_ Low_Intres_ID : 23|8@0+ (1.0,0) [0.0|0.0] "ID" Vector__XXX
+ SG_ Low_Cell_Resistance : 23|16@0+ (0.1,0) [0.0|100.0] "mOhm" Vector__XXX
+ SG_ High_Cell_Resistance : 39|16@0+ (0.1,0) [0.0|100.0] "mOhm" Vector__XXX
+ SG_ Avg_Cell_Resistance : 7|16@0+ (0.1,0) [0.0|100.0] "mOhm" Vector__XXX
+ SG_ High_Intres_ID : 15|8@0+ (1.0,0) [0.0|255.0] "ID" Vector__XXX
+ SG_ Low_Intres_ID : 23|8@0+ (1.0,0) [0.0|255.0] "ID" Vector__XXX
 BO_ 21 BMS_Current: 8 BMS
- SG_ Average_Current : 7|16@0- (0.01,0) [0.0|0.0] "Amps" Vector__XXX
- SG_ Pack_Current : 23|16@0- (0.01,0) [0.0|0.0] "Amps" Vector__XXX
- SG_ Pack_DOD : 39|8@0+ (0.5,0) [0.0|0.0] "Percent" Vector__XXX
- SG_ Pack_DCL : 47|16@0+ (0.01,0) [0.0|0.0] "Amps" Vector__XXX
- SG_ Charger_Safety : 55|1@1+ (1.0,0) [0.0|0.0] "Bool" Vector__XXX
- SG_ Charge_Relay : 56|1@1+ (1.0,0) [0.0|0.0] "Bool" Vector__XXX
+ SG_ Average_Current : 7|16@0- (0.01,0) [-500.0|500.0] "Amps" Vector__XXX
+ SG_ Pack_Current : 23|16@0- (0.01,0) [-500.0|500.0] "Amps" Vector__XXX
+ SG_ Pack_DOD : 39|8@0+ (0.5,0) [0.0|100.0] "Percent" Vector__XXX
+ SG_ Pack_DCL : 47|16@0+ (0.01,0) [0.0|500.0] "Amps" Vector__XXX
+ SG_ Charger_Safety : 55|1@1+ (1.0,0) [0.0|1.0] "Bool" Vector__XXX
+ SG_ Charge_Relay : 56|1@1+ (1.0,0) [0.0|1.0] "Bool" Vector__XXX
 
 BO_ 32 GIL_Inv_Data_1: 8 GI_Left
  SG_ PWM_L : 7|16@0+ (1.0,0) [0.0|1000.0] "raw" Vector__XXX
@@ -205,8 +205,8 @@ BO_ 208 DASH_Buttons: 8 Dashboard
  SG_ Log_LTE_Toggle : 23|8@0+ (1.0,0) [0.0|1.0] "bool" Vector__XXX
 
  SG_ Gps_speed : 7|16@0+ (0.01,0) [0.0|326.0] "m/s" Vector__XXX
- SG_ Gps_course : 23|16@0- (0.0001,0) [0.0|0.0] "rad [UW]" Vector__XXX
- SG_ Gps_yaw_angle : 39|16@0- (0.0001,0) [0.0|0.0] "rad [UW]" Vector__XXX
+ SG_ Gps_course : 23|16@0- (0.0001,0) [-100.0|100.0] "rad [UW]" Vector__XXX
+ SG_ Gps_yaw_angle : 39|16@0- (0.0001,0) [-100.0|100.0] "rad [UW]" Vector__XXX
 
 BO_ 80 IMU_Data: 8 IMU
  SG_ IMU_Header : 7|8@0+ (1.0,0) [0.0|255.0] "const_0x55" Vector__XXX
