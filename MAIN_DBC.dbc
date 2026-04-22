@@ -51,13 +51,6 @@ BO_ 175 GF_Software_Status: 8 Gateway_Front
  SG_ GF_APPS_Recal_Step : 31|8@0+ (1.0,0) [0.0|3.0] "hex" Vector__XXX
  SG_ GF_Board_Is_Starting : 39|8@0+ (1.0,0) [0.0|1.0] "bool" Vector__XXX
  SG_ GF_ADC_Ready : 47|8@0+ (1.0,0) [0.0|1.0] "bool" Vector__XXX
-BO_ 175 GF_Software_Status: 8 Gateway_Front
- SG_ GF_Current_State : 7|8@0+ (1.0,0) [0.0|255.0] "hex" Vector__XXX
- SG_ GF_Previous_Reason : 15|8@0+ (1.0,0) [0.0|255.0] "hex" Vector__XXX
- SG_ GF_Next_State : 23|8@0+ (1.0,0) [0.0|255.0] "hex" Vector__XXX
- SG_ GF_APPS_Recal_Step : 31|8@0+ (1.0,0) [0.0|3.0] "hex" Vector__XXX
- SG_ GF_Board_Is_Starting : 39|8@0+ (1.0,0) [0.0|1.0] "bool" Vector__XXX
- SG_ GF_ADC_Ready : 47|8@0+ (1.0,0) [0.0|1.0] "bool" Vector__XXX
 
 BO_ 176 GR_Wheel_Sensors: 8 Gateway_Rear
  SG_ Wheel_Speed_RR : 7|16@0+ (1.0,0) [0.0|8000.0] "rpm" Vector__XXX
@@ -73,13 +66,6 @@ BO_ 178 GR_Liquid_Sensors: 8 Gateway_Rear
  SG_ Flow_Sensor : 7|16@0+ (1.0,0) [0.0|100.0] "L/m" Vector__XXX
  SG_ Temp_1 : 23|16@0- (0.001,0) [-10.0|100.0] "degC" Vector__XXX
  SG_ Temp_2 : 39|16@0- (0.001,0) [-10.0|100.0] "degC" Vector__XXX
-BO_ 191 GR_Software_Status: 8 Gateway_Rear
- SG_ GR_Current_State : 7|8@0+ (1.0,0) [0.0|255.0] "hex" Vector__XXX
- SG_ GR_Previous_Reason : 15|8@0+ (1.0,0) [0.0|255.0] "hex" Vector__XXX
- SG_ GR_Next_State : 23|8@0+ (1.0,0) [0.0|255.0] "hex" Vector__XXX
- SG_ GR_APPS_Recal_Step : 31|8@0+ (1.0,0) [0.0|3.0] "hex" Vector__XXX
- SG_ GR_Board_Is_Starting : 39|8@0+ (1.0,0) [0.0|1.0] "bool" Vector__XXX
- SG_ GR_ADC_Ready : 47|8@0+ (1.0,0) [0.0|1.0] "bool" Vector__XXX
 BO_ 191 GR_Software_Status: 8 Gateway_Rear
  SG_ GR_Current_State : 7|8@0+ (1.0,0) [0.0|255.0] "hex" Vector__XXX
  SG_ GR_Previous_Reason : 15|8@0+ (1.0,0) [0.0|255.0] "hex" Vector__XXX
@@ -104,8 +90,6 @@ BO_ 229 ECU_Software_Data: 8 ECU
  SG_ PRECH_State : 5|1@0+ (1.0,0) [0.0|1.0] "bool" Vector__XXX
  SG_ AIR_Neg_State : 6|1@0+ (1.0,0) [0.0|1.0] "bool" Vector__XXX
  SG_ AIR_Pos_State : 7|1@0+ (1.0,0) [0.0|1.0] "bool" Vector__XXX
- SG_ Fan_State : 8|1@0+ (1.0,0) [0.0|1.0] "bool" Vector__XXX
- SG_ Pump_State : 9|1@0+ (1.0,0) [0.0|1.0] "bool" Vector__XXX
  SG_ Fan_State : 8|1@0+ (1.0,0) [0.0|1.0] "bool" Vector__XXX
  SG_ Pump_State : 9|1@0+ (1.0,0) [0.0|1.0] "bool" Vector__XXX
  SG_ ECU_Code_State : 23|8@0+ (1.0,0) [0.0|255.0] "enum" Vector__XXX
@@ -179,15 +163,8 @@ BO_ 32 GIL_Inv_Data_1: 8 GI_Left
  SG_ PWM_L : 7|16@0+ (1.0,0) [0.0|1000.0] "raw" Vector__XXX
  SG_ Input_Voltage_L : 23|16@0+ (0.1,0) [0.0|410.0] "V" Vector__XXX
  SG_ Phase_Current_L : 39|16@0+ (0.1,0) [0.0|511.0] "A" Vector__XXX
- SG_ PWM_L : 7|16@0+ (1.0,0) [0.0|1000.0] "raw" Vector__XXX
- SG_ Input_Voltage_L : 23|16@0+ (0.1,0) [0.0|410.0] "V" Vector__XXX
- SG_ Phase_Current_L : 39|16@0+ (0.1,0) [0.0|511.0] "A" Vector__XXX
  SG_ RPM_L : 55|16@0+ (1.0,0) [0.0|65535.0] "rpm" Vector__XXX
 BO_ 33 GIL_Inv_Data_2: 8 GI_Left
- SG_ Motor_Temp_L : 7|8@0- (1.0,0) [-100.0|155.0] "degC" Vector__XXX
- SG_ Inverter_Temp_L : 15|8@0- (1.0,0) [-100.0|155.0] "degC" Vector__XXX
- SG_ Aux_Brake_Input_L : 23|16@0+ (0.001,0) [0.0|5.0] "V" Vector__XXX
- SG_ Throttle_Input_L : 39|16@0+ (0.001,0) [0.0|5.0] "V" Vector__XXX
  SG_ Motor_Temp_L : 7|8@0- (1.0,0) [-100.0|155.0] "degC" Vector__XXX
  SG_ Inverter_Temp_L : 15|8@0- (1.0,0) [-100.0|155.0] "degC" Vector__XXX
  SG_ Aux_Brake_Input_L : 23|16@0+ (0.001,0) [0.0|5.0] "V" Vector__XXX
@@ -206,15 +183,8 @@ BO_ 48 GIR_Inv_Data_1: 8 GI_Right
  SG_ PWM_R : 7|16@0+ (1.0,0) [0.0|1000.0] "raw" Vector__XXX
  SG_ Input_Voltage_R : 23|16@0+ (0.1,0) [0.0|410.0] "V" Vector__XXX
  SG_ Phase_Current_R : 39|16@0+ (0.1,0) [0.0|511.0] "A" Vector__XXX
- SG_ PWM_R : 7|16@0+ (1.0,0) [0.0|1000.0] "raw" Vector__XXX
- SG_ Input_Voltage_R : 23|16@0+ (0.1,0) [0.0|410.0] "V" Vector__XXX
- SG_ Phase_Current_R : 39|16@0+ (0.1,0) [0.0|511.0] "A" Vector__XXX
  SG_ RPM_R : 55|16@0+ (1.0,0) [0.0|65535.0] "rpm" Vector__XXX
 BO_ 49 GIR_Inv_Data_2: 8 GI_Right
- SG_ Motor_Temp_R : 7|16@0- (1.0,0) [-100.0|155.0] "degC" Vector__XXX
- SG_ Inverter_Temp_R : 23|16@0- (1.0,0) [-100.0|155.0] "degC" Vector__XXX
- SG_ Aux_Input_R : 39|16@0+ (0.001,0) [0.0|5.0] "V" Vector__XXX
- SG_ Throttle_Input_R : 55|16@0+ (0.001,0) [0.0|5.0] "V" Vector__XXX
  SG_ Motor_Temp_R : 7|16@0- (1.0,0) [-100.0|155.0] "degC" Vector__XXX
  SG_ Inverter_Temp_R : 23|16@0- (1.0,0) [-100.0|155.0] "degC" Vector__XXX
  SG_ Aux_Input_R : 39|16@0+ (0.001,0) [0.0|5.0] "V" Vector__XXX
@@ -251,7 +221,6 @@ BO_ 80 IMU_Data: 8 IMU
  SG_ Angle_Pitch m83 : 39|16@0- (0.0054931640625,0) [-180.0|180.0] "deg" Vector__XXX
  SG_ Angle_Yaw m83 : 55|16@0- (0.0054931640625,0) [-180.0|180.0] "deg" Vector__XXX
 BO_ 80 IMU_Recal: 8 IMU
-BO_ 80 IMU_Recal: 8 IMU
  SG_ Protocol_Header_1 : 7|8@0+ (1.0,0) [0.0|255.0] "const_0xff" Vector__XXX
  SG_ Protocol_Header_2 : 15|8@0+ (1.0,0) [0.0|255.0] "const_0xaa" Vector__XXX
  SG_ Address M : 23|8@0+ (1.0,0) [0.0|255.0] "hex" Vector__XXX
@@ -263,17 +232,7 @@ BO_ 80 IMU_Recal: 8 IMU
  SG_ SAVE_High m0 : 39|8@0+ (1.0,0) [0.0|255.0] "hex" Vector__XXX
 
 BO_ 1264 PRG_Bootloader: 8 Programming
-BO_ 1264 PRG_Bootloader: 8 Programming
  SG_ MCU_ID : 7|8@0+ (1.0,0) [0.0|255.0] "id" Vector__XXX
-BO_ 1265 PRG_Inverter: 8 Programming
- SG_ Prg_Inv_Byte0 : 7|8@0+ (1.0,0) [0.0|255.0] "hex" Vector__XXX
- SG_ Prg_Inv_Byte1 : 15|8@0+ (1.0,0) [0.0|255.0] "hex" Vector__XXX
- SG_ Prg_Inv_Byte2 : 23|8@0+ (1.0,0) [0.0|255.0] "hex" Vector__XXX
- SG_ Prg_Inv_Byte3 : 31|8@0+ (1.0,0) [0.0|255.0] "hex" Vector__XXX
- SG_ Prg_Inv_Byte4 : 39|8@0+ (1.0,0) [0.0|255.0] "hex" Vector__XXX
- SG_ Prg_Inv_Byte5 : 47|8@0+ (1.0,0) [0.0|255.0] "hex" Vector__XXX
- SG_ Prg_Inv_Byte6 : 55|8@0+ (1.0,0) [0.0|255.0] "hex" Vector__XXX
- SG_ Prg_Inv_Byte7 : 63|8@0+ (1.0,0) [0.0|255.0] "hex" Vector__XXX
 BO_ 1265 PRG_Inverter: 8 Programming
  SG_ Prg_Inv_Byte0 : 7|8@0+ (1.0,0) [0.0|255.0] "hex" Vector__XXX
  SG_ Prg_Inv_Byte1 : 15|8@0+ (1.0,0) [0.0|255.0] "hex" Vector__XXX
