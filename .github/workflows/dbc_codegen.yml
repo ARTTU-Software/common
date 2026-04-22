@@ -1,4 +1,4 @@
-name: CAN DBC Codegen
+name: CAN DBC Code Checker
 
 on:
   pull_request:

@@ -28,17 +28,17 @@ typedef struct {
 #define CAN_MSG_GF_MISC_SENSORS_DLC 8U
 #define CAN_MSG_GF_MISC_SENSORS_CYCLE_TIME_MS 0U
 
-#define CAN_MSG_GF_MISC_SENSORS_SIG_APPS1_FACTOR 0.001f
+#define CAN_MSG_GF_MISC_SENSORS_SIG_APPS1_FACTOR 1.0f
 
-#define CAN_MSG_GF_MISC_SENSORS_SIG_APPS2_FACTOR 0.001f
+#define CAN_MSG_GF_MISC_SENSORS_SIG_APPS2_FACTOR 1.0f
 
 #define CAN_MSG_GF_MISC_SENSORS_SIG_STEERING_FACTOR 0.01f
 
 #define CAN_MSG_GF_MISC_SENSORS_SIG_R2D_BTN_FACTOR 1.0f
 
 typedef struct {
-    float APPS1; /* start_bit=7; length=8; factor=0.001; offset=0.0; unit="%" */
-    float APPS2; /* start_bit=15; length=8; factor=0.001; offset=0.0; unit="%" */
+    uint8_t APPS1; /* start_bit=7; length=8; factor=1.0; offset=0.0; unit="%" */
+    uint8_t APPS2; /* start_bit=15; length=8; factor=1.0; offset=0.0; unit="%" */
     float Steering; /* start_bit=23; length=16; factor=0.01; offset=0.0; unit="deg" */
     uint8_t R2D_BTN; /* start_bit=39; length=8; factor=1.0; offset=0.0; unit="bool" */
 } can_msg_GF_Misc_Sensors_t;
@@ -246,6 +246,10 @@ typedef struct {
 
 #define CAN_MSG_ECU_SOFTWARE_DATA_SIG_PUMP_STATE_FACTOR 1.0f
 
+#define CAN_MSG_ECU_SOFTWARE_DATA_SIG_FAN_STATE_FACTOR 1.0f
+
+#define CAN_MSG_ECU_SOFTWARE_DATA_SIG_PUMP_STATE_FACTOR 1.0f
+
 #define CAN_MSG_ECU_SOFTWARE_DATA_SIG_ECU_CODE_STATE_FACTOR 1.0f
 
 typedef struct {
@@ -259,8 +263,8 @@ typedef struct {
     uint8_t AIR_Pos_State; /* start_bit=7; length=1; factor=1.0; offset=0.0; unit="bool" */
     uint8_t Fan_State; /* start_bit=8; length=1; factor=1.0; offset=0.0; unit="bool" */
     uint8_t Pump_State; /* start_bit=9; length=1; factor=1.0; offset=0.0; unit="bool" */
-    uint8_t Fan_State; /* start_bit=8; length=1; factor=1.0; offset=0.0; unit="bool" */
-    uint8_t Pump_State; /* start_bit=9; length=1; factor=1.0; offset=0.0; unit="bool" */
+    uint8_t Fan_State_2; /* start_bit=8; length=1; factor=1.0; offset=0.0; unit="bool" */
+    uint8_t Pump_State_2; /* start_bit=9; length=1; factor=1.0; offset=0.0; unit="bool" */
     uint8_t ECU_Code_State; /* start_bit=23; length=8; factor=1.0; offset=0.0; unit="enum" */
 } can_msg_ECU_Software_Data_t;
 
@@ -288,7 +292,7 @@ typedef struct {
 #define CAN_MSG_BMS_ERRORS_TEMPS_DLC 8U
 #define CAN_MSG_BMS_ERRORS_TEMPS_CYCLE_TIME_MS 0U
 
-#define CAN_MSG_BMS_ERRORS_TEMPS_SIG_INTERNAL_TEMPERATURE_FACTOR 1.0f
+#define CAN_MSG_BMS_ERRORS_TEMPS_SIG_INTERNAL_TEMPERATURE_FACTOR 0.33333f
 
 #define CAN_MSG_BMS_ERRORS_TEMPS_SIG_DTC_P0AFA_LOW_CELL_VOLTAGE_FAULT_FACTOR 1.0f
 
@@ -343,7 +347,7 @@ typedef struct {
 #define CAN_MSG_BMS_ERRORS_TEMPS_SIG_LOW_THERMISTOR_ID_FACTOR 1.0f
 
 typedef struct {
-    int8_t Internal_Temperature; /* start_bit=7; length=8; factor=1.0; offset=0.0; unit="Celsius" */
+    float Internal_Temperature; /* start_bit=7; length=8; factor=0.33333; offset=0.0; unit="Celsius" */
     uint8_t DTC_P0AFA_Low_Cell_Voltage_Fault; /* start_bit=8; length=1; factor=1.0; offset=0.0; unit="Bool" */
     uint8_t DTC_P0A04_Cell_Open_Wiring_Fault; /* start_bit=9; length=1; factor=1.0; offset=0.0; unit="Bool" */
     uint8_t DTC_P0A0F_Cell_Bank_Fault; /* start_bit=10; length=1; factor=1.0; offset=0.0; unit="Bool" */
@@ -392,7 +396,7 @@ typedef struct {
     float Pack_Open_Voltage; /* start_bit=7; length=16; factor=0.1; offset=0.0; unit="Volts" */
     float Pack_Inst_Voltage; /* start_bit=23; length=16; factor=0.1; offset=0.0; unit="Volts" */
     uint8_t Pack_Health; /* start_bit=39; length=8; factor=1.0; offset=0.0; unit="Percent" */
-    float Simulated_SOC; /* start_bit=47; length=8; factor=0.5; offset=0.0; unit="Bool" */
+    float Simulated_SOC; /* start_bit=47; length=8; factor=0.5; offset=0.0; unit="Percent" */
     float Pack_SOC; /* start_bit=55; length=8; factor=0.5; offset=0.0; unit="Percent" */
     float Adaptive_SOC; /* start_bit=63; length=8; factor=0.5; offset=0.0; unit="Percent" */
 } can_msg_BMS_SoC_Voltage_t;
@@ -478,9 +482,6 @@ typedef struct {
 #define CAN_MSG_BMS_CURRENT_SIG_CHARGER_SAFETY_FACTOR 1.0f
 
 #define CAN_MSG_BMS_CURRENT_SIG_CHARGE_RELAY_FACTOR 1.0f
-#define CAN_MSG_BMS_CURRENT_SIG_CHARGER_SAFETY_FACTOR 1.0f
-
-#define CAN_MSG_BMS_CURRENT_SIG_CHARGE_RELAY_FACTOR 1.0f
 
 typedef struct {
     float Average_Current; /* start_bit=7; length=16; factor=0.01; offset=0.0; unit="Amps" */
@@ -501,12 +502,21 @@ typedef struct {
 
 #define CAN_MSG_GIL_INV_DATA_1_SIG_PHASE_CURRENT_L_FACTOR 0.1f
 
+#define CAN_MSG_GIL_INV_DATA_1_SIG_PWM_L_FACTOR 1.0f
+
+#define CAN_MSG_GIL_INV_DATA_1_SIG_INPUT_VOLTAGE_L_FACTOR 0.1f
+
+#define CAN_MSG_GIL_INV_DATA_1_SIG_PHASE_CURRENT_L_FACTOR 0.1f
+
 #define CAN_MSG_GIL_INV_DATA_1_SIG_RPM_L_FACTOR 1.0f
 
 typedef struct {
     uint16_t PWM_L; /* start_bit=7; length=16; factor=1.0; offset=0.0; unit="raw" */
     float Input_Voltage_L; /* start_bit=23; length=16; factor=0.1; offset=0.0; unit="V" */
     float Phase_Current_L; /* start_bit=39; length=16; factor=0.1; offset=0.0; unit="A" */
+    uint16_t PWM_L_2; /* start_bit=7; length=16; factor=1.0; offset=0.0; unit="raw" */
+    float Input_Voltage_L_2; /* start_bit=23; length=16; factor=0.1; offset=0.0; unit="V" */
+    float Phase_Current_L_2; /* start_bit=39; length=16; factor=0.1; offset=0.0; unit="A" */
     uint16_t RPM_L; /* start_bit=55; length=16; factor=1.0; offset=0.0; unit="rpm" */
 } can_msg_GIL_Inv_Data_1_t;
 
@@ -515,15 +525,19 @@ typedef struct {
 #define CAN_MSG_GIL_INV_DATA_2_CYCLE_TIME_MS 0U
 
 #define CAN_MSG_GIL_INV_DATA_2_SIG_MOTOR_TEMP_L_FACTOR 1.0f
-#define CAN_MSG_GIL_INV_DATA_2_SIG_MOTOR_TEMP_L_FACTOR 1.0f
 
 #define CAN_MSG_GIL_INV_DATA_2_SIG_INVERTER_TEMP_L_FACTOR 1.0f
-#define CAN_MSG_GIL_INV_DATA_2_SIG_INVERTER_TEMP_L_FACTOR 1.0f
 
-#define CAN_MSG_GIL_INV_DATA_2_SIG_AUX_BRAKE_INPUT_L_FACTOR 0.001f
 #define CAN_MSG_GIL_INV_DATA_2_SIG_AUX_BRAKE_INPUT_L_FACTOR 0.001f
 
 #define CAN_MSG_GIL_INV_DATA_2_SIG_THROTTLE_INPUT_L_FACTOR 0.001f
+
+#define CAN_MSG_GIL_INV_DATA_2_SIG_MOTOR_TEMP_L_FACTOR 1.0f
+
+#define CAN_MSG_GIL_INV_DATA_2_SIG_INVERTER_TEMP_L_FACTOR 1.0f
+
+#define CAN_MSG_GIL_INV_DATA_2_SIG_AUX_BRAKE_INPUT_L_FACTOR 0.001f
+
 #define CAN_MSG_GIL_INV_DATA_2_SIG_THROTTLE_INPUT_L_FACTOR 0.001f
 
 typedef struct {
@@ -531,10 +545,10 @@ typedef struct {
     int8_t Inverter_Temp_L; /* start_bit=15; length=8; factor=1.0; offset=0.0; unit="degC" */
     float Aux_Brake_Input_L; /* start_bit=23; length=16; factor=0.001; offset=0.0; unit="V" */
     float Throttle_Input_L; /* start_bit=39; length=16; factor=0.001; offset=0.0; unit="V" */
-    int8_t Motor_Temp_L; /* start_bit=7; length=8; factor=1.0; offset=0.0; unit="degC" */
-    int8_t Inverter_Temp_L; /* start_bit=15; length=8; factor=1.0; offset=0.0; unit="degC" */
-    float Aux_Brake_Input_L; /* start_bit=23; length=16; factor=0.001; offset=0.0; unit="V" */
-    float Throttle_Input_L; /* start_bit=39; length=16; factor=0.001; offset=0.0; unit="V" */
+    int8_t Motor_Temp_L_2; /* start_bit=7; length=8; factor=1.0; offset=0.0; unit="degC" */
+    int8_t Inverter_Temp_L_2; /* start_bit=15; length=8; factor=1.0; offset=0.0; unit="degC" */
+    float Aux_Brake_Input_L_2; /* start_bit=23; length=16; factor=0.001; offset=0.0; unit="V" */
+    float Throttle_Input_L_2; /* start_bit=39; length=16; factor=0.001; offset=0.0; unit="V" */
 } can_msg_GIL_Inv_Data_2_t;
 
 #define CAN_MSG_GIL_SOFTWARE_ID 34U
@@ -578,12 +592,21 @@ typedef struct {
 
 #define CAN_MSG_GIR_INV_DATA_1_SIG_PHASE_CURRENT_R_FACTOR 0.1f
 
+#define CAN_MSG_GIR_INV_DATA_1_SIG_PWM_R_FACTOR 1.0f
+
+#define CAN_MSG_GIR_INV_DATA_1_SIG_INPUT_VOLTAGE_R_FACTOR 0.1f
+
+#define CAN_MSG_GIR_INV_DATA_1_SIG_PHASE_CURRENT_R_FACTOR 0.1f
+
 #define CAN_MSG_GIR_INV_DATA_1_SIG_RPM_R_FACTOR 1.0f
 
 typedef struct {
     uint16_t PWM_R; /* start_bit=7; length=16; factor=1.0; offset=0.0; unit="raw" */
     float Input_Voltage_R; /* start_bit=23; length=16; factor=0.1; offset=0.0; unit="V" */
     float Phase_Current_R; /* start_bit=39; length=16; factor=0.1; offset=0.0; unit="A" */
+    uint16_t PWM_R_2; /* start_bit=7; length=16; factor=1.0; offset=0.0; unit="raw" */
+    float Input_Voltage_R_2; /* start_bit=23; length=16; factor=0.1; offset=0.0; unit="V" */
+    float Phase_Current_R_2; /* start_bit=39; length=16; factor=0.1; offset=0.0; unit="A" */
     uint16_t RPM_R; /* start_bit=55; length=16; factor=1.0; offset=0.0; unit="rpm" */
 } can_msg_GIR_Inv_Data_1_t;
 
@@ -592,15 +615,19 @@ typedef struct {
 #define CAN_MSG_GIR_INV_DATA_2_CYCLE_TIME_MS 0U
 
 #define CAN_MSG_GIR_INV_DATA_2_SIG_MOTOR_TEMP_R_FACTOR 1.0f
-#define CAN_MSG_GIR_INV_DATA_2_SIG_MOTOR_TEMP_R_FACTOR 1.0f
 
 #define CAN_MSG_GIR_INV_DATA_2_SIG_INVERTER_TEMP_R_FACTOR 1.0f
-#define CAN_MSG_GIR_INV_DATA_2_SIG_INVERTER_TEMP_R_FACTOR 1.0f
 
-#define CAN_MSG_GIR_INV_DATA_2_SIG_AUX_INPUT_R_FACTOR 0.001f
 #define CAN_MSG_GIR_INV_DATA_2_SIG_AUX_INPUT_R_FACTOR 0.001f
 
 #define CAN_MSG_GIR_INV_DATA_2_SIG_THROTTLE_INPUT_R_FACTOR 0.001f
+
+#define CAN_MSG_GIR_INV_DATA_2_SIG_MOTOR_TEMP_R_FACTOR 1.0f
+
+#define CAN_MSG_GIR_INV_DATA_2_SIG_INVERTER_TEMP_R_FACTOR 1.0f
+
+#define CAN_MSG_GIR_INV_DATA_2_SIG_AUX_INPUT_R_FACTOR 0.001f
+
 #define CAN_MSG_GIR_INV_DATA_2_SIG_THROTTLE_INPUT_R_FACTOR 0.001f
 
 typedef struct {
@@ -608,10 +635,10 @@ typedef struct {
     int16_t Inverter_Temp_R; /* start_bit=23; length=16; factor=1.0; offset=0.0; unit="degC" */
     float Aux_Input_R; /* start_bit=39; length=16; factor=0.001; offset=0.0; unit="V" */
     float Throttle_Input_R; /* start_bit=55; length=16; factor=0.001; offset=0.0; unit="V" */
-    int16_t Motor_Temp_R; /* start_bit=7; length=16; factor=1.0; offset=0.0; unit="degC" */
-    int16_t Inverter_Temp_R; /* start_bit=23; length=16; factor=1.0; offset=0.0; unit="degC" */
-    float Aux_Input_R; /* start_bit=39; length=16; factor=0.001; offset=0.0; unit="V" */
-    float Throttle_Input_R; /* start_bit=55; length=16; factor=0.001; offset=0.0; unit="V" */
+    int16_t Motor_Temp_R_2; /* start_bit=7; length=16; factor=1.0; offset=0.0; unit="degC" */
+    int16_t Inverter_Temp_R_2; /* start_bit=23; length=16; factor=1.0; offset=0.0; unit="degC" */
+    float Aux_Input_R_2; /* start_bit=39; length=16; factor=0.001; offset=0.0; unit="V" */
+    float Throttle_Input_R_2; /* start_bit=55; length=16; factor=0.001; offset=0.0; unit="V" */
 } can_msg_GIR_Inv_Data_2_t;
 
 #define CAN_MSG_GIR_SOFTWARE_ID 50U
@@ -661,19 +688,10 @@ typedef struct {
 
 #define CAN_MSG_DASH_BUTTONS_SIG_GPS_YAW_ANGLE_FACTOR 0.0001f
 
-#define CAN_MSG_DASH_BUTTONS_SIG_GPS_SPEED_FACTOR 0.01f
-
-#define CAN_MSG_DASH_BUTTONS_SIG_GPS_COURSE_FACTOR 0.0001f
-
-#define CAN_MSG_DASH_BUTTONS_SIG_GPS_YAW_ANGLE_FACTOR 0.0001f
-
 typedef struct {
     uint8_t APPS_Recal; /* start_bit=7; length=8; factor=1.0; offset=0.0; unit="bool" */
     uint8_t Log_SD_Toggle; /* start_bit=15; length=8; factor=1.0; offset=0.0; unit="bool" */
     uint8_t Log_LTE_Toggle; /* start_bit=23; length=8; factor=1.0; offset=0.0; unit="bool" */
-    float Gps_speed; /* start_bit=7; length=16; factor=0.01; offset=0.0; unit="m/s" */
-    float Gps_course; /* start_bit=23; length=16; factor=0.0001; offset=0.0; unit="rad [UW]" */
-    float Gps_yaw_angle; /* start_bit=39; length=16; factor=0.0001; offset=0.0; unit="rad [UW]" */
     float Gps_speed; /* start_bit=7; length=16; factor=0.01; offset=0.0; unit="m/s" */
     float Gps_course; /* start_bit=23; length=16; factor=0.0001; offset=0.0; unit="rad [UW]" */
     float Gps_yaw_angle; /* start_bit=39; length=16; factor=0.0001; offset=0.0; unit="rad [UW]" */
@@ -722,35 +740,30 @@ typedef struct {
 #define CAN_MSG_IMU_RECAL_ID 80U
 #define CAN_MSG_IMU_RECAL_DLC 8U
 #define CAN_MSG_IMU_RECAL_CYCLE_TIME_MS 0U
+
+typedef struct {
+} can_msg_IMU_Recal_t;
+
 #define CAN_MSG_IMU_RECAL_ID 80U
 #define CAN_MSG_IMU_RECAL_DLC 8U
 #define CAN_MSG_IMU_RECAL_CYCLE_TIME_MS 0U
 
 #define CAN_MSG_IMU_RECAL_SIG_PROTOCOL_HEADER_1_FACTOR 1.0f
-#define CAN_MSG_IMU_RECAL_SIG_PROTOCOL_HEADER_1_FACTOR 1.0f
 
-#define CAN_MSG_IMU_RECAL_SIG_PROTOCOL_HEADER_2_FACTOR 1.0f
 #define CAN_MSG_IMU_RECAL_SIG_PROTOCOL_HEADER_2_FACTOR 1.0f
 
 #define CAN_MSG_IMU_RECAL_SIG_ADDRESS_FACTOR 1.0f
-#define CAN_MSG_IMU_RECAL_SIG_ADDRESS_FACTOR 1.0f
 
-#define CAN_MSG_IMU_RECAL_SIG_KEY_LOW_FACTOR 1.0f
 #define CAN_MSG_IMU_RECAL_SIG_KEY_LOW_FACTOR 1.0f
 
 #define CAN_MSG_IMU_RECAL_SIG_KEY_HIGH_FACTOR 1.0f
-#define CAN_MSG_IMU_RECAL_SIG_KEY_HIGH_FACTOR 1.0f
 
-#define CAN_MSG_IMU_RECAL_SIG_CALSW_LOW_FACTOR 1.0f
 #define CAN_MSG_IMU_RECAL_SIG_CALSW_LOW_FACTOR 1.0f
 
 #define CAN_MSG_IMU_RECAL_SIG_CALSW_HIGH_FACTOR 1.0f
-#define CAN_MSG_IMU_RECAL_SIG_CALSW_HIGH_FACTOR 1.0f
 
 #define CAN_MSG_IMU_RECAL_SIG_SAVE_LOW_FACTOR 1.0f
-#define CAN_MSG_IMU_RECAL_SIG_SAVE_LOW_FACTOR 1.0f
 
-#define CAN_MSG_IMU_RECAL_SIG_SAVE_HIGH_FACTOR 1.0f
 #define CAN_MSG_IMU_RECAL_SIG_SAVE_HIGH_FACTOR 1.0f
 
 typedef struct {
@@ -764,16 +777,18 @@ typedef struct {
     uint8_t SAVE_Low; /* start_bit=31; length=8; factor=1.0; offset=0.0; mux=m0; unit="hex" */
     uint8_t SAVE_High; /* start_bit=39; length=8; factor=1.0; offset=0.0; mux=m0; unit="hex" */
 } can_msg_IMU_Recal_t;
-} can_msg_IMU_Recal_t;
 
 #define CAN_MSG_PRG_BOOTLOADER_ID 1264U
 #define CAN_MSG_PRG_BOOTLOADER_DLC 8U
 #define CAN_MSG_PRG_BOOTLOADER_CYCLE_TIME_MS 0U
+
+typedef struct {
+} can_msg_PRG_Bootloader_t;
+
 #define CAN_MSG_PRG_BOOTLOADER_ID 1264U
 #define CAN_MSG_PRG_BOOTLOADER_DLC 8U
 #define CAN_MSG_PRG_BOOTLOADER_CYCLE_TIME_MS 0U
 
-#define CAN_MSG_PRG_BOOTLOADER_SIG_MCU_ID_FACTOR 1.0f
 #define CAN_MSG_PRG_BOOTLOADER_SIG_MCU_ID_FACTOR 1.0f
 
 typedef struct {
@@ -810,7 +825,6 @@ typedef struct {
     uint8_t Prg_Inv_Byte6; /* start_bit=55; length=8; factor=1.0; offset=0.0; unit="hex" */
     uint8_t Prg_Inv_Byte7; /* start_bit=63; length=8; factor=1.0; offset=0.0; unit="hex" */
 } can_msg_PRG_Inverter_t;
-} can_msg_PRG_Bootloader_t;
 
 #define CAN_MSG_PRG_INVERTER_ID 1265U
 #define CAN_MSG_PRG_INVERTER_DLC 8U
