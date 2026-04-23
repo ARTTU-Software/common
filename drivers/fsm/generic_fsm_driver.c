@@ -132,3 +132,13 @@ void FSM_request_bootloader(FSM_Driver_t* driver)
     }
     driver->tracking.bootloader_requested = 1U;
 }
+
+void FSM_request_mode_change(FSM_Driver_t* driver, FSM_State_t requested_mode, FSM_Reason_t reason)
+{
+    if (driver == NULL) {
+        return;
+    }
+    driver->tracking.mode_change_state = requested_mode;
+    driver->tracking.mode_change_reason = reason;
+    driver->tracking.mode_change_requested = 1U;
+}

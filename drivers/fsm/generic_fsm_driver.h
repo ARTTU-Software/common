@@ -64,6 +64,10 @@ typedef struct {
     uint32_t transition_count;
     uint8_t fault_latched;  // Once set, remains set until hard reset (for safety-critical faults)
     uint8_t bootloader_requested;
+
+    FSM_Reason_t mode_change_reason; // Reason for external mode change request
+    FSM_State_t mode_change_state; // Desired mode from external request
+    uint8_t mode_change_requested; // Flag indicating an external mode change request is pending
 } FSM_State_Tracking_t;
 
 /**
@@ -145,5 +149,7 @@ void FSM_reset_fault_latch(FSM_Driver_t* driver);
  * @brief Request bootloader mode on next FSM cycle.
  */
 void FSM_request_bootloader(FSM_Driver_t* driver);
+
+void FSM_request_mode_change(FSM_Driver_t* driver, FSM_State_t requested_mode, FSM_Reason_t reason);
 
 #endif /* INC_GENERIC_FSM_DRIVER_H */
