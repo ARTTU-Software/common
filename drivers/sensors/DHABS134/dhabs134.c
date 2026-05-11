@@ -4,15 +4,21 @@ static void init_channel(DHAB_Channel_t* ch,
                          float supply_v,
                          float adc_vref,
                          float divider_gain,
-                         float sensitivity,
+                         float diode_drop,
+                         float nominal_sensitivity,
                          float alpha,
                          uint8_t port,
                          Generic_Kalman_Settings_t kalman){
+
     ch->supply_v = supply_v;
-    ch->offset_v = supply_v * 0.5f;     // VO = Uc/2
+    ch->offset_v = supply_v * 0.5f;            
     ch->adc_vref = adc_vref;
     ch->divider_gain = divider_gain;
-    ch->sensitivity_v_per_a = sensitivity;
+    ch->diode_drop = diode_drop;
+
+    // Scale sensitivity ratiometrically to actual supply voltage
+    ch->sensitivity_v_per_a = nominal_sensitivity * (supply_v / 5.0f);
+
     ch->alpha = alpha;
 
     ch->voltage_raw = 0.0f;
@@ -27,48 +33,54 @@ void dhab_s134_init(DHAB_S134_t* s,
                     float supply_v,
                     float adc_vref,
                     float divider_gain,
+                    float diode_drop_ch50,
+                    float diode_drop_ch200,
                     float alpha,
                     uint8_t port_ch50,
                     uint8_t port_ch200,
                     Generic_Kalman_Settings_t kalman_cfg_50,
                     Generic_Kalman_Settings_t kalman_cfg_200){
-    // Channel 1 = 50 A, 40 mV/A
+
+    // Channel 1 = ±50 A, 40 mV/A nominal
     init_channel(&s->ch50,
                  supply_v,
                  adc_vref,
                  divider_gain,
-                 0.040f,               // 40 mV/A
+                 diode_drop_ch50,
+                 0.040f,
                  alpha,
                  port_ch50,
                  kalman_cfg_50);
 
-    // Channel 2 = 200 A, 10 mV/A
+    // Channel 2 = ±200 A, 10 mV/A nominal
     init_channel(&s->ch200,
                  supply_v,
                  adc_vref,
                  divider_gain,
-                 0.010f,               // 10 mV/A
+                 diode_drop_ch200,
+                 0.010f,
                  alpha,
                  port_ch200,
                  kalman_cfg_200);
 }
 
-static uint16_t update_channel(DHAB_Channel_t* ch){
-    // Convert ADC to MCU volts
+static int16_t update_channel(DHAB_Channel_t* ch){
+    // Convert ADC counts to MCU pin voltage
     ch->voltage_raw = ch->generic_sensor.filtered_value * (ch->adc_vref / 4095.0f);
 
-    // Compensate voltage divider (if any)
-    ch->voltage_sensor = ch->voltage_raw * ch->divider_gain;
+    // Reconstruct sensor Vout: undo divider, then add back diode drop
+    ch->voltage_sensor = (ch->voltage_raw * ch->divider_gain) + ch->diode_drop;
 
-    // DHAB formula: IP = (Vout - VO) / G
-    float raw_current = (ch->voltage_sensor - ch->offset_v) /
-                         ch->sensitivity_v_per_a;
+    // Calculate current using datasheet formula:
+    // Ip = (5/Uc) × (Vout − Vo) / G
+    float raw_current = (ch->voltage_sensor - ch->offset_v) / ch->sensitivity_v_per_a;
 
     // LPF smoothing
-    float filtered_current = ch->alpha * raw_current +
-                  (1.0f - ch->alpha) * ch->current / 100.0f;
+    float filtered_current = (ch->alpha * raw_current) +
+                             ((1.0f - ch->alpha) * (ch->current / 100.0f));
 
-    ch->current = (uint16_t)(filtered_current * 100.0f);
+    // Store as x100 integer (e.g. 25.14 A -> 2514)
+    ch->current = (int16_t)(filtered_current * 100.0f);
 
     return ch->current;
 }
@@ -82,6 +94,6 @@ void dhab_s134_update_200A(DHAB_S134_t* s){
 }
 
 float dhab_s134_decode(uint8_t high_byte, uint8_t low_byte){
-    uint16_t value = (high_byte << 8) | low_byte;
+    int16_t value = (int16_t)((high_byte << 8) | low_byte);
     return value / 100.0f;
 }

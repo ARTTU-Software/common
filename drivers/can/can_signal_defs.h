@@ -172,46 +172,6 @@ typedef struct {
     float Calculated_Speed; /* start_bit=47; length=16; factor=0.01; offset=0.0; unit="km/h" */
 } can_msg_ECU_Inverter_Sig_t;
 
-#define CAN_MSG_ECU_SOFTWARE_DATA_ID 229U
-#define CAN_MSG_ECU_SOFTWARE_DATA_DLC 8U
-#define CAN_MSG_ECU_SOFTWARE_DATA_CYCLE_TIME_MS 0U
-
-#define CAN_MSG_ECU_SOFTWARE_DATA_SIG_REGEN_ENABLE_FACTOR 1.0f
-
-#define CAN_MSG_ECU_SOFTWARE_DATA_SIG_MOTOR_ENABLE_FACTOR 1.0f
-
-#define CAN_MSG_ECU_SOFTWARE_DATA_SIG_R2D_STATE_FACTOR 1.0f
-
-#define CAN_MSG_ECU_SOFTWARE_DATA_SIG_TS_ON_FACTOR 1.0f
-
-#define CAN_MSG_ECU_SOFTWARE_DATA_SIG_INPRECHARGE_FACTOR 1.0f
-
-#define CAN_MSG_ECU_SOFTWARE_DATA_SIG_PRECH_STATE_FACTOR 1.0f
-
-#define CAN_MSG_ECU_SOFTWARE_DATA_SIG_AIR_NEG_STATE_FACTOR 1.0f
-
-#define CAN_MSG_ECU_SOFTWARE_DATA_SIG_AIR_POS_STATE_FACTOR 1.0f
-
-#define CAN_MSG_ECU_SOFTWARE_DATA_SIG_FAN_STATE_FACTOR 1.0f
-
-#define CAN_MSG_ECU_SOFTWARE_DATA_SIG_PUMP_STATE_FACTOR 1.0f
-
-#define CAN_MSG_ECU_SOFTWARE_DATA_SIG_ECU_CODE_STATE_FACTOR 1.0f
-
-typedef struct {
-    uint8_t Regen_Enable; /* start_bit=0; length=1; factor=1.0; offset=0.0; unit="bool" */
-    uint8_t Motor_Enable; /* start_bit=1; length=1; factor=1.0; offset=0.0; unit="bool" */
-    uint8_t R2D_State; /* start_bit=2; length=1; factor=1.0; offset=0.0; unit="bool" */
-    uint8_t TS_ON; /* start_bit=3; length=1; factor=1.0; offset=0.0; unit="bool" */
-    uint8_t inPrecharge; /* start_bit=4; length=1; factor=1.0; offset=0.0; unit="bool" */
-    uint8_t PRECH_State; /* start_bit=5; length=1; factor=1.0; offset=0.0; unit="bool" */
-    uint8_t AIR_Neg_State; /* start_bit=6; length=1; factor=1.0; offset=0.0; unit="bool" */
-    uint8_t AIR_Pos_State; /* start_bit=7; length=1; factor=1.0; offset=0.0; unit="bool" */
-    uint8_t Fan_State; /* start_bit=8; length=1; factor=1.0; offset=0.0; unit="bool" */
-    uint8_t Pump_State; /* start_bit=9; length=1; factor=1.0; offset=0.0; unit="bool" */
-    uint8_t ECU_Code_State; /* start_bit=23; length=8; factor=1.0; offset=0.0; unit="enum" */
-} can_msg_ECU_Software_Data_t;
-
 #define CAN_MSG_ECU_REAR_NMOS_ID 179U
 #define CAN_MSG_ECU_REAR_NMOS_DLC 8U
 #define CAN_MSG_ECU_REAR_NMOS_CYCLE_TIME_MS 0U
@@ -232,11 +192,95 @@ typedef struct {
     uint8_t R2D_LED_Delay; /* start_bit=7; length=8; factor=1.0; offset=0.0; unit="Hz" */
 } can_msg_ECU_Front_NMOS_t;
 
+#define CAN_MSG_ECU_SOFTWARE_STATUS_MAIN_ID 229U
+#define CAN_MSG_ECU_SOFTWARE_STATUS_MAIN_DLC 8U
+#define CAN_MSG_ECU_SOFTWARE_STATUS_MAIN_CYCLE_TIME_MS 0U
+
+#define CAN_MSG_ECU_SOFTWARE_STATUS_MAIN_SIG_ECU_ECU_CURRENT_STATE_FACTOR 1.0f
+
+#define CAN_MSG_ECU_SOFTWARE_STATUS_MAIN_SIG_ECU_ECU_PREVIOUS_REASON_FACTOR 1.0f
+
+#define CAN_MSG_ECU_SOFTWARE_STATUS_MAIN_SIG_ECU_ECU_NEXT_STATE_FACTOR 1.0f
+
+#define CAN_MSG_ECU_SOFTWARE_STATUS_MAIN_SIG_ECU_AMS_ERROR_FACTOR 1.0f
+
+#define CAN_MSG_ECU_SOFTWARE_STATUS_MAIN_SIG_ECU_SDC_ERROR_FACTOR 1.0f
+
+#define CAN_MSG_ECU_SOFTWARE_STATUS_MAIN_SIG_ECU_IS_BOOTING_UP_FACTOR 1.0f
+
+typedef struct {
+    uint8_t ECU_ECU_Current_State; /* start_bit=7; length=8; factor=1.0; offset=0.0; unit="hex" */
+    uint8_t ECU_ECU_Previous_Reason; /* start_bit=15; length=8; factor=1.0; offset=0.0; unit="hex" */
+    uint8_t ECU_ECU_Next_State; /* start_bit=23; length=8; factor=1.0; offset=0.0; unit="hex" */
+    uint8_t ECU_AMS_Error; /* start_bit=31; length=8; factor=1.0; offset=0.0; unit="bool" */
+    uint8_t ECU_SDC_Error; /* start_bit=39; length=8; factor=1.0; offset=0.0; unit="bool" */
+    uint8_t ECU_Is_Booting_Up; /* start_bit=47; length=8; factor=1.0; offset=0.0; unit="bool" */
+} can_msg_ECU_Software_Status_Main_t;
+
+#define CAN_MSG_ECU_SOFTWARE_STATUS_R2D_ID 230U
+#define CAN_MSG_ECU_SOFTWARE_STATUS_R2D_DLC 8U
+#define CAN_MSG_ECU_SOFTWARE_STATUS_R2D_CYCLE_TIME_MS 0U
+
+#define CAN_MSG_ECU_SOFTWARE_STATUS_R2D_SIG_ECU_R2D_CURRENT_STATE_FACTOR 1.0f
+
+#define CAN_MSG_ECU_SOFTWARE_STATUS_R2D_SIG_ECU_R2D_PREVIOUS_REASON_FACTOR 1.0f
+
+#define CAN_MSG_ECU_SOFTWARE_STATUS_R2D_SIG_ECU_R2D_NEXT_STATE_FACTOR 1.0f
+
+#define CAN_MSG_ECU_SOFTWARE_STATUS_R2D_SIG_ECU_PRECHARGE_DONE_FACTOR 1.0f
+
+#define CAN_MSG_ECU_SOFTWARE_STATUS_R2D_SIG_ECU_R2D_BUTTON_PRESSED_FACTOR 1.0f
+
+#define CAN_MSG_ECU_SOFTWARE_STATUS_R2D_SIG_ECU_R2D_BRAKE_OK_FACTOR 1.0f
+
+#define CAN_MSG_ECU_SOFTWARE_STATUS_R2D_SIG_ECU_PRECHARGE_TIMED_OUT_FACTOR 1.0f
+
+#define CAN_MSG_ECU_SOFTWARE_STATUS_R2D_SIG_ECU_R2D_BUZZER_ELAPSED_FACTOR 1.0f
+
+typedef struct {
+    uint8_t ECU_R2D_Current_State; /* start_bit=7; length=8; factor=1.0; offset=0.0; unit="hex" */
+    uint8_t ECU_R2D_Previous_Reason; /* start_bit=15; length=8; factor=1.0; offset=0.0; unit="hex" */
+    uint8_t ECU_R2D_Next_State; /* start_bit=23; length=8; factor=1.0; offset=0.0; unit="hex" */
+    uint8_t ECU_Precharge_Done; /* start_bit=31; length=8; factor=1.0; offset=0.0; unit="bool" */
+    uint8_t ECU_R2D_Button_Pressed; /* start_bit=39; length=8; factor=1.0; offset=0.0; unit="bool" */
+    uint8_t ECU_R2D_Brake_Ok; /* start_bit=47; length=8; factor=1.0; offset=0.0; unit="bool" */
+    uint8_t ECU_Precharge_Timed_Out; /* start_bit=55; length=8; factor=1.0; offset=0.0; unit="bool" */
+    uint8_t ECU_R2D_Buzzer_Elapsed; /* start_bit=63; length=8; factor=1.0; offset=0.0; unit="bool" */
+} can_msg_ECU_Software_Status_R2D_t;
+
+#define CAN_MSG_ECU_SOFTWARE_STATUS_CTRL_ID 231U
+#define CAN_MSG_ECU_SOFTWARE_STATUS_CTRL_DLC 8U
+#define CAN_MSG_ECU_SOFTWARE_STATUS_CTRL_CYCLE_TIME_MS 0U
+
+#define CAN_MSG_ECU_SOFTWARE_STATUS_CTRL_SIG_ECU_CTRL_CURRENT_STATE_FACTOR 1.0f
+
+#define CAN_MSG_ECU_SOFTWARE_STATUS_CTRL_SIG_ECU_CTRL_PREVIOUS_REASON_FACTOR 1.0f
+
+#define CAN_MSG_ECU_SOFTWARE_STATUS_CTRL_SIG_ECU_CTRL_NEXT_STATE_FACTOR 1.0f
+
+#define CAN_MSG_ECU_SOFTWARE_STATUS_CTRL_SIG_ECU_APPS_ERROR_FACTOR 1.0f
+
+#define CAN_MSG_ECU_SOFTWARE_STATUS_CTRL_SIG_ECU_APPS_PERCENTAGE_FACTOR 1.0f
+
+#define CAN_MSG_ECU_SOFTWARE_STATUS_CTRL_SIG_ECU_CTRL_STOP_REQUEST_FACTOR 1.0f
+
+#define CAN_MSG_ECU_SOFTWARE_STATUS_CTRL_SIG_ECU_COOLING_RECALC_REQUESTED_FACTOR 1.0f
+
+typedef struct {
+    uint8_t ECU_CTRL_Current_State; /* start_bit=7; length=8; factor=1.0; offset=0.0; unit="hex" */
+    uint8_t ECU_CTRL_Previous_Reason; /* start_bit=15; length=8; factor=1.0; offset=0.0; unit="hex" */
+    uint8_t ECU_CTRL_Next_State; /* start_bit=23; length=8; factor=1.0; offset=0.0; unit="hex" */
+    uint8_t ECU_APPS_Error; /* start_bit=31; length=8; factor=1.0; offset=0.0; unit="bool" */
+    uint8_t ECU_APPS_Percentage; /* start_bit=39; length=8; factor=1.0; offset=0.0; unit="bool" */
+    uint8_t ECU_CTRL_Stop_Request; /* start_bit=47; length=8; factor=1.0; offset=0.0; unit="bool" */
+    uint8_t ECU_Cooling_Recalc_Requested; /* start_bit=55; length=8; factor=1.0; offset=0.0; unit="bool" */
+} can_msg_ECU_Software_Status_CTRL_t;
+
 #define CAN_MSG_BMS_ERRORS_TEMPS_ID 16U
 #define CAN_MSG_BMS_ERRORS_TEMPS_DLC 8U
 #define CAN_MSG_BMS_ERRORS_TEMPS_CYCLE_TIME_MS 0U
 
-#define CAN_MSG_BMS_ERRORS_TEMPS_SIG_INTERNAL_TEMPERATURE_FACTOR 0.33333f
+#define CAN_MSG_BMS_ERRORS_TEMPS_SIG_INTERNAL_TEMPERATURE_FACTOR 1.0f
 
 #define CAN_MSG_BMS_ERRORS_TEMPS_SIG_DTC_P0AFA_LOW_CELL_VOLTAGE_FAULT_FACTOR 1.0f
 
@@ -291,7 +335,7 @@ typedef struct {
 #define CAN_MSG_BMS_ERRORS_TEMPS_SIG_LOW_THERMISTOR_ID_FACTOR 1.0f
 
 typedef struct {
-    float Internal_Temperature; /* start_bit=7; length=8; factor=0.33333; offset=0.0; unit="Celsius" */
+    int8_t Internal_Temperature; /* start_bit=7; length=8; factor=1.0; offset=0.0; unit="Celsius" */
     uint8_t DTC_P0AFA_Low_Cell_Voltage_Fault; /* start_bit=8; length=1; factor=1.0; offset=0.0; unit="Bool" */
     uint8_t DTC_P0A04_Cell_Open_Wiring_Fault; /* start_bit=9; length=1; factor=1.0; offset=0.0; unit="Bool" */
     uint8_t DTC_P0A0F_Cell_Bank_Fault; /* start_bit=10; length=1; factor=1.0; offset=0.0; unit="Bool" */
@@ -371,20 +415,20 @@ typedef struct {
 #define CAN_MSG_BMS_CELL_VOLTAGE_DLC 8U
 #define CAN_MSG_BMS_CELL_VOLTAGE_CYCLE_TIME_MS 0U
 
-#define CAN_MSG_BMS_CELL_VOLTAGE_SIG_LOW_CELL_VOLTAGE_FACTOR 0.02f
+#define CAN_MSG_BMS_CELL_VOLTAGE_SIG_LOW_CELL_VOLTAGE_FACTOR 0.0001f
 
-#define CAN_MSG_BMS_CELL_VOLTAGE_SIG_HIGH_CELL_VOLTAGE_FACTOR 0.02f
+#define CAN_MSG_BMS_CELL_VOLTAGE_SIG_HIGH_CELL_VOLTAGE_FACTOR 0.0001f
 
-#define CAN_MSG_BMS_CELL_VOLTAGE_SIG_AVG_CELL_VOLTAGE_FACTOR 0.02f
+#define CAN_MSG_BMS_CELL_VOLTAGE_SIG_AVG_CELL_VOLTAGE_FACTOR 0.0001f
 
 #define CAN_MSG_BMS_CELL_VOLTAGE_SIG_LOW_CELL_VOLTAGE_ID_FACTOR 1.0f
 
 #define CAN_MSG_BMS_CELL_VOLTAGE_SIG_HIGH_CELL_VOLTAGE_ID_FACTOR 1.0f
 
 typedef struct {
-    float Low_Cell_Voltage; /* start_bit=7; length=16; factor=0.02; offset=0.0; unit="Volts" */
-    float High_Cell_Voltage; /* start_bit=23; length=16; factor=0.02; offset=0.0; unit="Volts" */
-    float Avg_Cell_Voltage; /* start_bit=39; length=16; factor=0.02; offset=0.0; unit="Volts" */
+    float Low_Cell_Voltage; /* start_bit=7; length=16; factor=0.0001; offset=0.0; unit="Volts" */
+    float High_Cell_Voltage; /* start_bit=23; length=16; factor=0.0001; offset=0.0; unit="Volts" */
+    float Avg_Cell_Voltage; /* start_bit=39; length=16; factor=0.0001; offset=0.0; unit="Volts" */
     uint8_t Low_Cell_Voltage_ID; /* start_bit=55; length=8; factor=1.0; offset=0.0; unit="ID" */
     uint8_t High_Cell_Voltage_ID; /* start_bit=63; length=8; factor=1.0; offset=0.0; unit="ID" */
 } can_msg_BMS_Cell_Voltage_t;
@@ -393,20 +437,20 @@ typedef struct {
 #define CAN_MSG_BMS_CELL_RESISTANCE_DLC 8U
 #define CAN_MSG_BMS_CELL_RESISTANCE_CYCLE_TIME_MS 0U
 
-#define CAN_MSG_BMS_CELL_RESISTANCE_SIG_LOW_CELL_RESISTANCE_FACTOR 0.1f
+#define CAN_MSG_BMS_CELL_RESISTANCE_SIG_LOW_CELL_RESISTANCE_FACTOR 0.01f
 
-#define CAN_MSG_BMS_CELL_RESISTANCE_SIG_HIGH_CELL_RESISTANCE_FACTOR 0.1f
+#define CAN_MSG_BMS_CELL_RESISTANCE_SIG_HIGH_CELL_RESISTANCE_FACTOR 0.01f
 
-#define CAN_MSG_BMS_CELL_RESISTANCE_SIG_AVG_CELL_RESISTANCE_FACTOR 0.1f
+#define CAN_MSG_BMS_CELL_RESISTANCE_SIG_AVG_CELL_RESISTANCE_FACTOR 0.01f
 
 #define CAN_MSG_BMS_CELL_RESISTANCE_SIG_HIGH_INTRES_ID_FACTOR 1.0f
 
 #define CAN_MSG_BMS_CELL_RESISTANCE_SIG_LOW_INTRES_ID_FACTOR 1.0f
 
 typedef struct {
-    float Low_Cell_Resistance; /* start_bit=23; length=16; factor=0.1; offset=0.0; unit="mOhm" */
-    float High_Cell_Resistance; /* start_bit=39; length=16; factor=0.1; offset=0.0; unit="mOhm" */
-    float Avg_Cell_Resistance; /* start_bit=7; length=16; factor=0.1; offset=0.0; unit="mOhm" */
+    float Low_Cell_Resistance; /* start_bit=23; length=16; factor=0.01; offset=0.0; unit="mOhm" */
+    float High_Cell_Resistance; /* start_bit=39; length=16; factor=0.01; offset=0.0; unit="mOhm" */
+    float Avg_Cell_Resistance; /* start_bit=7; length=16; factor=0.01; offset=0.0; unit="mOhm" */
     uint8_t High_Intres_ID; /* start_bit=15; length=8; factor=1.0; offset=0.0; unit="ID" */
     uint8_t Low_Intres_ID; /* start_bit=23; length=8; factor=1.0; offset=0.0; unit="ID" */
 } can_msg_BMS_Cell_Resistance_t;
@@ -415,23 +459,23 @@ typedef struct {
 #define CAN_MSG_BMS_CURRENT_DLC 8U
 #define CAN_MSG_BMS_CURRENT_CYCLE_TIME_MS 0U
 
-#define CAN_MSG_BMS_CURRENT_SIG_AVERAGE_CURRENT_FACTOR 0.01f
+#define CAN_MSG_BMS_CURRENT_SIG_AVERAGE_CURRENT_FACTOR 0.1f
 
-#define CAN_MSG_BMS_CURRENT_SIG_PACK_CURRENT_FACTOR 0.01f
+#define CAN_MSG_BMS_CURRENT_SIG_PACK_CURRENT_FACTOR 0.1f
 
 #define CAN_MSG_BMS_CURRENT_SIG_PACK_DOD_FACTOR 0.5f
 
-#define CAN_MSG_BMS_CURRENT_SIG_PACK_DCL_FACTOR 0.01f
+#define CAN_MSG_BMS_CURRENT_SIG_PACK_DCL_FACTOR 1.0f
 
 #define CAN_MSG_BMS_CURRENT_SIG_CHARGER_SAFETY_FACTOR 1.0f
 
 #define CAN_MSG_BMS_CURRENT_SIG_CHARGE_RELAY_FACTOR 1.0f
 
 typedef struct {
-    float Average_Current; /* start_bit=7; length=16; factor=0.01; offset=0.0; unit="Amps" */
-    float Pack_Current; /* start_bit=23; length=16; factor=0.01; offset=0.0; unit="Amps" */
+    float Average_Current; /* start_bit=7; length=16; factor=0.1; offset=0.0; unit="Amps" */
+    float Pack_Current; /* start_bit=23; length=16; factor=0.1; offset=0.0; unit="Amps" */
     float Pack_DOD; /* start_bit=39; length=8; factor=0.5; offset=0.0; unit="Percent" */
-    float Pack_DCL; /* start_bit=47; length=16; factor=0.01; offset=0.0; unit="Amps" */
+    uint16_t Pack_DCL; /* start_bit=47; length=16; factor=1.0; offset=0.0; unit="Amps" */
     uint8_t Charger_Safety; /* start_bit=55; length=1; factor=1.0; offset=0.0; unit="Bool" */
     uint8_t Charge_Relay; /* start_bit=56; length=1; factor=1.0; offset=0.0; unit="Bool" */
 } can_msg_BMS_Current_t;
@@ -468,31 +512,31 @@ typedef struct {
 #define CAN_MSG_GIL_INV_DATA_2_SIG_THROTTLE_INPUT_L_FACTOR 0.001f
 
 typedef struct {
-    int8_t Motor_Temp_L; /* start_bit=7; length=8; factor=1.0; offset=0.0; unit="degC" */
-    int8_t Inverter_Temp_L; /* start_bit=15; length=8; factor=1.0; offset=0.0; unit="degC" */
-    float Aux_Brake_Input_L; /* start_bit=23; length=16; factor=0.001; offset=0.0; unit="V" */
-    float Throttle_Input_L; /* start_bit=39; length=16; factor=0.001; offset=0.0; unit="V" */
+    int16_t Motor_Temp_L; /* start_bit=7; length=16; factor=1.0; offset=0.0; unit="degC" */
+    int16_t Inverter_Temp_L; /* start_bit=23; length=16; factor=1.0; offset=0.0; unit="degC" */
+    float Aux_Brake_Input_L; /* start_bit=39; length=16; factor=0.001; offset=0.0; unit="V" */
+    float Throttle_Input_L; /* start_bit=55; length=16; factor=0.001; offset=0.0; unit="V" */
 } can_msg_GIL_Inv_Data_2_t;
 
-#define CAN_MSG_GIL_SOFTWARE_ID 34U
-#define CAN_MSG_GIL_SOFTWARE_DLC 8U
-#define CAN_MSG_GIL_SOFTWARE_CYCLE_TIME_MS 0U
+#define CAN_MSG_GIL_SOFTWARE_STATUS_ID 34U
+#define CAN_MSG_GIL_SOFTWARE_STATUS_DLC 8U
+#define CAN_MSG_GIL_SOFTWARE_STATUS_CYCLE_TIME_MS 0U
 
-#define CAN_MSG_GIL_SOFTWARE_SIG_GIL_CURRENT_STATE_FACTOR 1.0f
+#define CAN_MSG_GIL_SOFTWARE_STATUS_SIG_GIL_CURRENT_STATE_FACTOR 1.0f
 
-#define CAN_MSG_GIL_SOFTWARE_SIG_GIL_PREVIOUS_REASON_FACTOR 1.0f
+#define CAN_MSG_GIL_SOFTWARE_STATUS_SIG_GIL_PREVIOUS_REASON_FACTOR 1.0f
 
-#define CAN_MSG_GIL_SOFTWARE_SIG_GIL_NEXT_STATE_FACTOR 1.0f
+#define CAN_MSG_GIL_SOFTWARE_STATUS_SIG_GIL_NEXT_STATE_FACTOR 1.0f
 
-#define CAN_MSG_GIL_SOFTWARE_SIG_GIL_FAULT_LATCHED_FACTOR 1.0f
+#define CAN_MSG_GIL_SOFTWARE_STATUS_SIG_GIL_FAULT_LATCHED_FACTOR 1.0f
 
-#define CAN_MSG_GIL_SOFTWARE_SIG_GIL_LEFT_PERCENTAGE_FACTOR 1.0f
+#define CAN_MSG_GIL_SOFTWARE_STATUS_SIG_GIL_LEFT_PERCENTAGE_FACTOR 1.0f
 
-#define CAN_MSG_GIL_SOFTWARE_SIG_GIL_RIGHT_PERCENTAGE_FACTOR 1.0f
+#define CAN_MSG_GIL_SOFTWARE_STATUS_SIG_GIL_RIGHT_PERCENTAGE_FACTOR 1.0f
 
-#define CAN_MSG_GIL_SOFTWARE_SIG_GIL_PASS_THROUGH_FLAG_FACTOR 1.0f
+#define CAN_MSG_GIL_SOFTWARE_STATUS_SIG_GIL_PASS_THROUGH_FLAG_FACTOR 1.0f
 
-#define CAN_MSG_GIL_SOFTWARE_SIG_GIL_BOARD_IS_STARTING_FACTOR 1.0f
+#define CAN_MSG_GIL_SOFTWARE_STATUS_SIG_GIL_BOARD_IS_STARTING_FACTOR 1.0f
 
 typedef struct {
     uint8_t GIL_Current_State; /* start_bit=7; length=8; factor=1.0; offset=0.0; unit="hex" */
@@ -503,7 +547,7 @@ typedef struct {
     uint8_t GIL_Right_Percentage; /* start_bit=47; length=8; factor=1.0; offset=0.0; unit="%" */
     uint8_t GIL_Pass_Through_Flag; /* start_bit=55; length=8; factor=1.0; offset=0.0; unit="bool" */
     uint8_t GIL_Board_Is_Starting; /* start_bit=63; length=8; factor=1.0; offset=0.0; unit="bool" */
-} can_msg_GIL_Software_t;
+} can_msg_GIL_Software_Status_t;
 
 #define CAN_MSG_GIR_INV_DATA_1_ID 48U
 #define CAN_MSG_GIR_INV_DATA_1_DLC 8U
@@ -543,25 +587,25 @@ typedef struct {
     float Throttle_Input_R; /* start_bit=55; length=16; factor=0.001; offset=0.0; unit="V" */
 } can_msg_GIR_Inv_Data_2_t;
 
-#define CAN_MSG_GIR_SOFTWARE_ID 50U
-#define CAN_MSG_GIR_SOFTWARE_DLC 8U
-#define CAN_MSG_GIR_SOFTWARE_CYCLE_TIME_MS 0U
+#define CAN_MSG_GIR_SOFTWARE_STATUS_ID 50U
+#define CAN_MSG_GIR_SOFTWARE_STATUS_DLC 8U
+#define CAN_MSG_GIR_SOFTWARE_STATUS_CYCLE_TIME_MS 0U
 
-#define CAN_MSG_GIR_SOFTWARE_SIG_GIR_CURRENT_STATE_FACTOR 1.0f
+#define CAN_MSG_GIR_SOFTWARE_STATUS_SIG_GIR_CURRENT_STATE_FACTOR 1.0f
 
-#define CAN_MSG_GIR_SOFTWARE_SIG_GIR_PREVIOUS_REASON_FACTOR 1.0f
+#define CAN_MSG_GIR_SOFTWARE_STATUS_SIG_GIR_PREVIOUS_REASON_FACTOR 1.0f
 
-#define CAN_MSG_GIR_SOFTWARE_SIG_GIR_NEXT_STATE_FACTOR 1.0f
+#define CAN_MSG_GIR_SOFTWARE_STATUS_SIG_GIR_NEXT_STATE_FACTOR 1.0f
 
-#define CAN_MSG_GIR_SOFTWARE_SIG_GIR_FAULT_LATCHED_FACTOR 1.0f
+#define CAN_MSG_GIR_SOFTWARE_STATUS_SIG_GIR_FAULT_LATCHED_FACTOR 1.0f
 
-#define CAN_MSG_GIR_SOFTWARE_SIG_GIR_LEFT_PERCENTAGE_FACTOR 1.0f
+#define CAN_MSG_GIR_SOFTWARE_STATUS_SIG_GIR_LEFT_PERCENTAGE_FACTOR 1.0f
 
-#define CAN_MSG_GIR_SOFTWARE_SIG_GIR_RIGHT_PERCENTAGE_FACTOR 1.0f
+#define CAN_MSG_GIR_SOFTWARE_STATUS_SIG_GIR_RIGHT_PERCENTAGE_FACTOR 1.0f
 
-#define CAN_MSG_GIR_SOFTWARE_SIG_GIR_PASS_THROUGH_FLAG_FACTOR 1.0f
+#define CAN_MSG_GIR_SOFTWARE_STATUS_SIG_GIR_PASS_THROUGH_FLAG_FACTOR 1.0f
 
-#define CAN_MSG_GIR_SOFTWARE_SIG_GIR_BOARD_IS_STARTING_FACTOR 1.0f
+#define CAN_MSG_GIR_SOFTWARE_STATUS_SIG_GIR_BOARD_IS_STARTING_FACTOR 1.0f
 
 typedef struct {
     uint8_t GIR_Current_State; /* start_bit=7; length=8; factor=1.0; offset=0.0; unit="hex" */
@@ -572,7 +616,7 @@ typedef struct {
     uint8_t GIR_Right_Percentage; /* start_bit=47; length=8; factor=1.0; offset=0.0; unit="%" */
     uint8_t GIR_Pass_Through_Flag; /* start_bit=55; length=8; factor=1.0; offset=0.0; unit="bool" */
     uint8_t GIR_Board_Is_Starting; /* start_bit=63; length=8; factor=1.0; offset=0.0; unit="bool" */
-} can_msg_GIR_Software_t;
+} can_msg_GIR_Software_Status_t;
 
 #define CAN_MSG_DASH_BUTTONS_ID 208U
 #define CAN_MSG_DASH_BUTTONS_DLC 8U
@@ -584,20 +628,30 @@ typedef struct {
 
 #define CAN_MSG_DASH_BUTTONS_SIG_LOG_LTE_TOGGLE_FACTOR 1.0f
 
-#define CAN_MSG_DASH_BUTTONS_SIG_GPS_SPEED_FACTOR 0.01f
-
-#define CAN_MSG_DASH_BUTTONS_SIG_GPS_COURSE_FACTOR 0.0001f
-
-#define CAN_MSG_DASH_BUTTONS_SIG_GPS_YAW_ANGLE_FACTOR 0.0001f
+#define CAN_MSG_DASH_BUTTONS_SIG_IMU_RECAL_FACTOR 1.0f
 
 typedef struct {
     uint8_t APPS_Recal; /* start_bit=7; length=8; factor=1.0; offset=0.0; unit="bool" */
     uint8_t Log_SD_Toggle; /* start_bit=15; length=8; factor=1.0; offset=0.0; unit="bool" */
     uint8_t Log_LTE_Toggle; /* start_bit=23; length=8; factor=1.0; offset=0.0; unit="bool" */
+    uint8_t IMU_Recal; /* start_bit=31; length=8; factor=1.0; offset=0.0; unit="bool" */
+} can_msg_DASH_Buttons_t;
+
+#define CAN_MSG_GPS_SEND_ID 240U
+#define CAN_MSG_GPS_SEND_DLC 8U
+#define CAN_MSG_GPS_SEND_CYCLE_TIME_MS 0U
+
+#define CAN_MSG_GPS_SEND_SIG_GPS_SPEED_FACTOR 0.01f
+
+#define CAN_MSG_GPS_SEND_SIG_GPS_COURSE_FACTOR 0.0001f
+
+#define CAN_MSG_GPS_SEND_SIG_GPS_YAW_ANGLE_FACTOR 0.0001f
+
+typedef struct {
     float Gps_speed; /* start_bit=7; length=16; factor=0.01; offset=0.0; unit="m/s" */
     float Gps_course; /* start_bit=23; length=16; factor=0.0001; offset=0.0; unit="rad [UW]" */
     float Gps_yaw_angle; /* start_bit=39; length=16; factor=0.0001; offset=0.0; unit="rad [UW]" */
-} can_msg_DASH_Buttons_t;
+} can_msg_GPS_Send_t;
 
 #define CAN_MSG_IMU_DATA_ID 80U
 #define CAN_MSG_IMU_DATA_DLC 8U

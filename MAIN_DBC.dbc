@@ -81,25 +81,37 @@ BO_ 224 ECU_Inverter_Sig: 8 ECU
  SG_ Inverter_L_Speed_Percentage : 31|8@0+ (1.0,0) [0.0|100.0] "%" Vector__XXX
  SG_ Inverter_R_Speed_Percentage : 39|8@0+ (1.0,0) [0.0|100.0] "%" Vector__XXX
  SG_ Calculated_Speed : 47|16@0+ (0.01,0) [0.0|200.0] "km/h" Vector__XXX
-BO_ 229 ECU_Software_Data: 8 ECU
- SG_ Regen_Enable : 0|1@0+ (1.0,0) [0.0|1.0] "bool" Vector__XXX
- SG_ Motor_Enable : 1|1@0+ (1.0,0) [0.0|1.0] "bool" Vector__XXX
- SG_ R2D_State : 2|1@0+ (1.0,0) [0.0|1.0] "bool" Vector__XXX
- SG_ TS_ON : 3|1@0+ (1.0,0) [0.0|1.0] "bool" Vector__XXX
- SG_ inPrecharge : 4|1@0+ (1.0,0) [0.0|1.0] "bool" Vector__XXX
- SG_ PRECH_State : 5|1@0+ (1.0,0) [0.0|1.0] "bool" Vector__XXX
- SG_ AIR_Neg_State : 6|1@0+ (1.0,0) [0.0|1.0] "bool" Vector__XXX
- SG_ AIR_Pos_State : 7|1@0+ (1.0,0) [0.0|1.0] "bool" Vector__XXX
- SG_ Fan_State : 8|1@0+ (1.0,0) [0.0|1.0] "bool" Vector__XXX
- SG_ Pump_State : 9|1@0+ (1.0,0) [0.0|1.0] "bool" Vector__XXX
- SG_ ECU_Code_State : 23|8@0+ (1.0,0) [0.0|255.0] "enum" Vector__XXX
 BO_ 179 ECU_Rear_NMOS: 8 ECU
  SG_ R2D_Buzzer_On_Off : 7|8@0+ (1.0,0) [0.0|1.0] "bool" Vector__XXX
 BO_ 162 ECU_Front_NMOS: 8 ECU
  SG_ R2D_LED_Delay : 7|8@0+ (1.0,0) [0.0|255.0] "Hz" Vector__XXX
+BO_ 229 ECU_Software_Status_Main: 8 ECU
+ SG_ ECU_ECU_Current_State : 7|8@0+ (1.0,0) [0.0|255.0] "hex" Vector__XXX
+ SG_ ECU_ECU_Previous_Reason : 15|8@0+ (1.0,0) [0.0|255.0] "hex" Vector__XXX
+ SG_ ECU_ECU_Next_State : 23|8@0+ (1.0,0) [0.0|255.0] "hex" Vector__XXX
+ SG_ ECU_AMS_Error : 31|8@0+ (1.0,0) [0.0|1.0] "bool" Vector__XXX
+ SG_ ECU_SDC_Error : 39|8@0+ (1.0,0) [0.0|1.0] "bool" Vector__XXX
+ SG_ ECU_Is_Booting_Up : 47|8@0+ (1.0,0) [0.0|1.0] "bool" Vector__XXX
+BO_ 230 ECU_Software_Status_R2D: 8 ECU
+ SG_ ECU_R2D_Current_State : 7|8@0+ (1.0,0) [0.0|255.0] "hex" Vector__XXX
+ SG_ ECU_R2D_Previous_Reason : 15|8@0+ (1.0,0) [0.0|255.0] "hex" Vector__XXX
+ SG_ ECU_R2D_Next_State : 23|8@0+ (1.0,0) [0.0|255.0] "hex" Vector__XXX
+ SG_ ECU_Precharge_Done : 31|8@0+ (1.0,0) [0.0|1.0] "bool" Vector__XXX
+ SG_ ECU_R2D_Button_Pressed : 39|8@0+ (1.0,0) [0.0|1.0] "bool" Vector__XXX
+ SG_ ECU_R2D_Brake_Ok : 47|8@0+ (1.0,0) [0.0|1.0] "bool" Vector__XXX
+ SG_ ECU_Precharge_Timed_Out : 55|8@0+ (1.0,0) [0.0|1.0] "bool" Vector__XXX
+ SG_ ECU_R2D_Buzzer_Elapsed : 63|8@0+ (1.0,0) [0.0|1.0] "bool" Vector__XXX
+BO_ 231 ECU_Software_Status_CTRL: 8 ECU
+ SG_ ECU_CTRL_Current_State : 7|8@0+ (1.0,0) [0.0|255.0] "hex" Vector__XXX
+ SG_ ECU_CTRL_Previous_Reason : 15|8@0+ (1.0,0) [0.0|255.0] "hex" Vector__XXX
+ SG_ ECU_CTRL_Next_State : 23|8@0+ (1.0,0) [0.0|255.0] "hex" Vector__XXX
+ SG_ ECU_APPS_Error : 31|8@0+ (1.0,0) [0.0|1.0] "bool" Vector__XXX
+ SG_ ECU_APPS_Percentage : 39|8@0+ (1.0,0) [0.0|1.0] "bool" Vector__XXX
+ SG_ ECU_CTRL_Stop_Request : 47|8@0+ (1.0,0) [0.0|1.0] "bool" Vector__XXX
+ SG_ ECU_Cooling_Recalc_Requested : 55|8@0+ (1.0,0) [0.0|1.0] "bool" Vector__XXX
 
 BO_ 16 BMS_Errors_Temps: 8 BMS
- SG_ Internal_Temperature : 7|8@0- (0.33333,0) [-10.0|100.0] "Celsius" Vector__XXX
+ SG_ Internal_Temperature : 7|8@0- (1.0,0) [-10.0|100.0] "Celsius" Vector__XXX
  SG_ DTC_P0AFA_Low_Cell_Voltage_Fault : 8|1@1+ (1.0,0) [0.0|1.0] "Bool" Vector__XXX
  SG_ DTC_P0A04_Cell_Open_Wiring_Fault : 9|1@1+ (1.0,0) [0.0|1.0] "Bool" Vector__XXX
  SG_ DTC_P0A0F_Cell_Bank_Fault : 10|1@1+ (1.0,0) [0.0|1.0] "Bool" Vector__XXX
@@ -140,22 +152,22 @@ BO_ 18 BMS_Cell_Open: 8 BMS
  SG_ Low_Opencell_ID : 55|8@0+ (1.0,0) [0.0|255.0] "ID" Vector__XXX
  SG_ High_Opencell_ID : 63|8@0+ (1.0,0) [0.0|255.0] "ID" Vector__XXX
 BO_ 19 BMS_Cell_Voltage: 8 BMS
- SG_ Low_Cell_Voltage : 7|16@0+ (0.02,0) [0.0|5.0] "Volts" Vector__XXX
- SG_ High_Cell_Voltage : 23|16@0+ (0.02,0) [0.0|5.0] "Volts" Vector__XXX
- SG_ Avg_Cell_Voltage : 39|16@0+ (0.02,0) [0.0|5.0] "Volts" Vector__XXX
+ SG_ Low_Cell_Voltage : 7|16@0+ (0.0001,0) [0.0|5.0] "Volts" Vector__XXX
+ SG_ High_Cell_Voltage : 23|16@0+ (0.0001,0) [0.0|5.0] "Volts" Vector__XXX
+ SG_ Avg_Cell_Voltage : 39|16@0+ (0.0001,0) [0.0|5.0] "Volts" Vector__XXX
  SG_ Low_Cell_Voltage_ID : 55|8@0+ (1.0,0) [0.0|255.0] "ID" Vector__XXX
  SG_ High_Cell_Voltage_ID : 63|8@0+ (1.0,0) [0.0|255.0] "ID" Vector__XXX
 BO_ 20 BMS_Cell_Resistance: 8 BMS
- SG_ Low_Cell_Resistance : 23|16@0+ (0.1,0) [0.0|100.0] "mOhm" Vector__XXX
- SG_ High_Cell_Resistance : 39|16@0+ (0.1,0) [0.0|100.0] "mOhm" Vector__XXX
- SG_ Avg_Cell_Resistance : 7|16@0+ (0.1,0) [0.0|100.0] "mOhm" Vector__XXX
+ SG_ Low_Cell_Resistance : 23|16@0+ (0.01,0) [0.0|100.0] "mOhm" Vector__XXX
+ SG_ High_Cell_Resistance : 39|16@0+ (0.01,0) [0.0|100.0] "mOhm" Vector__XXX
+ SG_ Avg_Cell_Resistance : 7|16@0+ (0.01,0) [0.0|100.0] "mOhm" Vector__XXX
  SG_ High_Intres_ID : 15|8@0+ (1.0,0) [0.0|255.0] "ID" Vector__XXX
  SG_ Low_Intres_ID : 23|8@0+ (1.0,0) [0.0|255.0] "ID" Vector__XXX
 BO_ 21 BMS_Current: 8 BMS
- SG_ Average_Current : 7|16@0- (0.01,0) [-500.0|500.0] "Amps" Vector__XXX
- SG_ Pack_Current : 23|16@0- (0.01,0) [-500.0|500.0] "Amps" Vector__XXX
+ SG_ Average_Current : 7|16@0- (0.1,0) [-500.0|500.0] "Amps" Vector__XXX
+ SG_ Pack_Current : 23|16@0- (0.1,0) [-500.0|500.0] "Amps" Vector__XXX
  SG_ Pack_DOD : 39|8@0+ (0.5,0) [0.0|100.0] "Percent" Vector__XXX
- SG_ Pack_DCL : 47|16@0+ (0.01,0) [0.0|500.0] "Amps" Vector__XXX
+ SG_ Pack_DCL : 47|16@0+ (1.0,0) [0.0|500.0] "Amps" Vector__XXX
  SG_ Charger_Safety : 55|1@1+ (1.0,0) [0.0|1.0] "Bool" Vector__XXX
  SG_ Charge_Relay : 56|1@1+ (1.0,0) [0.0|1.0] "Bool" Vector__XXX
 
@@ -165,11 +177,11 @@ BO_ 32 GIL_Inv_Data_1: 8 GI_Left
  SG_ Phase_Current_L : 39|16@0+ (0.1,0) [0.0|511.0] "A" Vector__XXX
  SG_ RPM_L : 55|16@0+ (1.0,0) [0.0|65535.0] "rpm" Vector__XXX
 BO_ 33 GIL_Inv_Data_2: 8 GI_Left
- SG_ Motor_Temp_L : 7|8@0- (1.0,0) [-100.0|155.0] "degC" Vector__XXX
- SG_ Inverter_Temp_L : 15|8@0- (1.0,0) [-100.0|155.0] "degC" Vector__XXX
- SG_ Aux_Brake_Input_L : 23|16@0+ (0.001,0) [0.0|5.0] "V" Vector__XXX
- SG_ Throttle_Input_L : 39|16@0+ (0.001,0) [0.0|5.0] "V" Vector__XXX
-BO_ 34 GIL_Software: 8 GI_Left
+ SG_ Motor_Temp_L : 7|16@0- (1.0,0) [-100.0|155.0] "degC" Vector__XXX
+ SG_ Inverter_Temp_L : 23|16@0- (1.0,0) [-100.0|155.0] "degC" Vector__XXX
+ SG_ Aux_Brake_Input_L : 39|16@0+ (0.001,0) [0.0|5.0] "V" Vector__XXX
+ SG_ Throttle_Input_L : 55|16@0+ (0.001,0) [0.0|5.0] "V" Vector__XXX
+BO_ 34 GIL_Software_Status: 8 GI_Left
  SG_ GIL_Current_State : 7|8@0+ (1.0,0) [0.0|255.0] "hex" Vector__XXX
  SG_ GIL_Previous_Reason : 15|8@0+ (1.0,0) [0.0|255.0] "hex" Vector__XXX
  SG_ GIL_Next_State : 23|8@0+ (1.0,0) [0.0|255.0] "hex" Vector__XXX
@@ -189,7 +201,7 @@ BO_ 49 GIR_Inv_Data_2: 8 GI_Right
  SG_ Inverter_Temp_R : 23|16@0- (1.0,0) [-100.0|155.0] "degC" Vector__XXX
  SG_ Aux_Input_R : 39|16@0+ (0.001,0) [0.0|5.0] "V" Vector__XXX
  SG_ Throttle_Input_R : 55|16@0+ (0.001,0) [0.0|5.0] "V" Vector__XXX
-BO_ 50 GIR_Software: 8 GI_Right
+BO_ 50 GIR_Software_Status: 8 GI_Right
  SG_ GIR_Current_State : 7|8@0+ (1.0,0) [0.0|255.0] "hex" Vector__XXX
  SG_ GIR_Previous_Reason : 15|8@0+ (1.0,0) [0.0|255.0] "hex" Vector__XXX
  SG_ GIR_Next_State : 23|8@0+ (1.0,0) [0.0|255.0] "hex" Vector__XXX
@@ -203,7 +215,9 @@ BO_ 208 DASH_Buttons: 8 Dashboard
  SG_ APPS_Recal : 7|8@0+ (1.0,0) [0.0|1.0] "bool" Vector__XXX
  SG_ Log_SD_Toggle : 15|8@0+ (1.0,0) [0.0|1.0] "bool" Vector__XXX
  SG_ Log_LTE_Toggle : 23|8@0+ (1.0,0) [0.0|1.0] "bool" Vector__XXX
+ SG_ IMU_Recal : 31|8@0+ (1.0,0) [0.0|1.0] "bool" Vector__XXX
 
+BO_ 240 GPS_Send: 8 Telemetry
  SG_ Gps_speed : 7|16@0+ (0.01,0) [0.0|326.0] "m/s" Vector__XXX
  SG_ Gps_course : 23|16@0- (0.0001,0) [-100.0|100.0] "rad [UW]" Vector__XXX
  SG_ Gps_yaw_angle : 39|16@0- (0.0001,0) [-100.0|100.0] "rad [UW]" Vector__XXX
@@ -252,6 +266,8 @@ BA_ "GenMsgCycleTime" BO_ 177 7;
 BA_ "GenMsgCycleTime" BO_ 178 200;
 BA_ "GenMsgCycleTime" BO_ 224 12;
 BA_ "GenMsgCycleTime" BO_ 229 50;
+BA_ "GenMsgCycleTime" BO_ 230 50;
+BA_ "GenMsgCycleTime" BO_ 231 50;
 BA_ "GenMsgCycleTime" BO_ 16 23;
 BA_ "GenMsgCycleTime" BO_ 17 47;
 BA_ "GenMsgCycleTime" BO_ 18 47;
@@ -262,7 +278,23 @@ BA_ "GenMsgCycleTime" BO_ 32 20;
 BA_ "GenMsgCycleTime" BO_ 33 20;
 BA_ "GenMsgCycleTime" BO_ 48 20;
 BA_ "GenMsgCycleTime" BO_ 49 20;
+BA_ "GenMsgCycleTime" BO_ 240 50;
 BA_ "GenMsgCycleTime" BO_ 80 5;
+VAL_ 175 GF_Current_State 0 "BOARD_FSM_MODE_INIT" 1 "BOARD_FSM_MODE_IDLE" 2 "BOARD_FSM_MODE_PROCESS_SENSORS" 3 "BOARD_FSM_MODE_OUTPUT_SENSORS" 4 "BOARD_FSM_MODE_BOOTLOADER" 5 "BOARD_FSM_MODE_FAULT" ;
+VAL_ 175 GF_Previous_Reason 0 "BOARD_FSM_REASON_NONE" 1 "BOARD_FSM_REASON_INIT_COMPLETE" 2 "BOARD_FSM_REASON_ADC_READY" 3 "BOARD_FSM_REASON_PROCESS_SENSORS_DONE" 4 "BOARD_FSM_REASON_OUTPUT_SENSORS_COMPLETE" 5 "BOARD_FSM_REASON_BOOTLOADER_REQUEST" 6 "BOARD_FSM_REASON_FORCE_FAULT" 7 "BOARD_FSM_REASON_INVALID_EVENT" ;
+VAL_ 175 GF_Next_State 0 "BOARD_FSM_MODE_INIT" 1 "BOARD_FSM_MODE_IDLE" 2 "BOARD_FSM_MODE_PROCESS_SENSORS" 3 "BOARD_FSM_MODE_OUTPUT_SENSORS" 4 "BOARD_FSM_MODE_BOOTLOADER" 5 "BOARD_FSM_MODE_FAULT" ;
+VAL_ 191 GR_Current_State 0 "BOARD_FSM_MODE_INIT" 1 "BOARD_FSM_MODE_IDLE" 2 "BOARD_FSM_MODE_PROCESS_SENSORS" 3 "BOARD_FSM_MODE_OUTPUT_SENSORS" 4 "BOARD_FSM_MODE_BOOTLOADER" 5 "BOARD_FSM_MODE_FAULT" ;
+VAL_ 191 GR_Previous_Reason 0 "BOARD_FSM_REASON_NONE" 1 "BOARD_FSM_REASON_INIT_COMPLETE" 2 "BOARD_FSM_REASON_ADC_READY" 3 "BOARD_FSM_REASON_PROCESS_SENSORS_DONE" 4 "BOARD_FSM_REASON_OUTPUT_SENSORS_COMPLETE" 5 "BOARD_FSM_REASON_BOOTLOADER_REQUEST" 6 "BOARD_FSM_REASON_FORCE_FAULT" 7 "BOARD_FSM_REASON_INVALID_EVENT" ;
+VAL_ 191 GR_Next_State 0 "BOARD_FSM_MODE_INIT" 1 "BOARD_FSM_MODE_IDLE" 2 "BOARD_FSM_MODE_PROCESS_SENSORS" 3 "BOARD_FSM_MODE_OUTPUT_SENSORS" 4 "BOARD_FSM_MODE_BOOTLOADER" 5 "BOARD_FSM_MODE_FAULT" ;
+VAL_ 229 ECU_ECU_Current_State 0 "SYSTEM_INIT" 1 "SYSTEM_IDLE" 2 "SYSTEM_R2D" 3 "SYSTEM_CONTROL" 4 "SYSTEM_SHUTDOWN" ;
+VAL_ 229 ECU_ECU_Previous_Reason 0 "ECU_FSM_REASON_NONE" 1 "ECU_FSM_REASON_REQUEST_IDLE" 2 "ECU_FSM_REASON_REQUEST_R2D" 3 "ECU_FSM_REASON_REQUEST_CONTROL" 4 "ECU_FSM_REASON_REQUEST_SHUTDOWN" 5 "ECU_FSM_REASON_REQUEST_FAULT" 6 "ECU_FSM_REASON_FAULT_CAN_SDC" 7 "ECU_FSM_REASON_FAULT_CAN_AMS" 8 "ECU_FSM_REASON_FAULT_APPS_TIMEOUT" 9 "ECU_FSM_REASON_FAULT_BRAKE_TIMEOUT" 10 "ECU_FSM_REASON_FAULT_SDC_TIMEOUT" 11 "ECU_FSM_REASON_FAULT_PRECHARGE_TIMEOUT" 12 "ECU_FSM_REASON_FAULT_LATCHED" 13 "ECU_FSM_REASON_PRESSED_R2D_BTN_IN_CONTROL" 14 "ECU_FSM_REASON_UNEXPECTED_STATE" ;
+VAL_ 229 ECU_ECU_Next_State 0 "SYSTEM_INIT" 1 "SYSTEM_IDLE" 2 "SYSTEM_R2D" 3 "SYSTEM_CONTROL" 4 "SYSTEM_SHUTDOWN" ;
+VAL_ 230 ECU_R2D_Current_State 0 "SYSTEM_R2D_FIRST_BTN" 1 "SYSTEM_R2D_PRECH_ONGOING" 2 "SYSTEM_R2D_SECOND_BTN" 3 "SYSTEM_R2D_BUZZING" ;
+VAL_ 230 ECU_R2D_Previous_Reason 0 "R2D_FSM_REASON_NONE" 1 "R2D_FSM_REASON_PRECHARGE_DONE" 2 "R2D_FSM_REASON_PRECHARGE_TIMEOUT" 3 "R2D_FSM_REASON_SECOND_BUTTON_BRAKE" 4 "R2D_FSM_REASON_BUZZER_COMPLETE" ;
+VAL_ 230 ECU_R2D_Next_State 0 "SYSTEM_R2D_FIRST_BTN" 1 "SYSTEM_R2D_PRECH_ONGOING" 2 "SYSTEM_R2D_SECOND_BTN" 3 "SYSTEM_R2D_BUZZING" ;
+VAL_ 231 ECU_CTRL_Current_State 0 "SYSTEM_CONTROL_COOLING" 1 "SYSTEM_CONTROL_MOTORS" 2 "SYSTEM_CONTROL_APPS_VALIDATION" ;
+VAL_ 231 ECU_CTRL_Previous_Reason 0 "CONTROL_FSM_REASON_NONE" 1 "CONTROL_FSM_REASON_DRIVER_STOP_REQUEST" 2 "CONTROL_FSM_REASON_APPS_ERROR" 3 "CONTROL_FSM_REASON_APPS_VALID" 4 "CONTROL_FSM_REASON_COOLING_RECYCLE" ;
+VAL_ 231 ECU_CTRL_Next_State 0 "SYSTEM_CONTROL_COOLING" 1 "SYSTEM_CONTROL_MOTORS" 2 "SYSTEM_CONTROL_APPS_VALIDATION" ;
 VAL_ 34 GIL_Current_State 0 "BOARD_FSM_MODE_INIT" 1 "BOARD_FSM_MODE_READY" 2 "BOARD_FSM_MODE_TORQUE_ACTIVE" 3 "BOARD_FSM_MODE_REGEN_ACTIVE" 4 "BOARD_FSM_MODE_PROGRAMMING" 5 "BOARD_FSM_MODE_BOOTLOADER" 6 "BOARD_FSM_MODE_FAULT" ;
 VAL_ 34 GIL_Previous_Reason 0 "BOARD_FSM_REASON_NONE" 1 "BOARD_FSM_REASON_INIT_COMPLETE" 2 "BOARD_FSM_REASON_ECU_DISABLE" 3 "BOARD_FSM_REASON_ECU_ENABLE" 4 "BOARD_FSM_REASON_ECU_REGEN" 5 "BOARD_FSM_REASON_PASS_THROUGH" 6 "BOARD_FSM_REASON_CAN_TIMEOUT" 7 "BOARD_FSM_REASON_INVALID_CMD" 8 "BOARD_FSM_REASON_BOOTLOADER_REQUEST" ;
 VAL_ 34 GIL_Next_State 0 "BOARD_FSM_MODE_INIT" 1 "BOARD_FSM_MODE_READY" 2 "BOARD_FSM_MODE_TORQUE_ACTIVE" 3 "BOARD_FSM_MODE_REGEN_ACTIVE" 4 "BOARD_FSM_MODE_PROGRAMMING" 5 "BOARD_FSM_MODE_BOOTLOADER" 6 "BOARD_FSM_MODE_FAULT" ;
