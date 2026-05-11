@@ -20,9 +20,11 @@ typedef struct {
 
 typedef struct {
     can_msg_ECU_Inverter_Sig_t ECU_Inverter_Sig;
-    can_msg_ECU_Software_Data_t ECU_Software_Data;
     can_msg_ECU_Rear_NMOS_t ECU_Rear_NMOS;
     can_msg_ECU_Front_NMOS_t ECU_Front_NMOS;
+    can_msg_ECU_Software_Status_Main_t ECU_Software_Status_Main;
+    can_msg_ECU_Software_Status_R2D_t ECU_Software_Status_R2D;
+    can_msg_ECU_Software_Status_CTRL_t ECU_Software_Status_CTRL;
 } can_board_ECU_t;
 
 typedef struct {
@@ -37,13 +39,13 @@ typedef struct {
 typedef struct {
     can_msg_GIL_Inv_Data_1_t GIL_Inv_Data_1;
     can_msg_GIL_Inv_Data_2_t GIL_Inv_Data_2;
-    can_msg_GIL_Software_t GIL_Software;
+    can_msg_GIL_Software_Status_t GIL_Software_Status;
 } can_board_GI_Left_t;
 
 typedef struct {
     can_msg_GIR_Inv_Data_1_t GIR_Inv_Data_1;
     can_msg_GIR_Inv_Data_2_t GIR_Inv_Data_2;
-    can_msg_GIR_Software_t GIR_Software;
+    can_msg_GIR_Software_Status_t GIR_Software_Status;
 } can_board_GI_Right_t;
 
 typedef struct {
@@ -51,7 +53,7 @@ typedef struct {
 } can_board_Dashboard_t;
 
 typedef struct {
-    uint8_t reserved;
+    can_msg_GPS_Send_t GPS_Send;
 } can_board_Telemetry_t;
 
 typedef struct {
