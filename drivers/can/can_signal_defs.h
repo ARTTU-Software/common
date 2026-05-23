@@ -276,6 +276,38 @@ typedef struct {
     uint8_t ECU_Cooling_Recalc_Requested; /* start_bit=55; length=8; factor=1.0; offset=0.0; unit="bool" */
 } can_msg_ECU_Software_Status_CTRL_t;
 
+#define CAN_MSG_ECU_UKF_OUTPUT_1_ID 232U
+#define CAN_MSG_ECU_UKF_OUTPUT_1_DLC 8U
+#define CAN_MSG_ECU_UKF_OUTPUT_1_CYCLE_TIME_MS 0U
+
+#define CAN_MSG_ECU_UKF_OUTPUT_1_SIG_ECU_UKF_VELOCITY_X_FACTOR 0.01f
+
+#define CAN_MSG_ECU_UKF_OUTPUT_1_SIG_ECU_UKF_SIDE_SLIP_ANGLE_FACTOR 0.0001f
+
+#define CAN_MSG_ECU_UKF_OUTPUT_1_SIG_ECU_UKF_ROTATION_Z_FACTOR 0.01f
+
+#define CAN_MSG_ECU_UKF_OUTPUT_1_SIG_ECU_UKF_ANGULAR_VELOCITY_Z_FACTOR 0.01f
+
+typedef struct {
+    float ECU_UKF_Velocity_X; /* start_bit=7; length=16; factor=0.01; offset=0.0; unit="km/h" */
+    float ECU_UKF_Side_Slip_Angle; /* start_bit=23; length=16; factor=0.0001; offset=0.0; unit="rad" */
+    float ECU_UKF_Rotation_Z; /* start_bit=39; length=16; factor=0.01; offset=0.0; unit="rad" */
+    float ECU_UKF_Angular_Velocity_Z; /* start_bit=55; length=16; factor=0.01; offset=0.0; unit="rad" */
+} can_msg_ECU_UKF_Output_1_t;
+
+#define CAN_MSG_ECU_UKF_OUTPUT_2_ID 233U
+#define CAN_MSG_ECU_UKF_OUTPUT_2_DLC 8U
+#define CAN_MSG_ECU_UKF_OUTPUT_2_CYCLE_TIME_MS 0U
+
+#define CAN_MSG_ECU_UKF_OUTPUT_2_SIG_ECU_UKF_ACCEL_X_FACTOR 0.01f
+
+#define CAN_MSG_ECU_UKF_OUTPUT_2_SIG_ECU_UKF_ACCEL_Y_FACTOR 0.01f
+
+typedef struct {
+    float ECU_UKF_Accel_X; /* start_bit=7; length=16; factor=0.01; offset=0.0; unit="m/s^2" */
+    float ECU_UKF_Accel_Y; /* start_bit=23; length=16; factor=0.01; offset=0.0; unit="m/s^2" */
+} can_msg_ECU_UKF_Output_2_t;
+
 #define CAN_MSG_BMS_ERRORS_TEMPS_ID 16U
 #define CAN_MSG_BMS_ERRORS_TEMPS_DLC 8U
 #define CAN_MSG_BMS_ERRORS_TEMPS_CYCLE_TIME_MS 0U
@@ -530,9 +562,7 @@ typedef struct {
 
 #define CAN_MSG_GIL_SOFTWARE_STATUS_SIG_GIL_FAULT_LATCHED_FACTOR 1.0f
 
-#define CAN_MSG_GIL_SOFTWARE_STATUS_SIG_GIL_LEFT_PERCENTAGE_FACTOR 1.0f
-
-#define CAN_MSG_GIL_SOFTWARE_STATUS_SIG_GIL_RIGHT_PERCENTAGE_FACTOR 1.0f
+#define CAN_MSG_GIL_SOFTWARE_STATUS_SIG_GIL_CAN_DELTA_MS_FACTOR 1.0f
 
 #define CAN_MSG_GIL_SOFTWARE_STATUS_SIG_GIL_PASS_THROUGH_FLAG_FACTOR 1.0f
 
@@ -543,8 +573,7 @@ typedef struct {
     uint8_t GIL_Previous_Reason; /* start_bit=15; length=8; factor=1.0; offset=0.0; unit="hex" */
     uint8_t GIL_Next_State; /* start_bit=23; length=8; factor=1.0; offset=0.0; unit="hex" */
     uint8_t GIL_Fault_Latched; /* start_bit=31; length=8; factor=1.0; offset=0.0; unit="bool" */
-    uint8_t GIL_Left_Percentage; /* start_bit=39; length=8; factor=1.0; offset=0.0; unit="%" */
-    uint8_t GIL_Right_Percentage; /* start_bit=47; length=8; factor=1.0; offset=0.0; unit="%" */
+    uint16_t GIL_CAN_Delta_MS; /* start_bit=39; length=16; factor=1.0; offset=0.0; unit="hex" */
     uint8_t GIL_Pass_Through_Flag; /* start_bit=55; length=8; factor=1.0; offset=0.0; unit="bool" */
     uint8_t GIL_Board_Is_Starting; /* start_bit=63; length=8; factor=1.0; offset=0.0; unit="bool" */
 } can_msg_GIL_Software_Status_t;
@@ -599,9 +628,7 @@ typedef struct {
 
 #define CAN_MSG_GIR_SOFTWARE_STATUS_SIG_GIR_FAULT_LATCHED_FACTOR 1.0f
 
-#define CAN_MSG_GIR_SOFTWARE_STATUS_SIG_GIR_LEFT_PERCENTAGE_FACTOR 1.0f
-
-#define CAN_MSG_GIR_SOFTWARE_STATUS_SIG_GIR_RIGHT_PERCENTAGE_FACTOR 1.0f
+#define CAN_MSG_GIR_SOFTWARE_STATUS_SIG_GIR_CAN_DELTA_MS_FACTOR 1.0f
 
 #define CAN_MSG_GIR_SOFTWARE_STATUS_SIG_GIR_PASS_THROUGH_FLAG_FACTOR 1.0f
 
@@ -612,8 +639,7 @@ typedef struct {
     uint8_t GIR_Previous_Reason; /* start_bit=15; length=8; factor=1.0; offset=0.0; unit="hex" */
     uint8_t GIR_Next_State; /* start_bit=23; length=8; factor=1.0; offset=0.0; unit="hex" */
     uint8_t GIR_Fault_Latched; /* start_bit=31; length=8; factor=1.0; offset=0.0; unit="bool" */
-    uint8_t GIR_Left_Percentage; /* start_bit=39; length=8; factor=1.0; offset=0.0; unit="%" */
-    uint8_t GIR_Right_Percentage; /* start_bit=47; length=8; factor=1.0; offset=0.0; unit="%" */
+    uint16_t GIR_CAN_Delta_MS; /* start_bit=39; length=16; factor=1.0; offset=0.0; unit="hex" */
     uint8_t GIR_Pass_Through_Flag; /* start_bit=55; length=8; factor=1.0; offset=0.0; unit="bool" */
     uint8_t GIR_Board_Is_Starting; /* start_bit=63; length=8; factor=1.0; offset=0.0; unit="bool" */
 } can_msg_GIR_Software_Status_t;
@@ -630,28 +656,38 @@ typedef struct {
 
 #define CAN_MSG_DASH_BUTTONS_SIG_IMU_RECAL_FACTOR 1.0f
 
+#define CAN_MSG_DASH_BUTTONS_SIG_FORCE_COOLING_FACTOR 1.0f
+
 typedef struct {
     uint8_t APPS_Recal; /* start_bit=7; length=8; factor=1.0; offset=0.0; unit="bool" */
     uint8_t Log_SD_Toggle; /* start_bit=15; length=8; factor=1.0; offset=0.0; unit="bool" */
     uint8_t Log_LTE_Toggle; /* start_bit=23; length=8; factor=1.0; offset=0.0; unit="bool" */
     uint8_t IMU_Recal; /* start_bit=31; length=8; factor=1.0; offset=0.0; unit="bool" */
+    uint8_t Force_Cooling; /* start_bit=39; length=8; factor=1.0; offset=0.0; unit="bool" */
 } can_msg_DASH_Buttons_t;
 
-#define CAN_MSG_GPS_SEND_ID 240U
-#define CAN_MSG_GPS_SEND_DLC 8U
-#define CAN_MSG_GPS_SEND_CYCLE_TIME_MS 0U
+#define CAN_MSG_GPS_ANGLES_ID 240U
+#define CAN_MSG_GPS_ANGLES_DLC 8U
+#define CAN_MSG_GPS_ANGLES_CYCLE_TIME_MS 0U
 
-#define CAN_MSG_GPS_SEND_SIG_GPS_SPEED_FACTOR 0.01f
+#define CAN_MSG_GPS_ANGLES_SIG_GPS_COURSE_FACTOR 0.0001f
 
-#define CAN_MSG_GPS_SEND_SIG_GPS_COURSE_FACTOR 0.0001f
-
-#define CAN_MSG_GPS_SEND_SIG_GPS_YAW_ANGLE_FACTOR 0.0001f
+#define CAN_MSG_GPS_ANGLES_SIG_GPS_YAW_ANGLE_FACTOR 0.0001f
 
 typedef struct {
-    float Gps_speed; /* start_bit=7; length=16; factor=0.01; offset=0.0; unit="m/s" */
-    float Gps_course; /* start_bit=23; length=16; factor=0.0001; offset=0.0; unit="rad [UW]" */
-    float Gps_yaw_angle; /* start_bit=39; length=16; factor=0.0001; offset=0.0; unit="rad [UW]" */
-} can_msg_GPS_Send_t;
+    float GPS_Course; /* start_bit=0; length=32; factor=0.0001; offset=0.0; unit="rad [UW]" */
+    float GPS_Yaw_Angle; /* start_bit=32; length=32; factor=0.0001; offset=0.0; unit="rad [UW]" */
+} can_msg_GPS_Angles_t;
+
+#define CAN_MSG_GPS_SPEED_ID 241U
+#define CAN_MSG_GPS_SPEED_DLC 8U
+#define CAN_MSG_GPS_SPEED_CYCLE_TIME_MS 0U
+
+#define CAN_MSG_GPS_SPEED_SIG_GPS_SPEED_FACTOR 0.01f
+
+typedef struct {
+    float GPS_Speed; /* start_bit=0; length=16; factor=0.01; offset=0.0; unit="m/s" */
+} can_msg_GPS_Speed_t;
 
 #define CAN_MSG_IMU_DATA_ID 80U
 #define CAN_MSG_IMU_DATA_DLC 8U
@@ -726,6 +762,44 @@ typedef struct {
     uint8_t SAVE_Low; /* start_bit=31; length=8; factor=1.0; offset=0.0; mux=m0; unit="hex" */
     uint8_t SAVE_High; /* start_bit=39; length=8; factor=1.0; offset=0.0; mux=m0; unit="hex" */
 } can_msg_IMU_Recal_t;
+
+#define CAN_MSG_LVSOC_STATUS_1_ID 768U
+#define CAN_MSG_LVSOC_STATUS_1_DLC 8U
+#define CAN_MSG_LVSOC_STATUS_1_CYCLE_TIME_MS 0U
+
+#define CAN_MSG_LVSOC_STATUS_1_SIG_BAT_VOLTAGE_FACTOR 0.001f
+
+#define CAN_MSG_LVSOC_STATUS_1_SIG_CURRENT_FACTOR 0.01f
+
+#define CAN_MSG_LVSOC_STATUS_1_SIG_SOC_FACTOR 0.1f
+
+#define CAN_MSG_LVSOC_STATUS_1_SIG_PEAK_CURRENT_10S_FACTOR 0.1f
+
+typedef struct {
+    float Bat_Voltage; /* start_bit=7; length=16; factor=0.001; offset=0.0; unit="V" */
+    float Current; /* start_bit=23; length=16; factor=0.01; offset=0.0; unit="A" */
+    float SoC; /* start_bit=39; length=16; factor=0.1; offset=0.0; unit="%" */
+    float Peak_Current_10s; /* start_bit=55; length=16; factor=0.1; offset=0.0; unit="A" */
+} can_msg_LVSOC_Status_1_t;
+
+#define CAN_MSG_LVSOC_STATUS_2_ID 769U
+#define CAN_MSG_LVSOC_STATUS_2_DLC 8U
+#define CAN_MSG_LVSOC_STATUS_2_CYCLE_TIME_MS 0U
+
+#define CAN_MSG_LVSOC_STATUS_2_SIG_CAPACITY_FACTOR 1.0f
+
+#define CAN_MSG_LVSOC_STATUS_2_SIG_SUDO_POWEROFF_FACTOR 1.0f
+
+#define CAN_MSG_LVSOC_STATUS_2_SIG_TIME_REMAINING_TTE_TTF_FACTOR 1.0f
+
+#define CAN_MSG_LVSOC_STATUS_2_SIG_AVG_CURRENT_10S_FACTOR 0.01f
+
+typedef struct {
+    uint16_t Capacity; /* start_bit=7; length=16; factor=1.0; offset=0.0; unit="mAh" */
+    uint16_t sudo_poweroff; /* start_bit=23; length=16; factor=1.0; offset=0.0 */
+    uint16_t Time_Remaining_TTE_TTF; /* start_bit=39; length=16; factor=1.0; offset=0.0; unit="min" */
+    float Avg_Current_10s; /* start_bit=55; length=16; factor=0.01; offset=0.0; unit="A" */
+} can_msg_LVSOC_Status_2_t;
 
 #define CAN_MSG_PRG_BOOTLOADER_ID 1264U
 #define CAN_MSG_PRG_BOOTLOADER_DLC 8U
