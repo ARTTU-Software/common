@@ -25,6 +25,8 @@ typedef struct {
     can_msg_ECU_Software_Status_Main_t ECU_Software_Status_Main;
     can_msg_ECU_Software_Status_R2D_t ECU_Software_Status_R2D;
     can_msg_ECU_Software_Status_CTRL_t ECU_Software_Status_CTRL;
+    can_msg_ECU_UKF_Output_1_t ECU_UKF_Output_1;
+    can_msg_ECU_UKF_Output_2_t ECU_UKF_Output_2;
 } can_board_ECU_t;
 
 typedef struct {
@@ -53,13 +55,19 @@ typedef struct {
 } can_board_Dashboard_t;
 
 typedef struct {
-    can_msg_GPS_Send_t GPS_Send;
+    can_msg_GPS_Angles_t GPS_Angles;
+    can_msg_GPS_Speed_t GPS_Speed;
 } can_board_Telemetry_t;
 
 typedef struct {
     can_msg_IMU_Data_t IMU_Data;
     can_msg_IMU_Recal_t IMU_Recal;
 } can_board_IMU_t;
+
+typedef struct {
+    can_msg_LVSOC_Status_1_t LVSOC_Status_1;
+    can_msg_LVSOC_Status_2_t LVSOC_Status_2;
+} can_board_LV_SOC_t;
 
 typedef struct {
     can_msg_PRG_Bootloader_t PRG_Bootloader;
