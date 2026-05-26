@@ -670,24 +670,17 @@ typedef struct {
 #define CAN_MSG_GPS_ANGLES_DLC 8U
 #define CAN_MSG_GPS_ANGLES_CYCLE_TIME_MS 0U
 
+#define CAN_MSG_GPS_ANGLES_SIG_GPS_SPEED_FACTOR 0.01f
+
 #define CAN_MSG_GPS_ANGLES_SIG_GPS_COURSE_FACTOR 0.0001f
 
 #define CAN_MSG_GPS_ANGLES_SIG_GPS_YAW_ANGLE_FACTOR 0.0001f
 
 typedef struct {
-    float GPS_Course; /* start_bit=0; length=32; factor=0.0001; offset=0.0; unit="rad [UW]" */
-    float GPS_Yaw_Angle; /* start_bit=32; length=32; factor=0.0001; offset=0.0; unit="rad [UW]" */
-} can_msg_GPS_Angles_t;
-
-#define CAN_MSG_GPS_SPEED_ID 241U
-#define CAN_MSG_GPS_SPEED_DLC 8U
-#define CAN_MSG_GPS_SPEED_CYCLE_TIME_MS 0U
-
-#define CAN_MSG_GPS_SPEED_SIG_GPS_SPEED_FACTOR 0.01f
-
-typedef struct {
     float GPS_Speed; /* start_bit=0; length=16; factor=0.01; offset=0.0; unit="m/s" */
-} can_msg_GPS_Speed_t;
+    float GPS_Course; /* start_bit=16; length=16; factor=0.0001; offset=0.0; unit="rad [UW]" */
+    float GPS_Yaw_Angle; /* start_bit=32; length=16; factor=0.0001; offset=0.0; unit="rad [UW]" */
+} can_msg_GPS_Angles_t;
 
 #define CAN_MSG_IMU_DATA_ID 80U
 #define CAN_MSG_IMU_DATA_DLC 8U
