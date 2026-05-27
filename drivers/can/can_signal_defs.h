@@ -282,7 +282,7 @@ typedef struct {
 
 #define CAN_MSG_ECU_UKF_OUTPUT_1_SIG_ECU_UKF_VELOCITY_X_FACTOR 0.01f
 
-#define CAN_MSG_ECU_UKF_OUTPUT_1_SIG_ECU_UKF_SIDE_SLIP_ANGLE_FACTOR 0.0001f
+#define CAN_MSG_ECU_UKF_OUTPUT_1_SIG_ECU_UKF_VELOCITY_Y_FACTOR 0.0001f
 
 #define CAN_MSG_ECU_UKF_OUTPUT_1_SIG_ECU_UKF_ROTATION_Z_FACTOR 0.01f
 
@@ -290,7 +290,7 @@ typedef struct {
 
 typedef struct {
     float ECU_UKF_Velocity_X; /* start_bit=7; length=16; factor=0.01; offset=0.0; unit="km/h" */
-    float ECU_UKF_Side_Slip_Angle; /* start_bit=23; length=16; factor=0.0001; offset=0.0; unit="rad" */
+    float ECU_UKF_Velocity_Y; /* start_bit=23; length=16; factor=0.0001; offset=0.0; unit="m/s" */
     float ECU_UKF_Rotation_Z; /* start_bit=39; length=16; factor=0.01; offset=0.0; unit="rad" */
     float ECU_UKF_Angular_Velocity_Z; /* start_bit=55; length=16; factor=0.01; offset=0.0; unit="rad" */
 } can_msg_ECU_UKF_Output_1_t;
@@ -678,8 +678,8 @@ typedef struct {
 
 typedef struct {
     float GPS_Speed; /* start_bit=0; length=16; factor=0.01; offset=0.0; unit="m/s" */
-    float GPS_Course; /* start_bit=16; length=16; factor=0.0001; offset=0.0; unit="rad [UW]" */
-    float GPS_Yaw_Angle; /* start_bit=32; length=16; factor=0.0001; offset=0.0; unit="rad [UW]" */
+    float GPS_Course; /* start_bit=16; length=16; factor=0.0001; offset=0.0; unit="rad" */
+    float GPS_Yaw_Angle; /* start_bit=32; length=16; factor=0.0001; offset=0.0; unit="rad" */
 } can_msg_GPS_Angles_t;
 
 #define CAN_MSG_IMU_DATA_ID 80U
