@@ -282,7 +282,7 @@ typedef struct {
 
 #define CAN_MSG_ECU_UKF_OUTPUT_1_SIG_ECU_UKF_VELOCITY_X_FACTOR 0.01f
 
-#define CAN_MSG_ECU_UKF_OUTPUT_1_SIG_ECU_UKF_VELOCITY_Y_FACTOR 0.0001f
+#define CAN_MSG_ECU_UKF_OUTPUT_1_SIG_ECU_UKF_VELOCITY_Y_FACTOR 0.001f
 
 #define CAN_MSG_ECU_UKF_OUTPUT_1_SIG_ECU_UKF_ROTATION_Z_FACTOR 0.01f
 
@@ -290,7 +290,7 @@ typedef struct {
 
 typedef struct {
     float ECU_UKF_Velocity_X; /* start_bit=7; length=16; factor=0.01; offset=0.0; unit="km/h" */
-    float ECU_UKF_Velocity_Y; /* start_bit=23; length=16; factor=0.0001; offset=0.0; unit="m/s" */
+    float ECU_UKF_Velocity_Y; /* start_bit=23; length=16; factor=0.001; offset=0.0; unit="m/s" */
     float ECU_UKF_Rotation_Z; /* start_bit=39; length=16; factor=0.01; offset=0.0; unit="rad" */
     float ECU_UKF_Angular_Velocity_Z; /* start_bit=55; length=16; factor=0.01; offset=0.0; unit="rad" */
 } can_msg_ECU_UKF_Output_1_t;
@@ -650,20 +650,23 @@ typedef struct {
 
 #define CAN_MSG_DASH_BUTTONS_SIG_APPS_RECAL_FACTOR 1.0f
 
-#define CAN_MSG_DASH_BUTTONS_SIG_LOG_SD_TOGGLE_FACTOR 1.0f
+#define CAN_MSG_DASH_BUTTONS_SIG_STEERING_RECAL_FACTOR 1.0f
 
-#define CAN_MSG_DASH_BUTTONS_SIG_LOG_LTE_TOGGLE_FACTOR 1.0f
+#define CAN_MSG_DASH_BUTTONS_SIG_SUSPENSION_RECAL_FACTOR 1.0f
 
 #define CAN_MSG_DASH_BUTTONS_SIG_IMU_RECAL_FACTOR 1.0f
 
 #define CAN_MSG_DASH_BUTTONS_SIG_FORCE_COOLING_FACTOR 1.0f
 
+#define CAN_MSG_DASH_BUTTONS_SIG_TEMPORARY_SLIP_OFF_ON_FACTOR 1.0f
+
 typedef struct {
     uint8_t APPS_Recal; /* start_bit=7; length=8; factor=1.0; offset=0.0; unit="bool" */
-    uint8_t Log_SD_Toggle; /* start_bit=15; length=8; factor=1.0; offset=0.0; unit="bool" */
-    uint8_t Log_LTE_Toggle; /* start_bit=23; length=8; factor=1.0; offset=0.0; unit="bool" */
+    uint8_t Steering_Recal; /* start_bit=15; length=8; factor=1.0; offset=0.0; unit="bool" */
+    uint8_t Suspension_Recal; /* start_bit=23; length=8; factor=1.0; offset=0.0; unit="bool" */
     uint8_t IMU_Recal; /* start_bit=31; length=8; factor=1.0; offset=0.0; unit="bool" */
     uint8_t Force_Cooling; /* start_bit=39; length=8; factor=1.0; offset=0.0; unit="bool" */
+    uint8_t TEMPORARY_SLIP_OFF_ON; /* start_bit=47; length=8; factor=1.0; offset=0.0; unit="bool" */
 } can_msg_DASH_Buttons_t;
 
 #define CAN_MSG_GPS_ANGLES_ID 240U

@@ -111,7 +111,7 @@ BO_ 231 ECU_Software_Status_CTRL: 8 ECU
  SG_ ECU_Cooling_Recalc_Requested : 55|8@0+ (1.0,0) [0.0|1.0] "bool" Vector__XXX
 BO_ 232 ECU_UKF_Output_1: 8 ECU
  SG_ ECU_UKF_Velocity_X : 7|16@0- (0.01,0) [0.0|200.0] "km/h" Vector__XXX
- SG_ ECU_UKF_Velocity_Y : 23|16@0- (0.0001,0) [-1.0|1.0] "m/s" Vector__XXX
+ SG_ ECU_UKF_Velocity_Y : 23|16@0- (0.001,0) [-30.0|30.0] "m/s" Vector__XXX
  SG_ ECU_UKF_Rotation_Z : 39|16@0- (0.01,0) [0.0|360.0] "rad" Vector__XXX
  SG_ ECU_UKF_Angular_Velocity_Z : 55|16@0- (0.01,0) [0.0|360.0] "rad" Vector__XXX
 BO_ 233 ECU_UKF_Output_2: 8 ECU
@@ -219,10 +219,11 @@ BO_ 50 GIR_Software_Status: 8 GI_Right
 
 BO_ 208 DASH_Buttons: 8 Dashboard
  SG_ APPS_Recal : 7|8@0+ (1.0,0) [0.0|1.0] "bool" Vector__XXX
- SG_ Log_SD_Toggle : 15|8@0+ (1.0,0) [0.0|1.0] "bool" Vector__XXX
- SG_ Log_LTE_Toggle : 23|8@0+ (1.0,0) [0.0|1.0] "bool" Vector__XXX
+ SG_ Steering_Recal : 15|8@0+ (1.0,0) [0.0|1.0] "bool" Vector__XXX
+ SG_ Suspension_Recal : 23|8@0+ (1.0,0) [0.0|1.0] "bool" Vector__XXX
  SG_ IMU_Recal : 31|8@0+ (1.0,0) [0.0|1.0] "bool" Vector__XXX
  SG_ Force_Cooling : 39|8@0+ (1.0,0) [0.0|1.0] "bool" Vector__XXX
+ SG_ TEMPORARY_SLIP_OFF_ON : 47|8@0+ (1.0,0) [0.0|1.0] "bool" Vector__XXX
 
 BO_ 240 GPS_Angles: 8 Telemetry
  SG_ GPS_Speed : 0|16@1- (0.01,0) [0.0|327.67] "m/s" Vector__XXX
