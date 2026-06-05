@@ -9,6 +9,7 @@ typedef struct {
     can_msg_GF_Wheel_Sensors_t GF_Wheel_Sensors;
     can_msg_GF_Misc_Sensors_t GF_Misc_Sensors;
     can_msg_GF_Software_Status_t GF_Software_Status;
+    can_msg_GF_Calibration_Values_t GF_Calibration_Values;
 } can_board_Gateway_Front_t;
 
 typedef struct {

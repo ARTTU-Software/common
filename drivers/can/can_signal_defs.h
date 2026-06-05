@@ -68,6 +68,25 @@ typedef struct {
     uint8_t GF_ADC_Ready; /* start_bit=47; length=8; factor=1.0; offset=0.0; unit="bool" */
 } can_msg_GF_Software_Status_t;
 
+#define CAN_MSG_GF_CALIBRATION_VALUES_ID 174U
+#define CAN_MSG_GF_CALIBRATION_VALUES_DLC 8U
+#define CAN_MSG_GF_CALIBRATION_VALUES_CYCLE_TIME_MS 0U
+
+#define CAN_MSG_GF_CALIBRATION_VALUES_SIG_GF_APPS_MIN_FACTOR 1.0f
+
+#define CAN_MSG_GF_CALIBRATION_VALUES_SIG_GF_APPS_MAX_FACTOR 1.0f
+
+#define CAN_MSG_GF_CALIBRATION_VALUES_SIG_GF_STEER_MIN_FACTOR 1.0f
+
+#define CAN_MSG_GF_CALIBRATION_VALUES_SIG_GF_STEER_MAX_FACTOR 1.0f
+
+typedef struct {
+    uint16_t GF_APPS_Min; /* start_bit=7; length=16; factor=1.0; offset=0.0; unit="dec" */
+    uint16_t GF_APPS_Max; /* start_bit=23; length=16; factor=1.0; offset=0.0; unit="dec" */
+    uint16_t GF_Steer_Min; /* start_bit=39; length=16; factor=1.0; offset=0.0; unit="dec" */
+    uint16_t GF_Steer_Max; /* start_bit=55; length=16; factor=1.0; offset=0.0; unit="dec" */
+} can_msg_GF_Calibration_Values_t;
+
 #define CAN_MSG_GR_WHEEL_SENSORS_ID 176U
 #define CAN_MSG_GR_WHEEL_SENSORS_DLC 8U
 #define CAN_MSG_GR_WHEEL_SENSORS_CYCLE_TIME_MS 0U
