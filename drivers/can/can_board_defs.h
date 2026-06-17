@@ -52,7 +52,7 @@ typedef struct {
 } can_board_GI_Right_t;
 
 typedef struct {
-    can_msg_DASH_Buttons_t DASH_Buttons;
+    can_msg_DASH_Inputs_t DASH_Inputs;
 } can_board_Dashboard_t;
 
 typedef struct {

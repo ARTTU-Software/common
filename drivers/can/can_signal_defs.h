@@ -371,7 +371,7 @@ typedef struct {
 
 #define CAN_MSG_BMS_ERRORS_TEMPS_SIG_DTC_P0AC0_CURRENT_SENSOR_FAULT_FACTOR 1.0f
 
-#define CAN_MSG_BMS_ERRORS_TEMPS_SIG_DTC_P0A04_CELL_OPEN_WIRING_FAULT_FACTOR 1.0f
+#define CAN_MSG_BMS_ERRORS_TEMPS_SIG_DTC_P0A04_CELL_OPEN_WIRING_FAULT_1_FACTOR 1.0f
 
 #define CAN_MSG_BMS_ERRORS_TEMPS_SIG_DTC_P0A80_WEAK_CELL_FAULT_FACTOR 1.0f
 
@@ -406,7 +406,7 @@ typedef struct {
     uint8_t DTC_P0A0C_Highest_Cell_Voltage_Too_High_Fault; /* start_bit=24; length=1; factor=1.0; offset=0.0; unit="Bool" */
     uint8_t DTC_P0A9C_Thermistor_Fault; /* start_bit=25; length=1; factor=1.0; offset=0.0; unit="Bool" */
     uint8_t DTC_P0AC0_Current_Sensor_Fault; /* start_bit=26; length=1; factor=1.0; offset=0.0; unit="Bool" */
-    uint8_t DTC_P0A04_Cell_Open_Wiring_Fault_2; /* start_bit=27; length=1; factor=1.0; offset=0.0; unit="Bool" */
+    uint8_t DTC_P0A04_Cell_Open_Wiring_Fault_1; /* start_bit=27; length=1; factor=1.0; offset=0.0; unit="Bool" */
     uint8_t DTC_P0A80_Weak_Cell_Fault; /* start_bit=28; length=1; factor=1.0; offset=0.0; unit="Bool" */
     uint8_t MultiPurpose_Output_2; /* start_bit=29; length=1; factor=1.0; offset=0.0; unit="Bool" */
     int8_t Low_Temperature; /* start_bit=39; length=8; factor=1.0; offset=0.0; unit="Celsius" */
@@ -663,30 +663,42 @@ typedef struct {
     uint8_t GIR_Board_Is_Starting; /* start_bit=63; length=8; factor=1.0; offset=0.0; unit="bool" */
 } can_msg_GIR_Software_Status_t;
 
-#define CAN_MSG_DASH_BUTTONS_ID 208U
-#define CAN_MSG_DASH_BUTTONS_DLC 8U
-#define CAN_MSG_DASH_BUTTONS_CYCLE_TIME_MS 0U
+#define CAN_MSG_DASH_INPUTS_ID 208U
+#define CAN_MSG_DASH_INPUTS_DLC 8U
+#define CAN_MSG_DASH_INPUTS_CYCLE_TIME_MS 0U
 
-#define CAN_MSG_DASH_BUTTONS_SIG_APPS_RECAL_FACTOR 1.0f
+#define CAN_MSG_DASH_INPUTS_SIG_APPS_RECAL_FACTOR 1.0f
 
-#define CAN_MSG_DASH_BUTTONS_SIG_STEERING_RECAL_FACTOR 1.0f
+#define CAN_MSG_DASH_INPUTS_SIG_STEERING_RECAL_FACTOR 1.0f
 
-#define CAN_MSG_DASH_BUTTONS_SIG_SUSPENSION_RECAL_FACTOR 1.0f
+#define CAN_MSG_DASH_INPUTS_SIG_SUSPENSION_RECAL_FACTOR 1.0f
 
-#define CAN_MSG_DASH_BUTTONS_SIG_IMU_RECAL_FACTOR 1.0f
+#define CAN_MSG_DASH_INPUTS_SIG_IMU_RECAL_FACTOR 1.0f
 
-#define CAN_MSG_DASH_BUTTONS_SIG_FORCE_COOLING_FACTOR 1.0f
+#define CAN_MSG_DASH_INPUTS_SIG_FORCE_COOLING_FACTOR 1.0f
 
-#define CAN_MSG_DASH_BUTTONS_SIG_TEMPORARY_SLIP_OFF_ON_FACTOR 1.0f
+#define CAN_MSG_DASH_INPUTS_SIG_MOTOR_CONTROL_ON_OFF_FACTOR 1.0f
+
+#define CAN_MSG_DASH_INPUTS_SIG_TELEMETRY_SD_TOGGLE_FACTOR 1.0f
+
+#define CAN_MSG_DASH_INPUTS_SIG_TELEMETRY_UDP_TOGGLE_FACTOR 1.0f
+
+#define CAN_MSG_DASH_INPUTS_SIG_MOTOR_CONTROL_MODE_TOGGLE_FACTOR 1.0f
+
+#define CAN_MSG_DASH_INPUTS_SIG_MOTOR_CONTROL_TV_OR_SLIP_FACTOR 1.0f
 
 typedef struct {
-    uint8_t APPS_Recal; /* start_bit=7; length=8; factor=1.0; offset=0.0; unit="bool" */
-    uint8_t Steering_Recal; /* start_bit=15; length=8; factor=1.0; offset=0.0; unit="bool" */
-    uint8_t Suspension_Recal; /* start_bit=23; length=8; factor=1.0; offset=0.0; unit="bool" */
-    uint8_t IMU_Recal; /* start_bit=31; length=8; factor=1.0; offset=0.0; unit="bool" */
-    uint8_t Force_Cooling; /* start_bit=39; length=8; factor=1.0; offset=0.0; unit="bool" */
-    uint8_t TEMPORARY_SLIP_OFF_ON; /* start_bit=47; length=8; factor=1.0; offset=0.0; unit="bool" */
-} can_msg_DASH_Buttons_t;
+    uint8_t APPS_Recal; /* start_bit=0; length=1; factor=1.0; offset=0.0; unit="bool" */
+    uint8_t Steering_Recal; /* start_bit=1; length=1; factor=1.0; offset=0.0; unit="bool" */
+    uint8_t Suspension_Recal; /* start_bit=2; length=1; factor=1.0; offset=0.0; unit="bool" */
+    uint8_t IMU_Recal; /* start_bit=3; length=1; factor=1.0; offset=0.0; unit="bool" */
+    uint8_t Force_Cooling; /* start_bit=4; length=1; factor=1.0; offset=0.0; unit="bool" */
+    uint8_t Motor_Control_On_Off; /* start_bit=5; length=1; factor=1.0; offset=0.0; unit="enum" */
+    uint8_t Telemetry_SD_Toggle; /* start_bit=6; length=1; factor=1.0; offset=0.0; unit="bool" */
+    uint8_t Telemetry_UDP_Toggle; /* start_bit=7; length=1; factor=1.0; offset=0.0; unit="bool" */
+    uint8_t Motor_Control_Mode_Toggle; /* start_bit=15; length=8; factor=1.0; offset=0.0; unit="enum" */
+    uint8_t Motor_Control_TV_Or_Slip; /* start_bit=16; length=1; factor=1.0; offset=0.0; unit="bool" */
+} can_msg_DASH_Inputs_t;
 
 #define CAN_MSG_GPS_ANGLES_ID 240U
 #define CAN_MSG_GPS_ANGLES_DLC 8U
