@@ -122,6 +122,15 @@ BO_ 232 ECU_UKF_Output_1: 8 ECU
 BO_ 233 ECU_UKF_Output_2: 8 ECU
  SG_ ECU_UKF_Accel_X : 7|16@0- (0.01,0) [0.0|50.0] "m/s^2" Telemetry
  SG_ ECU_UKF_Accel_Y : 23|16@0- (0.01,0) [0.0|50.0] "m/s^2" Telemetry
+BO_ 234 ECU_TV_Output_1: 8 ECU
+ SG_ ECU_TV_State_On_Off : 7|8@0+ (1.0,0) [0.0|1.0] "number" Telemetry
+ SG_ ECU_TV_Delta_Mz : 15|16@0+ (1.0,0) [0.0|2500.0] "number" Telemetry
+ SG_ ECU_TV_Slip_State_On_Off : 31|8@0+ (1.0,0) [0.0|1.0] "number" Telemetry
+BO_ 235 ECU_TV_Output_2: 8 ECU
+ SG_ ECU_TV_Kappa_Ref_Rl : 7|16@0+ (0.001,0) [0.0|1.0] "number" Telemetry
+ SG_ ECU_TV_Kappa_Ref_Rr : 23|16@0+ (0.001,0) [0.0|1.0] "number" Telemetry
+ SG_ ECU_TV_Tmax_Rl : 39|16@0+ (0.1,0) [0.0|100.0] "number" Telemetry
+ SG_ ECU_TV_Tmax_Rr : 55|16@0+ (0.1,0) [0.0|100.0] "number" Telemetry
 
 BO_ 16 BMS_Errors_Temps: 8 BMS
  SG_ Internal_Temperature : 7|8@0- (1.0,0) [-10.0|100.0] "Celsius" Telemetry,ECU,Dashboard
@@ -231,8 +240,16 @@ BO_ 208 DASH_Inputs: 8 Dashboard
  SG_ Motor_Control_On_Off : 5|1@1+ (1.0,0) [0.0|1.0] "enum" Telemetry,ECU
  SG_ Telemetry_SD_Toggle : 6|1@1+ (1.0,0) [0.0|1.0] "bool" Telemetry,ECU
  SG_ Telemetry_UDP_Toggle : 7|1@1+ (1.0,0) [0.0|1.0] "bool" Telemetry,ECU
- SG_ Motor_Control_Mode_Toggle : 15|8@0+ (1.0,0) [0.0|1.0] "enum" Telemetry,ECU
- SG_ Motor_Control_TV_Or_Slip : 16|1@1+ (1.0,0) [0.0|1.0] "bool" Telemetry,ECU
+ SG_ Motor_Control_Mode_Toggle : 15|1@0+ (1.0,0) [0.0|1.0] "bool" Telemetry,ECU
+BO_ 209 DASH_PID_Tune_1: 8 Dashboard
+ SG_ Slip_Ctrl_Kp : 7|16@0+ (1.0,0) [0.0|65535.0] "unit" Telemetry,ECU
+ SG_ Slip_Ctrl_Ki : 23|16@0+ (1.0,0) [0.0|65535.0] "unit" Telemetry,ECU
+ SG_ Slip_Ctrl_Kd : 39|16@0+ (0.01,0) [0.0|655.35] "unit" Telemetry,ECU
+ SG_ Slip_Ctrl_Kn : 55|16@0+ (1.0,0) [0.0|100.0] "unit" Telemetry,ECU
+BO_ 210 DASH_PID_Tune_2: 8 Dashboard
+ SG_ Kp_TV_Beta : 7|16@0+ (1.0,0) [0.0|1000.0] "unit" Telemetry,ECU
+ SG_ Kp_TV_Yaw : 23|16@0+ (1.0,0) [0.0|1500.0] "unit" Telemetry,ECU
+ SG_ Slip_Steer_Th : 39|16@0+ (1.0,0) [0.0|255.0] "deg" Telemetry,ECU
 
 BO_ 240 GPS_Angles: 8 Telemetry
  SG_ GPS_Speed : 0|16@1- (0.01,0) [0.0|327.67] "m/s" ECU
@@ -295,6 +312,8 @@ BA_ "GenMsgCycleTime" BO_ 178 200;
 BA_ "GenMsgCycleTime" BO_ 224 12;
 BA_ "GenMsgCycleTime" BO_ 232 50;
 BA_ "GenMsgCycleTime" BO_ 233 50;
+BA_ "GenMsgCycleTime" BO_ 234 50;
+BA_ "GenMsgCycleTime" BO_ 235 50;
 BA_ "GenMsgCycleTime" BO_ 16 23;
 BA_ "GenMsgCycleTime" BO_ 17 47;
 BA_ "GenMsgCycleTime" BO_ 18 47;
@@ -331,5 +350,3 @@ VAL_ 50 GIR_Current_State 0 "BOARD_FSM_MODE_INIT" 1 "BOARD_FSM_MODE_READY" 2 "BO
 VAL_ 50 GIR_Previous_Reason 0 "BOARD_FSM_REASON_NONE" 1 "BOARD_FSM_REASON_INIT_COMPLETE" 2 "BOARD_FSM_REASON_ECU_DISABLE" 3 "BOARD_FSM_REASON_ECU_ENABLE" 4 "BOARD_FSM_REASON_ECU_REGEN" 5 "BOARD_FSM_REASON_PASS_THROUGH" 6 "BOARD_FSM_REASON_CAN_TIMEOUT" 7 "BOARD_FSM_REASON_INVALID_CMD" 8 "BOARD_FSM_REASON_BOOTLOADER_REQUEST" ;
 VAL_ 50 GIR_Next_State 0 "BOARD_FSM_MODE_INIT" 1 "BOARD_FSM_MODE_READY" 2 "BOARD_FSM_MODE_TORQUE_ACTIVE" 3 "BOARD_FSM_MODE_REGEN_ACTIVE" 4 "BOARD_FSM_MODE_PROGRAMMING" 5 "BOARD_FSM_MODE_BOOTLOADER" 6 "BOARD_FSM_MODE_FAULT" ;
 VAL_ 208 Motor_Control_On_Off 0 "OFF" 1 "ON" ;
-VAL_ 208 Motor_Control_Mode_Toggle 0 "SMOOTH" 1 "AGGRESSIVE" ;
-VAL_ 208 Motor_Control_TV_Or_Slip 0 "SLIP" 1 "TV" ;

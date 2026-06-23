@@ -327,6 +327,41 @@ typedef struct {
     float ECU_UKF_Accel_Y; /* start_bit=23; length=16; factor=0.01; offset=0.0; unit="m/s^2" */
 } can_msg_ECU_UKF_Output_2_t;
 
+#define CAN_MSG_ECU_TV_OUTPUT_1_ID 234U
+#define CAN_MSG_ECU_TV_OUTPUT_1_DLC 8U
+#define CAN_MSG_ECU_TV_OUTPUT_1_CYCLE_TIME_MS 0U
+
+#define CAN_MSG_ECU_TV_OUTPUT_1_SIG_ECU_TV_STATE_ON_OFF_FACTOR 1.0f
+
+#define CAN_MSG_ECU_TV_OUTPUT_1_SIG_ECU_TV_DELTA_MZ_FACTOR 1.0f
+
+#define CAN_MSG_ECU_TV_OUTPUT_1_SIG_ECU_TV_SLIP_STATE_ON_OFF_FACTOR 1.0f
+
+typedef struct {
+    uint8_t ECU_TV_State_On_Off; /* start_bit=7; length=8; factor=1.0; offset=0.0; unit="number" */
+    uint16_t ECU_TV_Delta_Mz; /* start_bit=15; length=16; factor=1.0; offset=0.0; unit="number" */
+    uint8_t ECU_TV_Slip_State_On_Off; /* start_bit=31; length=8; factor=1.0; offset=0.0; unit="number" */
+} can_msg_ECU_TV_Output_1_t;
+
+#define CAN_MSG_ECU_TV_OUTPUT_2_ID 235U
+#define CAN_MSG_ECU_TV_OUTPUT_2_DLC 8U
+#define CAN_MSG_ECU_TV_OUTPUT_2_CYCLE_TIME_MS 0U
+
+#define CAN_MSG_ECU_TV_OUTPUT_2_SIG_ECU_TV_KAPPA_REF_RL_FACTOR 0.001f
+
+#define CAN_MSG_ECU_TV_OUTPUT_2_SIG_ECU_TV_KAPPA_REF_RR_FACTOR 0.001f
+
+#define CAN_MSG_ECU_TV_OUTPUT_2_SIG_ECU_TV_TMAX_RL_FACTOR 0.1f
+
+#define CAN_MSG_ECU_TV_OUTPUT_2_SIG_ECU_TV_TMAX_RR_FACTOR 0.1f
+
+typedef struct {
+    float ECU_TV_Kappa_Ref_Rl; /* start_bit=7; length=16; factor=0.001; offset=0.0; unit="number" */
+    float ECU_TV_Kappa_Ref_Rr; /* start_bit=23; length=16; factor=0.001; offset=0.0; unit="number" */
+    float ECU_TV_Tmax_Rl; /* start_bit=39; length=16; factor=0.1; offset=0.0; unit="number" */
+    float ECU_TV_Tmax_Rr; /* start_bit=55; length=16; factor=0.1; offset=0.0; unit="number" */
+} can_msg_ECU_TV_Output_2_t;
+
 #define CAN_MSG_BMS_ERRORS_TEMPS_ID 16U
 #define CAN_MSG_BMS_ERRORS_TEMPS_DLC 8U
 #define CAN_MSG_BMS_ERRORS_TEMPS_CYCLE_TIME_MS 0U
@@ -685,8 +720,6 @@ typedef struct {
 
 #define CAN_MSG_DASH_INPUTS_SIG_MOTOR_CONTROL_MODE_TOGGLE_FACTOR 1.0f
 
-#define CAN_MSG_DASH_INPUTS_SIG_MOTOR_CONTROL_TV_OR_SLIP_FACTOR 1.0f
-
 typedef struct {
     uint8_t APPS_Recal; /* start_bit=0; length=1; factor=1.0; offset=0.0; unit="bool" */
     uint8_t Steering_Recal; /* start_bit=1; length=1; factor=1.0; offset=0.0; unit="bool" */
@@ -696,9 +729,43 @@ typedef struct {
     uint8_t Motor_Control_On_Off; /* start_bit=5; length=1; factor=1.0; offset=0.0; unit="enum" */
     uint8_t Telemetry_SD_Toggle; /* start_bit=6; length=1; factor=1.0; offset=0.0; unit="bool" */
     uint8_t Telemetry_UDP_Toggle; /* start_bit=7; length=1; factor=1.0; offset=0.0; unit="bool" */
-    uint8_t Motor_Control_Mode_Toggle; /* start_bit=15; length=8; factor=1.0; offset=0.0; unit="enum" */
-    uint8_t Motor_Control_TV_Or_Slip; /* start_bit=16; length=1; factor=1.0; offset=0.0; unit="bool" */
+    uint8_t Motor_Control_Mode_Toggle; /* start_bit=15; length=1; factor=1.0; offset=0.0; unit="bool" */
 } can_msg_DASH_Inputs_t;
+
+#define CAN_MSG_DASH_PID_TUNE_1_ID 209U
+#define CAN_MSG_DASH_PID_TUNE_1_DLC 8U
+#define CAN_MSG_DASH_PID_TUNE_1_CYCLE_TIME_MS 0U
+
+#define CAN_MSG_DASH_PID_TUNE_1_SIG_SLIP_CTRL_KP_FACTOR 1.0f
+
+#define CAN_MSG_DASH_PID_TUNE_1_SIG_SLIP_CTRL_KI_FACTOR 1.0f
+
+#define CAN_MSG_DASH_PID_TUNE_1_SIG_SLIP_CTRL_KD_FACTOR 0.01f
+
+#define CAN_MSG_DASH_PID_TUNE_1_SIG_SLIP_CTRL_KN_FACTOR 1.0f
+
+typedef struct {
+    uint16_t Slip_Ctrl_Kp; /* start_bit=7; length=16; factor=1.0; offset=0.0; unit="unit" */
+    uint16_t Slip_Ctrl_Ki; /* start_bit=23; length=16; factor=1.0; offset=0.0; unit="unit" */
+    float Slip_Ctrl_Kd; /* start_bit=39; length=16; factor=0.01; offset=0.0; unit="unit" */
+    uint16_t Slip_Ctrl_Kn; /* start_bit=55; length=16; factor=1.0; offset=0.0; unit="unit" */
+} can_msg_DASH_PID_Tune_1_t;
+
+#define CAN_MSG_DASH_PID_TUNE_2_ID 210U
+#define CAN_MSG_DASH_PID_TUNE_2_DLC 8U
+#define CAN_MSG_DASH_PID_TUNE_2_CYCLE_TIME_MS 0U
+
+#define CAN_MSG_DASH_PID_TUNE_2_SIG_KP_TV_BETA_FACTOR 1.0f
+
+#define CAN_MSG_DASH_PID_TUNE_2_SIG_KP_TV_YAW_FACTOR 1.0f
+
+#define CAN_MSG_DASH_PID_TUNE_2_SIG_SLIP_STEER_TH_FACTOR 1.0f
+
+typedef struct {
+    uint16_t Kp_TV_Beta; /* start_bit=7; length=16; factor=1.0; offset=0.0; unit="unit" */
+    uint16_t Kp_TV_Yaw; /* start_bit=23; length=16; factor=1.0; offset=0.0; unit="unit" */
+    uint16_t Slip_Steer_Th; /* start_bit=39; length=16; factor=1.0; offset=0.0; unit="deg" */
+} can_msg_DASH_PID_Tune_2_t;
 
 #define CAN_MSG_GPS_ANGLES_ID 240U
 #define CAN_MSG_GPS_ANGLES_DLC 8U

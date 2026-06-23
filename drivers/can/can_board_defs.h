@@ -28,6 +28,8 @@ typedef struct {
     can_msg_ECU_Software_Status_CTRL_t ECU_Software_Status_CTRL;
     can_msg_ECU_UKF_Output_1_t ECU_UKF_Output_1;
     can_msg_ECU_UKF_Output_2_t ECU_UKF_Output_2;
+    can_msg_ECU_TV_Output_1_t ECU_TV_Output_1;
+    can_msg_ECU_TV_Output_2_t ECU_TV_Output_2;
 } can_board_ECU_t;
 
 typedef struct {
@@ -53,6 +55,8 @@ typedef struct {
 
 typedef struct {
     can_msg_DASH_Inputs_t DASH_Inputs;
+    can_msg_DASH_PID_Tune_1_t DASH_PID_Tune_1;
+    can_msg_DASH_PID_Tune_2_t DASH_PID_Tune_2;
 } can_board_Dashboard_t;
 
 typedef struct {
