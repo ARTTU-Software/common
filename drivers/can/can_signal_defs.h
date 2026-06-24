@@ -534,9 +534,9 @@ typedef struct {
 #define CAN_MSG_BMS_CELL_RESISTANCE_SIG_LOW_INTRES_ID_FACTOR 1.0f
 
 typedef struct {
-    float Low_Cell_Resistance; /* start_bit=23; length=16; factor=0.01; offset=0.0; unit="mOhm" */
-    float High_Cell_Resistance; /* start_bit=39; length=16; factor=0.01; offset=0.0; unit="mOhm" */
-    float Avg_Cell_Resistance; /* start_bit=7; length=16; factor=0.01; offset=0.0; unit="mOhm" */
+    float Low_Cell_Resistance; /* start_bit=7; length=16; factor=0.01; offset=0.0; unit="mOhm" */
+    float High_Cell_Resistance; /* start_bit=23; length=16; factor=0.01; offset=0.0; unit="mOhm" */
+    float Avg_Cell_Resistance; /* start_bit=39; length=16; factor=0.01; offset=0.0; unit="mOhm" */
     uint8_t High_Intres_ID; /* start_bit=15; length=8; factor=1.0; offset=0.0; unit="ID" */
     uint8_t Low_Intres_ID; /* start_bit=23; length=8; factor=1.0; offset=0.0; unit="ID" */
 } can_msg_BMS_Cell_Resistance_t;
@@ -562,8 +562,8 @@ typedef struct {
     float Pack_Current; /* start_bit=23; length=16; factor=0.1; offset=0.0; unit="Amps" */
     float Pack_DOD; /* start_bit=39; length=8; factor=0.5; offset=0.0; unit="Percent" */
     uint16_t Pack_DCL; /* start_bit=47; length=16; factor=1.0; offset=0.0; unit="Amps" */
-    uint8_t Charger_Safety; /* start_bit=55; length=1; factor=1.0; offset=0.0; unit="Bool" */
-    uint8_t Charge_Relay; /* start_bit=56; length=1; factor=1.0; offset=0.0; unit="Bool" */
+    uint8_t Charger_Safety; /* start_bit=56; length=1; factor=1.0; offset=0.0; unit="Bool" */
+    uint8_t Charge_Relay; /* start_bit=57; length=1; factor=1.0; offset=0.0; unit="Bool" */
 } can_msg_BMS_Current_t;
 
 #define CAN_MSG_GIL_INV_DATA_1_ID 32U
@@ -729,7 +729,7 @@ typedef struct {
     uint8_t Motor_Control_On_Off; /* start_bit=5; length=1; factor=1.0; offset=0.0; unit="enum" */
     uint8_t Telemetry_SD_Toggle; /* start_bit=6; length=1; factor=1.0; offset=0.0; unit="bool" */
     uint8_t Telemetry_UDP_Toggle; /* start_bit=7; length=1; factor=1.0; offset=0.0; unit="bool" */
-    uint8_t Motor_Control_Mode_Toggle; /* start_bit=15; length=1; factor=1.0; offset=0.0; unit="bool" */
+    uint8_t Motor_Control_Mode_Toggle; /* start_bit=15; length=8; factor=1.0; offset=0.0; unit="enum" */
 } can_msg_DASH_Inputs_t;
 
 #define CAN_MSG_DASH_PID_TUNE_1_ID 209U
