@@ -14,8 +14,94 @@ The FSM driver provides a small framework for state transitions with entry, exit
 > [!NOTE]
 > You should have a `task_board_fsm.c` and `task_board_fsm_actions.c` pair of files to manage the driver setup and the state-specific actions.
 
-## State Diagram
-![FSM Diagram Image](../../../../../public/images/FSM_driver_diagram.png)
+## State and Flow Diagram
+
+<div data-zoom="0.9">
+
+```mermaid
+%%{init: {
+  'theme': 'dark',
+  'themeVariables': {
+    'fontSize': '14px',
+    'fontFamily': 'system-ui, sans-serif'
+  },
+  'flowchart': {
+    'nodeSpacing': 30,
+    'rankSpacing': 40,
+    'padding': 15,
+    'curve': 'basis'
+  }
+}}%%
+flowchart TB
+    %% Subgraph Styles
+    style Transition_Path fill:#0f172a,stroke:#10b981,stroke-width:2px,color:#fff
+    style No_Transition_Path fill:#0f172a,stroke:#64748b,stroke-width:2px,color:#fff
+    style Optional_Branches fill:#0f172a,stroke:#a1a1aa,stroke-width:2px,color:#fff
+
+    %% Node Styles
+    classDef genericLogic fill:#1d4ed8,stroke:#3b82f6,stroke-width:1px,color:#fff;
+    classDef appLogic fill:#701a75,stroke:#d946ef,stroke-width:1px,color:#fff;
+    classDef transPath fill:#065f46,stroke:#10b981,stroke-width:1px,color:#fff;
+    classDef noTransPath fill:#334155,stroke:#64748b,stroke-width:1px,color:#fff;
+    classDef optBranch fill:#78350f,stroke:#f59e0b,stroke-width:1px,color:#fff;
+    classDef errorState fill:#991b1b,stroke:#ef4444,stroke-width:1px,color:#fff;
+    classDef decisionPoint fill:#7c2d12,stroke:#f97316,stroke-width:1px,color:#fff;
+
+    init_fsm(["FSM_init()"]):::genericLogic
+    begin_cycle(["FSM_step()"]):::genericLogic
+    snap_exists{"Snapshot Exist?"}:::decisionPoint
+    build_snap["Build Event Snapshot"]:::appLogic
+    decide_state["FSM_DecisionFn"]:::appLogic
+    state_changed{"State Changed?"}:::decisionPoint
+
+    init_fsm --> begin_cycle
+    begin_cycle --> snap_exists
+    snap_exists -- Yes --> build_snap
+    snap_exists -- No --> decide_state
+    build_snap --> decide_state
+    decide_state --> state_changed
+
+    subgraph Transition_Path ["Transition Path"]
+        direction TB
+        exit_act["Exit Action"]:::transPath
+        commit_state["Commit State"]:::transPath
+        entry_act["Entry Action"]:::transPath
+        exit_act --> commit_state --> entry_act
+    end
+
+    subgraph No_Transition_Path ["No Transition Path"]
+        direction TB
+        skip_trans["Skip Transition"]:::noTransPath
+    end
+
+    state_changed -- Yes --> exit_act
+    state_changed -- No --> skip_trans
+
+    exec_action["Run Current State Action"]:::transPath
+    entry_act --> exec_action
+    skip_trans --> exec_action
+
+    subgraph Optional_Branches ["Optional Branches"]
+        direction TB
+        fault_check{"Fault Latched?"}:::decisionPoint
+        handle_fault["Handle Fault"]:::errorState
+        boot_req{"Bootloader Requested?"}:::decisionPoint
+        trigger_boot["Trigger Bootloader"]:::errorState
+
+        fault_check -- Yes --> handle_fault
+        fault_check -- No --> boot_req
+        boot_req -- Yes --> trigger_boot
+    end
+
+    exec_action --> fault_check
+
+    %% Feedback loop back to FSM_step()
+    handle_fault -->|Repeat Next Cycle| begin_cycle
+    trigger_boot -->|Repeat Next Cycle| begin_cycle
+    boot_req -- No --> begin_cycle
+```
+
+</div>
 
 ## Functions
 #### `void FSM_init(FSM_Driver_t* driver, FSM_DecisionFn_t decide_fn, FSM_SnapshotBuildFn_t build_snapshot_fn, FSM_State_Config_t* state_configs, uint8_t num_states, FSM_State_t initial_state, FSM_Event_Snapshot_t event_snapshot)`
