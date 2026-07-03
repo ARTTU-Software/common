@@ -124,8 +124,9 @@ BO_ 233 ECU_UKF_Output_2: 8 ECU
  SG_ ECU_UKF_Accel_Y : 23|16@0- (0.01,0) [0.0|50.0] "m/s^2" Telemetry
 BO_ 234 ECU_TV_Output_1: 8 ECU
  SG_ ECU_TV_State_On_Off : 7|8@0+ (1.0,0) [0.0|1.0] "number" Telemetry
- SG_ ECU_TV_Delta_Mz : 15|16@0+ (1.0,0) [0.0|2500.0] "number" Telemetry
- SG_ ECU_TV_Slip_State_On_Off : 31|8@0+ (1.0,0) [0.0|1.0] "number" Telemetry
+ SG_ ECU_TV_Mz_Yaw : 15|16@0+ (1.0,0) [0.0|2500.0] "number" Telemetry
+ SG_ ECU_TV_Mz_Beta : 31|16@0+ (1.0,0) [0.0|2500.0] "number" Telemetry
+ SG_ ECU_TV_Slip_State_On_Off : 47|8@0+ (1.0,0) [0.0|1.0] "number" Telemetry
 BO_ 235 ECU_TV_Output_2: 8 ECU
  SG_ ECU_TV_Kappa_Ref_Rl : 7|16@0+ (0.001,0) [0.0|1.0] "number" Telemetry
  SG_ ECU_TV_Kappa_Ref_Rr : 23|16@0+ (0.001,0) [0.0|1.0] "number" Telemetry
