@@ -333,14 +333,17 @@ typedef struct {
 
 #define CAN_MSG_ECU_TV_OUTPUT_1_SIG_ECU_TV_STATE_ON_OFF_FACTOR 1.0f
 
-#define CAN_MSG_ECU_TV_OUTPUT_1_SIG_ECU_TV_DELTA_MZ_FACTOR 1.0f
+#define CAN_MSG_ECU_TV_OUTPUT_1_SIG_ECU_TV_MZ_YAW_FACTOR 1.0f
+
+#define CAN_MSG_ECU_TV_OUTPUT_1_SIG_ECU_TV_MZ_BETA_FACTOR 1.0f
 
 #define CAN_MSG_ECU_TV_OUTPUT_1_SIG_ECU_TV_SLIP_STATE_ON_OFF_FACTOR 1.0f
 
 typedef struct {
     uint8_t ECU_TV_State_On_Off; /* start_bit=7; length=8; factor=1.0; offset=0.0; unit="number" */
-    uint16_t ECU_TV_Delta_Mz; /* start_bit=15; length=16; factor=1.0; offset=0.0; unit="number" */
-    uint8_t ECU_TV_Slip_State_On_Off; /* start_bit=31; length=8; factor=1.0; offset=0.0; unit="number" */
+    uint16_t ECU_TV_Mz_Yaw; /* start_bit=15; length=16; factor=1.0; offset=0.0; unit="number" */
+    uint16_t ECU_TV_Mz_Beta; /* start_bit=31; length=16; factor=1.0; offset=0.0; unit="number" */
+    uint8_t ECU_TV_Slip_State_On_Off; /* start_bit=47; length=8; factor=1.0; offset=0.0; unit="number" */
 } can_msg_ECU_TV_Output_1_t;
 
 #define CAN_MSG_ECU_TV_OUTPUT_2_ID 235U
