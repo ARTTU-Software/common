@@ -18,4 +18,3 @@ Most sensor drivers wrap the generic sensor and linear sensor helpers, then add 
 - [MX5051](/shared/common/modules/sensors/mx5051)
 - [PU8702](/shared/common/modules/sensors/pu8702)
 - [Steering](/shared/common/modules/sensors/steering)
-- [Recalibration](/shared/common/modules/sensors/recalibration)

@@ -12,3 +12,4 @@ Drivers are small, testable building blocks intended to be wired to board-specif
 - [FSM](/shared/common/modules/drivers/fsm)
 - [Misc Helpers](/shared/common/modules/drivers/misc)
 - [Structs](/shared/common/modules/drivers/structs)
+- [Recalibration](/shared/common/modules/drivers/recalibration)
