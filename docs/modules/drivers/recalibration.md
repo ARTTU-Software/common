@@ -1,5 +1,5 @@
 ---
-title: Common - Sensor Recalibration
+title: Common - Recalibration Driver
 description: Two-point sensor calibration with optional NVM storage.
 ---
 
