@@ -283,12 +283,14 @@ BO_ 768 LVSOC_Status_1: 8 LV_SOC
  SG_ Bat__Voltage : 7|16@0+ (0.001,0) [0.0|65535.0] "V" Telemetry,Dashboard
  SG_ Current : 23|16@0- (0.01,0) [-327.68|327.67] "A" Telemetry,Dashboard
  SG_ SoC : 39|16@0+ (0.1,0) [0.0|100.0] "%" Telemetry,Dashboard
- SG_ Peak_Current_1s : 55|16@0- (0.1,0) [-327.68|327.67] "A" Telemetry,Dashboard
+ SG_ Peak_Current_1s : 55|16@0- (0.01,0) [-327.68|327.67] "A" Telemetry,Dashboard
 BO_ 769 LVSOC_Status_2: 8 LV_SOC
  SG_ Capacity : 7|16@0+ (1.0,0) [0.0|65535.0] "mAh" Telemetry
- SG_ sudo_poweroff : 23|16@0+ (1.0,0) [0.0|0.0] "" Telemetry
+ SG_ State_Of_Operation : 23|8@0+ (1.0,0) [0.0|255.0] "enum" Telemetry
  SG_ Time_Remaining_TTE_TTF : 39|16@0+ (1.0,0) [0.0|65535.0] "min" Telemetry
- SG_ Avg_Current_1s : 55|16@0+ (0.01,0) [-327.68|327.67] "A" Telemetry
+ SG_ Avg_Current_1s : 55|16@0- (0.01,0) [-327.68|327.67] "A" Telemetry
+BO_ 770 LVSOC_Status_3: 8 LV_SOC
+ SG_ OCV : 7|16@0+ (0.001,0) [0.0|65.535] "V" Telemetry
 
 BO_ 1264 PRG_Bootloader: 8 Programming
  SG_ MCU_ID : 7|8@0+ (1.0,0) [0.0|255.0] "id" Gateway_Front,Gateway_Rear,ECU,BMS,GI_Left,GI_Right,Dashboard,Telemetry
@@ -328,6 +330,7 @@ BA_ "GenMsgCycleTime" BO_ 240 50;
 BA_ "GenMsgCycleTime" BO_ 80 5;
 BA_ "GenMsgCycleTime" BO_ 768 1000;
 BA_ "GenMsgCycleTime" BO_ 769 1000;
+BA_ "GenMsgCycleTime" BO_ 770 1000;
 VAL_ 175 GF_Current_State 0 "BOARD_FSM_MODE_INIT" 1 "BOARD_FSM_MODE_IDLE" 2 "BOARD_FSM_MODE_PROCESS_SENSORS" 3 "BOARD_FSM_MODE_OUTPUT_SENSORS" 4 "BOARD_FSM_MODE_BOOTLOADER" 5 "BOARD_FSM_MODE_FAULT" ;
 VAL_ 175 GF_Previous_Reason 0 "BOARD_FSM_REASON_NONE" 1 "BOARD_FSM_REASON_INIT_COMPLETE" 2 "BOARD_FSM_REASON_ADC_READY" 3 "BOARD_FSM_REASON_PROCESS_SENSORS_DONE" 4 "BOARD_FSM_REASON_OUTPUT_SENSORS_COMPLETE" 5 "BOARD_FSM_REASON_BOOTLOADER_REQUEST" 6 "BOARD_FSM_REASON_FORCE_FAULT" 7 "BOARD_FSM_REASON_INVALID_EVENT" ;
 VAL_ 175 GF_Next_State 0 "BOARD_FSM_MODE_INIT" 1 "BOARD_FSM_MODE_IDLE" 2 "BOARD_FSM_MODE_PROCESS_SENSORS" 3 "BOARD_FSM_MODE_OUTPUT_SENSORS" 4 "BOARD_FSM_MODE_BOOTLOADER" 5 "BOARD_FSM_MODE_FAULT" ;
