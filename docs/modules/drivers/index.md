@@ -9,6 +9,7 @@ Drivers are small, testable building blocks intended to be wired to board-specif
 
 ## Modules
 - [CAN](/shared/common/modules/drivers/can)
+- [CAN Integration Guide](/shared/common/modules/drivers/can-integration)
 - [FSM](/shared/common/modules/drivers/fsm)
 - [Misc Helpers](/shared/common/modules/drivers/misc)
 - [Structs](/shared/common/modules/drivers/structs)
