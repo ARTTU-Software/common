@@ -5,27 +5,27 @@ description: Step-by-step guide to integrating the generic CAN driver on a new b
 
 # CAN Integration Guide
 
-This walks through how to set up the generic CAN driver on a new board. All examples are taken from the ECU project - the same pattern applies to every board.
+This guide details setting up the generic CAN driver on a board, using implementation details from the ECU project as a reference.
 
-## File structure
+## File Structure
 
-Every board using CAN needs these files:
+Board CAN implementation requires the following files:
 
 ```
 Core/Inc/App/Communication/
-├── can_driver.h    ← buffer sizes, externs, HAL callback prototypes
-└── can_comm.h      ← RX/TX data structs, process/set function prototypes
+├── can_driver.h    <- buffer sizes, externs, HAL callback prototypes
+└── can_comm.h      <- RX/TX data structs, process/set function prototypes
 
 Core/Src/App/Communication/
-├── can_driver.c    ← buffer allocation, frame config, HAL callbacks, init
-└── can_comm.c      ← RX message handler, TX payload packer
+├── can_driver.c    <- buffer allocation, frame config, HAL callbacks, init
+└── can_comm.c      <- RX message handler, TX payload packer
 ```
 
 ---
 
-## Step 1 - Define buffer sizes (`can_driver.h`)
+## Step 1: Define Buffer Sizes (`can_driver.h`)
 
-Decide how many TX frame slots, and how large the RX and TX ring buffers should be.
+Define frame slot counts and ring buffer dimensions:
 
 ```c
 #include "generic_can_driver.h"
@@ -33,8 +33,8 @@ Decide how many TX frame slots, and how large the RX and TX ring buffers should 
 #define HZ_TO_MS(hz) (1000 / (hz))
 
 #define NR_OF_CAN_TX_FRAMES        10   // Number of distinct TX messages this board sends
-#define NR_OF_CAN_RX_BUFFER_FRAMES 128  // RX ring buffer depth (handles ISR bursts)
-#define NR_OF_CAN_TX_BUFFER_FRAMES 64   // TX queue depth (software → hardware FIFO)
+#define NR_OF_CAN_RX_BUFFER_FRAMES 128  // RX ring buffer depth
+#define NR_OF_CAN_TX_BUFFER_FRAMES 64   // TX queue depth (software to HW FIFO)
 
 extern CAN_Driver_t can_driver;
 
@@ -45,19 +45,18 @@ void init_canbus_driver(CAN_Driver_t *driver,
 ```
 
 > [!TIP]
-> **Sizing the RX buffer**: it needs to hold all frames that can arrive between two `process_can_frames()` calls. 128 is a safe default for a busy bus. If you drop frames, increase this.
+> **RX Buffer Sizing**: The buffer must accommodate all frames received between consecutive `process_can_frames()` execution cycles. 128 slots is recommended for standard bus traffic.
 
 ---
 
-## Step 2 - Allocate buffers and configure TX frames (`can_driver.c`)
+## Step 2: Allocate Buffers & Configure Frames (`can_driver.c`)
 
-This is where you allocate the static arrays and tell each TX frame slot its CAN ID, DLC, and transmission rate.
+Allocate static arrays for messages and configure slot parameters (ID, DLC, transmission rate):
 
 ```c
 #include "can_driver.h"
 #include "generic_can_driver.h"
 
-// Static buffer allocations
 FDCAN_TxHeaderTypeDef tx_header_templates[NR_OF_CAN_TX_FRAMES];
 CAN_Tx_Message_Frame_t tx_message_frames[NR_OF_CAN_TX_FRAMES];
 CAN_Tx_Message_Frame_t tx_buffer_frames[NR_OF_CAN_TX_BUFFER_FRAMES];
@@ -66,31 +65,29 @@ CAN_Rx_Message_Frame_t rx_message_frame[NR_OF_CAN_RX_BUFFER_FRAMES];
 CAN_Driver_t can_driver;
 ```
 
-### Configuring TX frame slots
+### Configuring TX Frame Slots
 
-Each slot maps to one CAN message your board sends. Set the CAN ID, payload size, and scheduler period:
+Assign properties per message slot:
 
 ```c
 static void set_tx_configs(CAN_Driver_t* driver) {
-    // Periodic frame: sent automatically at 50 Hz by the scheduler
+    // Periodic frame: scheduled at 50 Hz (20 ms period)
     driver->tx_message_frames[0].msg_id = 0x0E0;
     driver->tx_message_frames[0].num_values = FDCAN_DLC_BYTES_8;
-    driver->tx_message_frames[0].scheduler_timer_value = HZ_TO_MS(50); // 20ms
+    driver->tx_message_frames[0].scheduler_timer_value = HZ_TO_MS(50);
 
-    // Non-periodic frame: only sent manually via CAN_send_single_frame()
+    // Non-periodic frame: transmitted manually via CAN_send_single_frame()
     driver->tx_message_frames[1].msg_id = 0x0B3;
     driver->tx_message_frames[1].num_values = FDCAN_DLC_BYTES_8;
     driver->tx_message_frames[1].scheduler_timer_value = CAN_DRIVER_NON_PERIODIC_FRAME;
-
-    // ... repeat for each TX message
 }
 ```
 
-**Periodic vs. non-periodic**: Use `HZ_TO_MS(freq)` for frames that should be sent at a fixed rate (sensor data, status). Use `CAN_DRIVER_NON_PERIODIC_FRAME` for event-driven frames (commands, one-shot status updates) - these are sent via `CAN_send_single_frame()`.
+Use `HZ_TO_MS(freq)` for continuous broadcast data. Use `CAN_DRIVER_NON_PERIODIC_FRAME` for event-triggered transmissions.
 
-### Init function
+### Driver Initialization Function
 
-Wire the buffers to the driver struct, fill in the HAL TX header templates, then call the generic init:
+Bind allocated memory to the driver instance and populate peripheral header templates:
 
 ```c
 void init_canbus_driver(CAN_Driver_t* driver,
@@ -98,11 +95,9 @@ void init_canbus_driver(CAN_Driver_t* driver,
     CanTxFifoLevelFn_t get_tx_fifo_level_fn,
     void* hfdcan_instance)
 {
-    // Tell the driver how many frames and buffers it has
     driver->rx_frame_number = NR_OF_CAN_RX_BUFFER_FRAMES;
     driver->tx_frame_number = NR_OF_CAN_TX_FRAMES;
 
-    // Point to the static arrays
     driver->tx_message_frames = tx_message_frames;
     driver->tx_ring_buffer.frame = tx_buffer_frames;
     driver->tx_ring_buffer.size = NR_OF_CAN_TX_BUFFER_FRAMES;
@@ -110,7 +105,6 @@ void init_canbus_driver(CAN_Driver_t* driver,
 
     set_tx_configs(driver);
 
-    // Build HAL TX headers from the frame configs
     for (uint8_t i = 0; i < NR_OF_CAN_TX_FRAMES; i++) {
         tx_header_templates[i].IdType = FDCAN_STANDARD_ID;
         tx_header_templates[i].TxFrameType = FDCAN_DATA_FRAME;
@@ -122,24 +116,22 @@ void init_canbus_driver(CAN_Driver_t* driver,
         tx_header_templates[i].DataLength = driver->tx_message_frames[i].num_values;
         tx_header_templates[i].Identifier = driver->tx_message_frames[i].msg_id;
 
-        // Generic driver stores the header as void* - cast happens here
         driver->tx_message_frames[i].hdr = (void*)&tx_header_templates[i];
     }
 
-    // Initialize the generic driver internals (resets indices, clears flags)
     CAN_set_structures(driver, add_to_fifo_fn, get_tx_fifo_level_fn, hfdcan_instance);
 }
 ```
 
 ---
 
-## Step 3 - HAL callbacks (`can_driver.c`)
+## Step 3: HAL Interrupt Callbacks (`can_driver.c`)
 
-These callbacks bridge the STM32 HAL interrupts to the generic driver. They live in `can_driver.c` alongside the init.
+Connect STM32 HAL interrupt callbacks to the driver interface.
 
-### RX callback
+### RX Interrupt Callback
 
-Drains the hardware RX FIFO and feeds each frame to the generic driver's ring buffer:
+Reads peripheral RX FIFO entries and pushes data to the software ring buffer:
 
 ```c
 void HAL_FDCAN_RxFifo0Callback(FDCAN_HandleTypeDef *hfdcan, uint32_t RxFifo0ITs) {
@@ -157,9 +149,9 @@ void HAL_FDCAN_RxFifo0Callback(FDCAN_HandleTypeDef *hfdcan, uint32_t RxFifo0ITs)
 }
 ```
 
-### TX drain callbacks
+### TX Buffer Callbacks
 
-When the hardware FIFO has space again, signal the driver to drain its software queue:
+Set drain request flags when peripheral hardware TX slots become available:
 
 ```c
 void HAL_FDCAN_TxFifoEmptyCallback(FDCAN_HandleTypeDef *hfdcan) {
@@ -176,28 +168,27 @@ void HAL_FDCAN_TxBufferCompleteCallback(FDCAN_HandleTypeDef *hfdcan, uint32_t Bu
 }
 ```
 
-### Bus-Off recovery
+### Bus-Off Error Recovery
 
 ```c
 void HAL_FDCAN_ErrorStatusCallback(FDCAN_HandleTypeDef *hfdcan, uint32_t ErrorStatusITs) {
     if ((ErrorStatusITs & FDCAN_IT_BUS_OFF) != 0) {
-        hfdcan->Instance->CCCR &= ~FDCAN_CCCR_INIT; // Auto-recover from Bus-Off
+        hfdcan->Instance->CCCR &= ~FDCAN_CCCR_INIT;
     }
 }
 ```
 
 ---
 
-## Step 4 - RX message handler (`can_comm.c`)
+## Step 4: RX Processing Logic (`can_comm.c`)
 
-Define structs to hold the latest RX and TX data, then write `process_can_frames()` with a `switch` on the message ID:
+Unpack incoming messages from the RX ring buffer in main context:
 
 ```c
 // can_comm.h
 typedef struct {
     can_msg_GF_Wheel_Sensors_t gf_wheel_sensors;
     can_msg_GR_Misc_Sensors_t  gr_misc_sensors;
-    // ... one field per RX message type you care about
 } CAN_data_rx_t;
 
 extern volatile CAN_data_rx_t can_rx_data;
@@ -209,7 +200,6 @@ volatile CAN_data_rx_t can_rx_data;
 
 void process_can_frames(CAN_Driver_t* driver) {
     while (driver->rx_ring_buffer.head != driver->rx_ring_buffer.tail) {
-        // Snapshot the frame so the ISR can't overwrite it mid-read
         CAN_Rx_Message_Frame_t current_frame =
             driver->rx_ring_buffer.frame[driver->rx_ring_buffer.tail];
         driver->rx_ring_buffer.tail =
@@ -230,7 +220,7 @@ void process_can_frames(CAN_Driver_t* driver) {
                 break;
 
             default:
-                break; // Unknown ID - ignore
+                break;
         }
     }
 
@@ -239,23 +229,19 @@ void process_can_frames(CAN_Driver_t* driver) {
 }
 ```
 
-> [!NOTE]
-> Use the `CAN_COMBINE_16` / `CAN_COMBINE_32` macros from `generic_can_driver.h` and the `_FACTOR` macros from `can_signal_defs.h` to reconstruct and scale signal values.
-
 ---
 
-## Step 5 - TX payload packer (`can_comm.c`)
+## Step 5: TX Payload Assembly (`can_comm.c`)
 
-Pack your outgoing data into the TX frame payloads before the scheduler sends them:
+Populate buffer payloads prior to automated transmission:
 
 ```c
 void set_can_frames(CAN_Driver_t* driver) {
-    // Frame 0 (0x0E0): Inverter command
+    // Slot 0 (0x0E0): Inverter control signals
     driver->tx_message_frames[0].payload[0] = can_tx_data.ecu_inverter_sig.Motor_EN_DIS_Regen;
     driver->tx_message_frames[0].payload[1] = can_tx_data.ecu_inverter_sig.Inverter_L_Regen_Percentage;
-    // ... pack remaining bytes
 
-    // For 16-bit values, split into HIGH_BYTE / LOW_BYTE
+    // Split multi-byte variables using byte extraction helpers
     uint16_t speed = pack_s16_scaled(velocity, 100.0f);
     driver->tx_message_frames[6].payload[0] = HIGH_BYTE(speed);
     driver->tx_message_frames[6].payload[1] = LOW_BYTE(speed);
@@ -264,38 +250,37 @@ void set_can_frames(CAN_Driver_t* driver) {
 
 ---
 
-## Step 6 - Wire into `main.c`
+## Step 6: Main Loop Integration (`main.c`)
+
+Call driver functions inside application entry:
 
 ```c
-// In main(), after peripheral init:
+// Peripheral setup & driver initialization
 init_canbus_driver(&can_driver,
     (CanTxFn_t)HAL_FDCAN_AddMessageToTxFifoQ,
     (CanTxFifoLevelFn_t)HAL_FDCAN_GetTxFifoFreeLevel,
     (void*)&hfdcan1);
 
-// Main loop:
+// Application execution loop
 while (1) {
-    process_can_frames(&can_driver);   // Consume RX ring buffer
-    set_can_frames(&can_driver);       // Pack TX payloads with latest data
+    process_can_frames(&can_driver);
+    set_can_frames(&can_driver);
 
-    // Service TX scheduler + drain queue
     CAN_send_frames(&can_driver, HAL_GetTick());
     if (can_driver.tx_queue_drain_requested) {
         CAN_process_tx_queue(&can_driver, 0U);
     }
-
-    // ... rest of your loop (FSM, sensors, etc.)
 }
 ```
 
 ---
 
-## Common Pitfalls
+## Common Implementation Issues
 
-| Pitfall | What happens | Fix |
-|---------|-------------|-----|
-| Forgetting to set `rx_frame_number` / `tx_frame_number` before `CAN_set_structures` | RX buffer size is 0, all frames dropped | Set them in `init_canbus_driver` before calling the generic init |
-| Processing frames inside the RX callback | Blocks interrupts, causes frame loss | Only call `CAN_driver_rx_callback` in the ISR - do all processing in the main loop |
-| Not calling `CAN_process_tx_queue` | Frames pile up in the software queue and never reach the bus | Call it every loop iteration, gated by `tx_queue_drain_requested` |
-| Using wrong DLC constant | Payload bytes are truncated or padded | Use `FDCAN_DLC_BYTES_8` (not raw `8`) for the `num_values` field |
-| Editing `can_signal_defs.h` by hand | Changes are overwritten on next DBC generation | Edit `MAIN_DBC.dbc` and re-run `dbc_to_c_builder.py` |
+| Issue | Symptom | Solution |
+|-------|---------|----------|
+| Unset `rx_frame_number` / `tx_frame_number` | Ring buffer size evaluates to 0; messages dropped | Assign frame counts prior to `CAN_set_structures()` execution |
+| ISR message processing | High interrupt latency; missed message frames | Limit ISR routine to `CAN_driver_rx_callback()`; process in main loop |
+| Omitted `CAN_process_tx_queue()` call | Software buffer overflow; transmission halts | Ensure `CAN_process_tx_queue()` runs conditionally on `tx_queue_drain_requested` |
+| Invalid DLC configuration | Truncated or malformed frames | Use hardware DLC definitions (`FDCAN_DLC_BYTES_8`) rather than raw byte counts |
+| Manual edits to `can_signal_defs.h` | Code overwritten during build step | Update source DBC (`MAIN_DBC.dbc`) and regenerate headers |
