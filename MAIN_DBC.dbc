@@ -184,8 +184,8 @@ BO_ 20 BMS_Cell_Resistance: 8 BMS
  SG_ Low_Cell_Resistance : 7|16@0+ (0.01,0) [0.0|100.0] "mOhm" Vector__XXX
  SG_ High_Cell_Resistance : 23|16@0+ (0.01,0) [0.0|100.0] "mOhm" Vector__XXX
  SG_ Avg_Cell_Resistance : 39|16@0+ (0.01,0) [0.0|100.0] "mOhm" Vector__XXX
- SG_ High_Intres_ID : 15|8@0+ (1.0,0) [0.0|255.0] "ID" Vector__XXX
- SG_ Low_Intres_ID : 23|8@0+ (1.0,0) [0.0|255.0] "ID" Vector__XXX
+ SG_ High_Intres_ID : 55|8@0+ (1.0,0) [0.0|255.0] "ID" Vector__XXX
+ SG_ Low_Intres_ID : 63|8@0+ (1.0,0) [0.0|255.0] "ID" Vector__XXX
 BO_ 21 BMS_Current: 8 BMS
  SG_ Average_Current : 7|16@0- (0.1,0) [-500.0|500.0] "Amps" Vector__XXX
  SG_ Pack_Current : 23|16@0- (0.1,0) [-500.0|500.0] "Amps" Vector__XXX
@@ -242,6 +242,7 @@ BO_ 208 DASH_Inputs: 8 Dashboard
  SG_ Telemetry_SD_Toggle : 6|1@1+ (1.0,0) [0.0|1.0] "bool" Vector__XXX
  SG_ Telemetry_UDP_Toggle : 7|1@1+ (1.0,0) [0.0|1.0] "bool" Vector__XXX
  SG_ Motor_Control_Mode_Toggle : 15|8@0+ (1.0,0) [0.0|255.0] "enum" Vector__XXX
+ SG_ Slip_Control_On_Off : 16|1@1+ (1.0,0) [0.0|1.0] "bool" Vector__XXX
 BO_ 209 DASH_PID_Tune_1: 8 Dashboard
  SG_ Slip_Ctrl_Kp : 7|16@0+ (1.0,0) [0.0|65535.0] "unit" Vector__XXX
  SG_ Slip_Ctrl_Ki : 23|16@0+ (1.0,0) [0.0|65535.0] "unit" Vector__XXX
@@ -269,16 +270,6 @@ BO_ 80 IMU_Data: 8 IMU
  SG_ Angle_Roll m83 : 23|16@0- (0.0054931640625,0) [-180.0|180.0] "deg" Vector__XXX
  SG_ Angle_Pitch m83 : 39|16@0- (0.0054931640625,0) [-180.0|180.0] "deg" Vector__XXX
  SG_ Angle_Yaw m83 : 55|16@0- (0.0054931640625,0) [-180.0|180.0] "deg" Vector__XXX
-BO_ 80 IMU_Recal: 8 IMU
- SG_ Protocol_Header_1 : 7|8@0+ (1.0,0) [0.0|255.0] "const_0xff" Vector__XXX
- SG_ Protocol_Header_2 : 15|8@0+ (1.0,0) [0.0|255.0] "const_0xaa" Vector__XXX
- SG_ Address M : 23|8@0+ (1.0,0) [0.0|255.0] "hex" Vector__XXX
- SG_ KEY_Low m105 : 31|8@0+ (1.0,0) [0.0|255.0] "hex" Vector__XXX
- SG_ KEY_High m105 : 39|8@0+ (1.0,0) [0.0|255.0] "hex" Vector__XXX
- SG_ CALSW_Low m1 : 31|8@0+ (1.0,0) [0.0|255.0] "hex" Vector__XXX
- SG_ CALSW_High m1 : 39|8@0+ (1.0,0) [0.0|255.0] "hex" Vector__XXX
- SG_ SAVE_Low m0 : 31|8@0+ (1.0,0) [0.0|255.0] "hex" Vector__XXX
- SG_ SAVE_High m0 : 39|8@0+ (1.0,0) [0.0|255.0] "hex" Vector__XXX
 
 BO_ 768 LVSOC_Status_1: 8 LV_SOC
  SG_ LVSOC_Bat_Voltage : 7|16@0+ (0.001,0) [0.0|65.535] "V" Vector__XXX
@@ -288,7 +279,6 @@ BO_ 768 LVSOC_Status_1: 8 LV_SOC
 BO_ 769 LVSOC_Status_2: 8 LV_SOC
  SG_ LVSOC_Capacity : 7|16@0+ (1.0,0) [0.0|65535.0] "mAh" Vector__XXX
  SG_ LVSOC_State_of_Operation : 23|8@0+ (1.0,0) [0.0|255.0] "enum" Vector__XXX
- SG_ LVSOC_Reserved : 31|8@0+ (1.0,0) [0.0|0.0] "raw" Vector__XXX
  SG_ LVSOC_Time_Remaining_TTE_TTF : 39|16@0+ (1.0,0) [0.0|65535.0] "min" Vector__XXX
  SG_ LVSOC_Avg_Current_10s : 55|16@0- (0.01,0) [-327.68|327.67] "A" Vector__XXX
 BO_ 770 LVSOC_Status_3: 8 LV_SOC
@@ -357,3 +347,4 @@ VAL_ 50 GIR_Next_State 0 "BOARD_FSM_MODE_INIT" 1 "BOARD_FSM_MODE_READY" 2 "BOARD
 VAL_ 208 Motor_Control_On_Off 0 "OFF" 1 "ON" ;
 VAL_ 208 Telemetry_SD_Toggle 0 "OFF" 1 "ON" ;
 VAL_ 208 Telemetry_UDP_Toggle 0 "OFF" 1 "ON" ;
+VAL_ 208 Slip_Control_On_Off 0 "OFF" 1 "ON" ;

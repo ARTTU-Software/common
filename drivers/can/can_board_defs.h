@@ -65,7 +65,6 @@ typedef struct {
 
 typedef struct {
     can_msg_IMU_Data_t IMU_Data;
-    can_msg_IMU_Recal_t IMU_Recal;
 } can_board_IMU_t;
 
 typedef struct {

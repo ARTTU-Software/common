@@ -540,8 +540,8 @@ typedef struct {
     float Low_Cell_Resistance; /* start_bit=7; length=16; factor=0.01; offset=0.0; unit="mOhm" */
     float High_Cell_Resistance; /* start_bit=23; length=16; factor=0.01; offset=0.0; unit="mOhm" */
     float Avg_Cell_Resistance; /* start_bit=39; length=16; factor=0.01; offset=0.0; unit="mOhm" */
-    uint8_t High_Intres_ID; /* start_bit=15; length=8; factor=1.0; offset=0.0; unit="ID" */
-    uint8_t Low_Intres_ID; /* start_bit=23; length=8; factor=1.0; offset=0.0; unit="ID" */
+    uint8_t High_Intres_ID; /* start_bit=55; length=8; factor=1.0; offset=0.0; unit="ID" */
+    uint8_t Low_Intres_ID; /* start_bit=63; length=8; factor=1.0; offset=0.0; unit="ID" */
 } can_msg_BMS_Cell_Resistance_t;
 
 #define CAN_MSG_BMS_CURRENT_ID 21U
@@ -723,6 +723,8 @@ typedef struct {
 
 #define CAN_MSG_DASH_INPUTS_SIG_MOTOR_CONTROL_MODE_TOGGLE_FACTOR 1.0f
 
+#define CAN_MSG_DASH_INPUTS_SIG_SLIP_CONTROL_ON_OFF_FACTOR 1.0f
+
 typedef struct {
     uint8_t APPS_Recal; /* start_bit=0; length=1; factor=1.0; offset=0.0; unit="bool" */
     uint8_t Steering_Recal; /* start_bit=1; length=1; factor=1.0; offset=0.0; unit="bool" */
@@ -733,6 +735,7 @@ typedef struct {
     uint8_t Telemetry_SD_Toggle; /* start_bit=6; length=1; factor=1.0; offset=0.0; unit="bool" */
     uint8_t Telemetry_UDP_Toggle; /* start_bit=7; length=1; factor=1.0; offset=0.0; unit="bool" */
     uint8_t Motor_Control_Mode_Toggle; /* start_bit=15; length=8; factor=1.0; offset=0.0; unit="enum" */
+    uint8_t Slip_Control_On_Off; /* start_bit=16; length=1; factor=1.0; offset=0.0; unit="bool" */
 } can_msg_DASH_Inputs_t;
 
 #define CAN_MSG_DASH_PID_TUNE_1_ID 209U
@@ -826,40 +829,6 @@ typedef struct {
     float Angle_Yaw; /* start_bit=55; length=16; factor=0.0054931640625; offset=0.0; mux=m83; unit="deg" */
 } can_msg_IMU_Data_t;
 
-#define CAN_MSG_IMU_RECAL_ID 80U
-#define CAN_MSG_IMU_RECAL_DLC 8U
-#define CAN_MSG_IMU_RECAL_CYCLE_TIME_MS 0U
-
-#define CAN_MSG_IMU_RECAL_SIG_PROTOCOL_HEADER_1_FACTOR 1.0f
-
-#define CAN_MSG_IMU_RECAL_SIG_PROTOCOL_HEADER_2_FACTOR 1.0f
-
-#define CAN_MSG_IMU_RECAL_SIG_ADDRESS_FACTOR 1.0f
-
-#define CAN_MSG_IMU_RECAL_SIG_KEY_LOW_FACTOR 1.0f
-
-#define CAN_MSG_IMU_RECAL_SIG_KEY_HIGH_FACTOR 1.0f
-
-#define CAN_MSG_IMU_RECAL_SIG_CALSW_LOW_FACTOR 1.0f
-
-#define CAN_MSG_IMU_RECAL_SIG_CALSW_HIGH_FACTOR 1.0f
-
-#define CAN_MSG_IMU_RECAL_SIG_SAVE_LOW_FACTOR 1.0f
-
-#define CAN_MSG_IMU_RECAL_SIG_SAVE_HIGH_FACTOR 1.0f
-
-typedef struct {
-    uint8_t Protocol_Header_1; /* start_bit=7; length=8; factor=1.0; offset=0.0; unit="const_0xff" */
-    uint8_t Protocol_Header_2; /* start_bit=15; length=8; factor=1.0; offset=0.0; unit="const_0xaa" */
-    uint8_t Address; /* start_bit=23; length=8; factor=1.0; offset=0.0; mux=M; unit="hex" */
-    uint8_t KEY_Low; /* start_bit=31; length=8; factor=1.0; offset=0.0; mux=m105; unit="hex" */
-    uint8_t KEY_High; /* start_bit=39; length=8; factor=1.0; offset=0.0; mux=m105; unit="hex" */
-    uint8_t CALSW_Low; /* start_bit=31; length=8; factor=1.0; offset=0.0; mux=m1; unit="hex" */
-    uint8_t CALSW_High; /* start_bit=39; length=8; factor=1.0; offset=0.0; mux=m1; unit="hex" */
-    uint8_t SAVE_Low; /* start_bit=31; length=8; factor=1.0; offset=0.0; mux=m0; unit="hex" */
-    uint8_t SAVE_High; /* start_bit=39; length=8; factor=1.0; offset=0.0; mux=m0; unit="hex" */
-} can_msg_IMU_Recal_t;
-
 #define CAN_MSG_LVSOC_STATUS_1_ID 768U
 #define CAN_MSG_LVSOC_STATUS_1_DLC 8U
 #define CAN_MSG_LVSOC_STATUS_1_CYCLE_TIME_MS 0U
@@ -887,8 +856,6 @@ typedef struct {
 
 #define CAN_MSG_LVSOC_STATUS_2_SIG_LVSOC_STATE_OF_OPERATION_FACTOR 1.0f
 
-#define CAN_MSG_LVSOC_STATUS_2_SIG_LVSOC_RESERVED_FACTOR 1.0f
-
 #define CAN_MSG_LVSOC_STATUS_2_SIG_LVSOC_TIME_REMAINING_TTE_TTF_FACTOR 1.0f
 
 #define CAN_MSG_LVSOC_STATUS_2_SIG_LVSOC_AVG_CURRENT_10S_FACTOR 0.01f
@@ -896,7 +863,6 @@ typedef struct {
 typedef struct {
     uint16_t LVSOC_Capacity; /* start_bit=7; length=16; factor=1.0; offset=0.0; unit="mAh" */
     uint8_t LVSOC_State_of_Operation; /* start_bit=23; length=8; factor=1.0; offset=0.0; unit="enum" */
-    uint8_t LVSOC_Reserved; /* start_bit=31; length=8; factor=1.0; offset=0.0; unit="raw" */
     uint16_t LVSOC_Time_Remaining_TTE_TTF; /* start_bit=39; length=16; factor=1.0; offset=0.0; unit="min" */
     float LVSOC_Avg_Current_10s; /* start_bit=55; length=16; factor=0.01; offset=0.0; unit="A" */
 } can_msg_LVSOC_Status_2_t;
