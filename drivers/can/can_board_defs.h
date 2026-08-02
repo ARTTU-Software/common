@@ -71,6 +71,7 @@ typedef struct {
 typedef struct {
     can_msg_LVSOC_Status_1_t LVSOC_Status_1;
     can_msg_LVSOC_Status_2_t LVSOC_Status_2;
+    can_msg_LVSOC_Status_3_t LVSOC_Status_3;
 } can_board_LV_SOC_t;
 
 typedef struct {

@@ -864,39 +864,52 @@ typedef struct {
 #define CAN_MSG_LVSOC_STATUS_1_DLC 8U
 #define CAN_MSG_LVSOC_STATUS_1_CYCLE_TIME_MS 0U
 
-#define CAN_MSG_LVSOC_STATUS_1_SIG_BAT_VOLTAGE_FACTOR 0.001f
+#define CAN_MSG_LVSOC_STATUS_1_SIG_LVSOC_BAT_VOLTAGE_FACTOR 0.001f
 
-#define CAN_MSG_LVSOC_STATUS_1_SIG_CURRENT_FACTOR 0.01f
+#define CAN_MSG_LVSOC_STATUS_1_SIG_LVSOC_CURRENT_FACTOR 0.01f
 
-#define CAN_MSG_LVSOC_STATUS_1_SIG_SOC_FACTOR 0.1f
+#define CAN_MSG_LVSOC_STATUS_1_SIG_LVSOC_SOC_FACTOR 0.1f
 
-#define CAN_MSG_LVSOC_STATUS_1_SIG_PEAK_CURRENT_10S_FACTOR 0.1f
+#define CAN_MSG_LVSOC_STATUS_1_SIG_LVSOC_PEAK_CURRENT_10S_FACTOR 0.01f
 
 typedef struct {
-    float Bat_Voltage; /* start_bit=7; length=16; factor=0.001; offset=0.0; unit="V" */
-    float Current; /* start_bit=23; length=16; factor=0.01; offset=0.0; unit="A" */
-    float SoC; /* start_bit=39; length=16; factor=0.1; offset=0.0; unit="%" */
-    float Peak_Current_10s; /* start_bit=55; length=16; factor=0.1; offset=0.0; unit="A" */
+    float LVSOC_Bat_Voltage; /* start_bit=7; length=16; factor=0.001; offset=0.0; unit="V" */
+    float LVSOC_Current; /* start_bit=23; length=16; factor=0.01; offset=0.0; unit="A" */
+    float LVSOC_SoC; /* start_bit=39; length=16; factor=0.1; offset=0.0; unit="%" */
+    float LVSOC_Peak_Current_10s; /* start_bit=55; length=16; factor=0.01; offset=0.0; unit="A" */
 } can_msg_LVSOC_Status_1_t;
 
 #define CAN_MSG_LVSOC_STATUS_2_ID 769U
 #define CAN_MSG_LVSOC_STATUS_2_DLC 8U
 #define CAN_MSG_LVSOC_STATUS_2_CYCLE_TIME_MS 0U
 
-#define CAN_MSG_LVSOC_STATUS_2_SIG_CAPACITY_FACTOR 1.0f
+#define CAN_MSG_LVSOC_STATUS_2_SIG_LVSOC_CAPACITY_FACTOR 1.0f
 
-#define CAN_MSG_LVSOC_STATUS_2_SIG_SUDO_POWEROFF_FACTOR 1.0f
+#define CAN_MSG_LVSOC_STATUS_2_SIG_LVSOC_STATE_OF_OPERATION_FACTOR 1.0f
 
-#define CAN_MSG_LVSOC_STATUS_2_SIG_TIME_REMAINING_TTE_TTF_FACTOR 1.0f
+#define CAN_MSG_LVSOC_STATUS_2_SIG_LVSOC_RESERVED_FACTOR 1.0f
 
-#define CAN_MSG_LVSOC_STATUS_2_SIG_AVG_CURRENT_10S_FACTOR 0.01f
+#define CAN_MSG_LVSOC_STATUS_2_SIG_LVSOC_TIME_REMAINING_TTE_TTF_FACTOR 1.0f
+
+#define CAN_MSG_LVSOC_STATUS_2_SIG_LVSOC_AVG_CURRENT_10S_FACTOR 0.01f
 
 typedef struct {
-    uint16_t Capacity; /* start_bit=7; length=16; factor=1.0; offset=0.0; unit="mAh" */
-    uint16_t sudo_poweroff; /* start_bit=23; length=16; factor=1.0; offset=0.0 */
-    uint16_t Time_Remaining_TTE_TTF; /* start_bit=39; length=16; factor=1.0; offset=0.0; unit="min" */
-    float Avg_Current_10s; /* start_bit=55; length=16; factor=0.01; offset=0.0; unit="A" */
+    uint16_t LVSOC_Capacity; /* start_bit=7; length=16; factor=1.0; offset=0.0; unit="mAh" */
+    uint8_t LVSOC_State_of_Operation; /* start_bit=23; length=8; factor=1.0; offset=0.0; unit="enum" */
+    uint8_t LVSOC_Reserved; /* start_bit=31; length=8; factor=1.0; offset=0.0; unit="raw" */
+    uint16_t LVSOC_Time_Remaining_TTE_TTF; /* start_bit=39; length=16; factor=1.0; offset=0.0; unit="min" */
+    float LVSOC_Avg_Current_10s; /* start_bit=55; length=16; factor=0.01; offset=0.0; unit="A" */
 } can_msg_LVSOC_Status_2_t;
+
+#define CAN_MSG_LVSOC_STATUS_3_ID 770U
+#define CAN_MSG_LVSOC_STATUS_3_DLC 8U
+#define CAN_MSG_LVSOC_STATUS_3_CYCLE_TIME_MS 0U
+
+#define CAN_MSG_LVSOC_STATUS_3_SIG_LVSOC_OCV_FACTOR 0.001f
+
+typedef struct {
+    float LVSOC_OCV; /* start_bit=7; length=16; factor=0.001; offset=0.0; unit="V" */
+} can_msg_LVSOC_Status_3_t;
 
 #define CAN_MSG_PRG_BOOTLOADER_ID 1264U
 #define CAN_MSG_PRG_BOOTLOADER_DLC 8U
