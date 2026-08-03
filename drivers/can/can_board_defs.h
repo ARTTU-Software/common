@@ -61,6 +61,7 @@ typedef struct {
 
 typedef struct {
     can_msg_GPS_Angles_t GPS_Angles;
+    can_msg_Lap_Completed_t Lap_Completed;
 } can_board_Telemetry_t;
 
 typedef struct {

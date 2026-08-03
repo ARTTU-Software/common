@@ -36,11 +36,14 @@ typedef struct {
 
 #define CAN_MSG_GF_MISC_SENSORS_SIG_R2D_BTN_FACTOR 1.0f
 
+#define CAN_MSG_GF_MISC_SENSORS_SIG_LAP_COUNT_START_BTN_FACTOR 1.0f
+
 typedef struct {
     uint8_t APPS1; /* start_bit=7; length=8; factor=1.0; offset=0.0; unit="%" */
     uint8_t APPS2; /* start_bit=15; length=8; factor=1.0; offset=0.0; unit="%" */
     float Steering; /* start_bit=23; length=16; factor=0.01; offset=0.0; unit="deg" */
     uint8_t R2D_BTN; /* start_bit=39; length=8; factor=1.0; offset=0.0; unit="bool" */
+    uint8_t LAP_COUNT_START_BTN; /* start_bit=47; length=8; factor=1.0; offset=0.0; unit="bool" */
 } can_msg_GF_Misc_Sensors_t;
 
 #define CAN_MSG_GF_SOFTWARE_STATUS_ID 175U
@@ -725,6 +728,8 @@ typedef struct {
 
 #define CAN_MSG_DASH_INPUTS_SIG_SLIP_CONTROL_ON_OFF_FACTOR 1.0f
 
+#define CAN_MSG_DASH_INPUTS_SIG_LAP_RESET_BTN_FACTOR 1.0f
+
 typedef struct {
     uint8_t APPS_Recal; /* start_bit=0; length=1; factor=1.0; offset=0.0; unit="bool" */
     uint8_t Steering_Recal; /* start_bit=1; length=1; factor=1.0; offset=0.0; unit="bool" */
@@ -736,6 +741,7 @@ typedef struct {
     uint8_t Telemetry_UDP_Toggle; /* start_bit=7; length=1; factor=1.0; offset=0.0; unit="bool" */
     uint8_t Motor_Control_Mode_Toggle; /* start_bit=15; length=8; factor=1.0; offset=0.0; unit="enum" */
     uint8_t Slip_Control_On_Off; /* start_bit=16; length=1; factor=1.0; offset=0.0; unit="bool" */
+    uint8_t Lap_Reset_Btn; /* start_bit=17; length=1; factor=1.0; offset=0.0; unit="bool" */
 } can_msg_DASH_Inputs_t;
 
 #define CAN_MSG_DASH_PID_TUNE_1_ID 209U
@@ -788,6 +794,19 @@ typedef struct {
     float GPS_Course; /* start_bit=16; length=16; factor=0.0001; offset=0.0; unit="rad" */
     float GPS_Yaw_Angle; /* start_bit=32; length=16; factor=0.0001; offset=0.0; unit="rad" */
 } can_msg_GPS_Angles_t;
+
+#define CAN_MSG_LAP_COMPLETED_ID 241U
+#define CAN_MSG_LAP_COMPLETED_DLC 8U
+#define CAN_MSG_LAP_COMPLETED_CYCLE_TIME_MS 0U
+
+#define CAN_MSG_LAP_COMPLETED_SIG_LAP_COMPLETED_FLAG_FACTOR 1.0f
+
+#define CAN_MSG_LAP_COMPLETED_SIG_LAP_COUNT_FACTOR 1.0f
+
+typedef struct {
+    uint8_t Lap_Completed_Flag; /* start_bit=0; length=8; factor=1.0; offset=0.0; unit="bool" */
+    uint16_t Lap_Count; /* start_bit=8; length=16; factor=1.0; offset=0.0; unit="dec" */
+} can_msg_Lap_Completed_t;
 
 #define CAN_MSG_IMU_DATA_ID 80U
 #define CAN_MSG_IMU_DATA_DLC 8U

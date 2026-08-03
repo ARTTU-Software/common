@@ -44,6 +44,7 @@ BO_ 161 GF_Misc_Sensors: 8 Gateway_Front
  SG_ APPS2 : 15|8@0+ (1.0,0) [0.0|100.0] "%" Vector__XXX
  SG_ Steering : 23|16@0- (0.01,0) [-290.0|290.0] "deg" Vector__XXX
  SG_ R2D_BTN : 39|8@0+ (1.0,0) [0.0|1.0] "bool" Vector__XXX
+ SG_ LAP_COUNT_START_BTN : 47|8@0+ (1.0,0) [0.0|1.0] "bool" Vector__XXX
 BO_ 175 GF_Software_Status: 8 Gateway_Front
  SG_ GF_Current_State : 7|8@0+ (1.0,0) [0.0|255.0] "hex" Vector__XXX
  SG_ GF_Previous_Reason : 15|8@0+ (1.0,0) [0.0|255.0] "hex" Vector__XXX
@@ -243,6 +244,7 @@ BO_ 208 DASH_Inputs: 8 Dashboard
  SG_ Telemetry_UDP_Toggle : 7|1@1+ (1.0,0) [0.0|1.0] "bool" Vector__XXX
  SG_ Motor_Control_Mode_Toggle : 15|8@0+ (1.0,0) [0.0|255.0] "enum" Vector__XXX
  SG_ Slip_Control_On_Off : 16|1@1+ (1.0,0) [0.0|1.0] "bool" Vector__XXX
+ SG_ Lap_Reset_Btn : 17|1@1+ (1.0,0) [0.0|1.0] "bool" Vector__XXX
 BO_ 209 DASH_PID_Tune_1: 8 Dashboard
  SG_ Slip_Ctrl_Kp : 7|16@0+ (1.0,0) [0.0|65535.0] "unit" Vector__XXX
  SG_ Slip_Ctrl_Ki : 23|16@0+ (1.0,0) [0.0|65535.0] "unit" Vector__XXX
@@ -257,6 +259,9 @@ BO_ 240 GPS_Angles: 8 Telemetry
  SG_ GPS_Speed : 0|16@1- (0.01,0) [0.0|327.67] "m/s" Vector__XXX
  SG_ GPS_Course : 16|16@1- (0.0001,0) [-3.15|3.15] "rad" Vector__XXX
  SG_ GPS_Yaw_Angle : 32|16@1- (0.0001,0) [-3.15|3.15] "rad" Vector__XXX
+BO_ 241 Lap_Completed: 8 Telemetry
+ SG_ Lap_Completed_Flag : 0|8@1+ (1.0,0) [0.0|1.0] "bool" Vector__XXX
+ SG_ Lap_Count : 8|16@1+ (1.0,0) [0.0|65535.0] "dec" Vector__XXX
 
 BO_ 80 IMU_Data: 8 IMU
  SG_ IMU_Header : 7|8@0+ (1.0,0) [0.0|255.0] "const_0x55" Vector__XXX
