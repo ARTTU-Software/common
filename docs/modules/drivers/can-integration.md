@@ -3,7 +3,7 @@ title: CAN Integration Guide
 description: Step-by-step guide to integrating the generic CAN driver on a new board.
 ---
 
-# CAN Integration Guide
+# CAN Integration Guide <Badge type="tip" text="Board Bring-Up" /> <Badge type="info" text="STM32 HAL" />
 
 This guide details setting up the generic CAN driver on a board, using implementation details from the ECU project as a reference.
 
@@ -128,6 +128,9 @@ void init_canbus_driver(CAN_Driver_t* driver,
 ## Step 3: HAL Interrupt Callbacks (`can_driver.c`)
 
 Connect STM32 HAL interrupt callbacks to the driver interface.
+
+> [!IMPORTANT]
+> **FDCAN Hardware Acceptance Filters**: On STM32G4/H5/H7 devices, unconfigured peripheral filters cause the hardware to silently reject incoming frames before they trigger an interrupt. Ensure your CubeMX setup or peripheral initialization calls `HAL_FDCAN_ConfigGlobalFilter` with non-matching standard frames configured as `FDCAN_ACCEPT_IN_RX_FIFO0`, or configure explicit filter elements for incoming IDs.
 
 ### RX Interrupt Callback
 

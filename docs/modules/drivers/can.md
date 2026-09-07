@@ -3,7 +3,7 @@ title: Common - CAN
 description: Generated CAN definitions and the generic CAN driver.
 ---
 
-# CAN
+# CAN <Badge type="info" text="FDCAN / Classic CAN" /> <Badge type="tip" text="Generic Driver" />
 
 ## Overview
 
@@ -50,21 +50,67 @@ ecu.ECU_Inverter_Sig.Calculated_Speed = 42.0f;
 
 The driver manages two ring buffers and a periodic scheduler:
 
-```
-ISR context                          Main loop context
-─────────────                        ──────────────────
-HAL RX interrupt                     CAN_send_frames()
-  └─► CAN_driver_rx_callback()         └─► enqueues due periodic frames
-        └─► writes to RX ring buf          into the TX ring buffer
+<div data-zoom="0.95">
 
-                                     CAN_process_tx_queue()
-                                       └─► drains TX ring buffer
-                                            into HW FIFO via add_to_fifo_fn()
+```mermaid
+%%{init: {
+  'theme': 'dark',
+  'themeVariables': {
+    'fontSize': '14px',
+    'fontFamily': 'system-ui, sans-serif'
+  },
+  'flowchart': {
+    'nodeSpacing': 25,
+    'rankSpacing': 35,
+    'padding': 15,
+    'curve': 'basis'
+  }
+}}%%
+flowchart LR
+    classDef isrNode fill:#2e1065,stroke:#a855f7,stroke-width:1px,color:#fff;
+    classDef loopNode fill:#064e3b,stroke:#10b981,stroke-width:1px,color:#fff;
+    classDef bufNode fill:#1e293b,stroke:#3b82f6,stroke-width:2px,color:#fff;
+    classDef hwNode fill:#7c2d12,stroke:#f97316,stroke-width:1px,color:#fff;
 
-                                     process_can_frames()  [board code]
-                                       └─► reads from RX ring buffer
-                                            via head/tail iteration
+    subgraph ISR_Context ["ISR Context (Hardware Interrupts)"]
+        direction TB
+        rx_irq["HAL RX Interrupt<br/>(RxFifo0Callback)"]:::isrNode
+        rx_cb["CAN_driver_rx_callback()"]:::isrNode
+        rx_irq --> rx_cb
+    end
+
+    subgraph Buffers ["Driver Ring Buffers (Software RAM)"]
+        direction TB
+        rx_buf[("RX Ring Buffer<br/>Depth: 128 frames")]:::bufNode
+        tx_buf[("TX Ring Buffer<br/>Depth: 64 frames")]:::bufNode
+    end
+
+    subgraph Main_Loop ["Main Loop Context (Application Task)"]
+        direction TB
+        send_frames["CAN_send_frames()<br/>(Schedules due periodic frames)"]:::loopNode
+        drain_queue["CAN_process_tx_queue()<br/>(Drains SW queue to HW FIFO)"]:::loopNode
+        proc_frames["process_can_frames()<br/>(Reads frames tail -> head)"]:::loopNode
+    end
+
+    subgraph HW_Peripheral ["Hardware Controller"]
+        direction TB
+        hw_fifo["Peripheral Hardware TX FIFO<br/>(add_to_fifo_fn)"]:::hwNode
+    end
+
+    rx_cb -->|"Write Frame"| rx_buf
+    rx_buf -->|"Read Frame"| proc_frames
+
+    send_frames -->|"Enqueue Frame"| tx_buf
+    tx_buf -->|"Pop Frame"| drain_queue
+    drain_queue -->|"Flush to FIFO"| hw_fifo
+
+    style ISR_Context fill:#0f172a,stroke:#a855f7,stroke-width:1px,color:#fff
+    style Buffers fill:#0f172a,stroke:#3b82f6,stroke-width:1px,color:#fff
+    style Main_Loop fill:#0f172a,stroke:#10b981,stroke-width:1px,color:#fff
+    style HW_Peripheral fill:#0f172a,stroke:#f97316,stroke-width:1px,color:#fff
 ```
+
+</div>
 
 **TX scheduling**: Each TX frame slot specifies a `scheduler_timer_value` in ms. `CAN_send_frames()` checks which frames are due and enqueues them. Frames marked `CAN_DRIVER_NON_PERIODIC_FRAME` are skipped by the scheduler and sent manually via `CAN_send_single_frame()`.
 
@@ -157,7 +203,7 @@ if (CAN_send_single_frame(&can_driver, &frame) != 0) {
 <details>
 <summary>Click to expand state and flow diagram</summary>
 
-<div data-zoom="0.3">
+<div data-zoom="0.85">
 
 ```mermaid
 %%{init: {
@@ -290,7 +336,7 @@ flowchart TB
         single_check{"Single driver null?"}:::decisionNode
         single_ret(["Single return early"]):::errorNode
         single_enqueue["Enqueue single frame"]:::singleActionNode
-        single_flush["Flush after enqueue"]:::singleActionNode
+        single_flush["Request TX queue drain"]:::singleActionNode
         single_done(["Single frame complete"]):::successNode
 
         single_start --> single_check
@@ -391,3 +437,18 @@ flowchart TB
 </div>
 
 </details>
+
+---
+
+## Diagnostics & Profiling
+
+The generic driver provides built-in instrumentation variables in `generic_can_driver.c` to monitor runtime performance, buffer health, and scheduler jitter. These can be inspected via debugger watch windows or exported into telemetry frames:
+
+| Variable | Type | Description |
+| :--- | :--- | :--- |
+| `can_dbg_tx_enqueue_full_count` | `volatile uint32_t` | Count of outgoing frames dropped due to an exhausted software TX ring buffer |
+| `can_dbg_tx_id_replace_count` | `volatile uint32_t` | Count of deduplication events where older queued frames were overwritten with newer payloads |
+| `can_dbg_tx_processed_count` | `volatile uint32_t` | Total number of frames successfully flushed from software ring buffer to peripheral HW FIFO |
+| `can_dbg_tx_queue_high_watermark`| `volatile uint16_t` | Peak concurrent frame utilization reached by the software TX ring buffer |
+| `can_dbg_tx_catchup_count` | `volatile uint32_t` | Count of scheduler catch-up iterations executed following loop latency spikes |
+| `can_dbg_tx_phase_resync_count` | `volatile uint32_t` | Count of hard phase resynchronizations when loop jitter exceeded `CAN_TX_MAX_CATCHUP_PER_CALL` |
