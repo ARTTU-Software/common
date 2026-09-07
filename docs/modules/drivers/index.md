@@ -1,6 +1,6 @@
 ---
 title: Common - Drivers
-description: CAN, FSM, and misc helper drivers.
+description: CAN, FSM, recalibration, and misc helper drivers.
 ---
 
 # Drivers
@@ -14,3 +14,4 @@ Drivers are small, testable building blocks intended to be wired to board-specif
 - [Misc Helpers](/shared/common/modules/drivers/misc)
 - [Structs](/shared/common/modules/drivers/structs)
 - [Recalibration](/shared/common/modules/drivers/recalibration)
+- [Recalibration Integration Guide](/shared/common/modules/drivers/recalibration-integration)
