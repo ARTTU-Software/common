@@ -8,4 +8,4 @@ jobs:
       contents: read
       pull-requests: write
       checks: write
-    uses: ARTTU-Software/.github/.github/workflows/ceedling-test.yml@main
+    uses: ARTTU-Software/.github/.github/workflows/ceedling-test.yml@test/ci-improvements
