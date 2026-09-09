@@ -2,7 +2,7 @@
 
 #define MAX_16BIT_VAL 65535ULL
 
-/* Helper function to determine prescaler and auto-reload values from target ticks */
+/* Helper function to compute optimal prescaler (PSC) and auto-reload (ARR) values from target ticks */
 static bool calc_from_total_ticks(uint64_t total_ticks, uint16_t *psc, uint16_t *arr)
 {
     if (total_ticks == 0ULL || psc == NULL || arr == NULL) {
