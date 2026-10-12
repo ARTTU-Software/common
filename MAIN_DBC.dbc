@@ -37,8 +37,8 @@ BU_: Gateway_Front Gateway_Rear ECU BMS GI_Left GI_Right Dashboard Telemetry IMU
 BO_ 160 GF_Wheel_Sensors: 8 Gateway_Front
  SG_ Wheel_Speed_FR : 7|16@0+ (1.0,0) [0.0|8000.0] "rpm" Vector__XXX
  SG_ Wheel_Speed_FL : 23|16@0+ (1.0,0) [0.0|8000.0] "rpm" Vector__XXX
- SG_ Susp_Travel_FR : 39|16@0+ (0.001,0) [0.0|65.535] "mm" Vector__XXX
- SG_ Susp_Travel_FL : 55|16@0+ (0.001,0) [0.0|65.535] "mm" Vector__XXX
+ SG_ Susp_Travel_FR : 39|16@0+ (0.01,0) [0.0|655.35] "mm" Vector__XXX
+ SG_ Susp_Travel_FL : 55|16@0+ (0.01,0) [0.0|655.35] "mm" Vector__XXX
 BO_ 161 GF_Misc_Sensors: 8 Gateway_Front
  SG_ APPS1 : 7|8@0+ (1.0,0) [0.0|100.0] "%" Vector__XXX
  SG_ APPS2 : 15|8@0+ (1.0,0) [0.0|100.0] "%" Vector__XXX
@@ -61,8 +61,8 @@ BO_ 174 GF_Calibration_Values: 8 Gateway_Front
 BO_ 176 GR_Wheel_Sensors: 8 Gateway_Rear
  SG_ Wheel_Speed_RR : 7|16@0+ (1.0,0) [0.0|8000.0] "rpm" Vector__XXX
  SG_ Wheel_Speed_RL : 23|16@0+ (1.0,0) [0.0|8000.0] "rpm" Vector__XXX
- SG_ Susp_Travel_RR : 39|16@0+ (0.001,0) [0.0|65.535] "mm" Vector__XXX
- SG_ Susp_Travel_RL : 55|16@0+ (0.001,0) [0.0|65.535] "mm" Vector__XXX
+ SG_ Susp_Travel_RR : 39|16@0+ (0.01,0) [0.0|655.35] "mm" Vector__XXX
+ SG_ Susp_Travel_RL : 55|16@0+ (0.01,0) [0.0|655.35] "mm" Vector__XXX
 BO_ 177 GR_Misc_Sensors: 8 Gateway_Rear
  SG_ Brake : 7|16@0+ (0.01,0) [0.0|100.0] "bar" Vector__XXX
  SG_ JB_50A : 23|16@0- (0.01,0) [-70.0|70.0] "A" Vector__XXX

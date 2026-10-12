@@ -13,15 +13,15 @@
 
 #define CAN_MSG_GF_WHEEL_SENSORS_SIG_WHEEL_SPEED_FL_FACTOR 1.0f
 
-#define CAN_MSG_GF_WHEEL_SENSORS_SIG_SUSP_TRAVEL_FR_FACTOR 0.001f
+#define CAN_MSG_GF_WHEEL_SENSORS_SIG_SUSP_TRAVEL_FR_FACTOR 0.01f
 
-#define CAN_MSG_GF_WHEEL_SENSORS_SIG_SUSP_TRAVEL_FL_FACTOR 0.001f
+#define CAN_MSG_GF_WHEEL_SENSORS_SIG_SUSP_TRAVEL_FL_FACTOR 0.01f
 
 typedef struct {
     uint16_t Wheel_Speed_FR; /* start_bit=7; length=16; factor=1.0; offset=0.0; unit="rpm" */
     uint16_t Wheel_Speed_FL; /* start_bit=23; length=16; factor=1.0; offset=0.0; unit="rpm" */
-    float Susp_Travel_FR; /* start_bit=39; length=16; factor=0.001; offset=0.0; unit="mm" */
-    float Susp_Travel_FL; /* start_bit=55; length=16; factor=0.001; offset=0.0; unit="mm" */
+    float Susp_Travel_FR; /* start_bit=39; length=16; factor=0.01; offset=0.0; unit="mm" */
+    float Susp_Travel_FL; /* start_bit=55; length=16; factor=0.01; offset=0.0; unit="mm" */
 } can_msg_GF_Wheel_Sensors_t;
 
 #define CAN_MSG_GF_MISC_SENSORS_ID 161U
@@ -98,15 +98,15 @@ typedef struct {
 
 #define CAN_MSG_GR_WHEEL_SENSORS_SIG_WHEEL_SPEED_RL_FACTOR 1.0f
 
-#define CAN_MSG_GR_WHEEL_SENSORS_SIG_SUSP_TRAVEL_RR_FACTOR 0.001f
+#define CAN_MSG_GR_WHEEL_SENSORS_SIG_SUSP_TRAVEL_RR_FACTOR 0.01f
 
-#define CAN_MSG_GR_WHEEL_SENSORS_SIG_SUSP_TRAVEL_RL_FACTOR 0.001f
+#define CAN_MSG_GR_WHEEL_SENSORS_SIG_SUSP_TRAVEL_RL_FACTOR 0.01f
 
 typedef struct {
     uint16_t Wheel_Speed_RR; /* start_bit=7; length=16; factor=1.0; offset=0.0; unit="rpm" */
     uint16_t Wheel_Speed_RL; /* start_bit=23; length=16; factor=1.0; offset=0.0; unit="rpm" */
-    float Susp_Travel_RR; /* start_bit=39; length=16; factor=0.001; offset=0.0; unit="mm" */
-    float Susp_Travel_RL; /* start_bit=55; length=16; factor=0.001; offset=0.0; unit="mm" */
+    float Susp_Travel_RR; /* start_bit=39; length=16; factor=0.01; offset=0.0; unit="mm" */
+    float Susp_Travel_RL; /* start_bit=55; length=16; factor=0.01; offset=0.0; unit="mm" */
 } can_msg_GR_Wheel_Sensors_t;
 
 #define CAN_MSG_GR_MISC_SENSORS_ID 177U
