@@ -27,7 +27,7 @@ Combines two bytes into a raw value.
 static FlowSensor_t flow = {0};
 
 void flow_init(void) {
-    flow_sensor_init(&flow, 450U, 0);
+    flow_sensor_init(&flow, 219U, 0);
 }
 
 void flow_exti_isr(void) {

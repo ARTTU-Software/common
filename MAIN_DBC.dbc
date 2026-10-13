@@ -69,9 +69,9 @@ BO_ 177 GR_Misc_Sensors: 8 Gateway_Rear
  SG_ JB_200A : 39|16@0- (0.01,0) [-300.0|300.0] "A" Vector__XXX
  SG_ SDC : 55|8@0+ (1.0,0) [0.0|1.0] "Bool" Vector__XXX
 BO_ 178 GR_Liquid_Sensors: 8 Gateway_Rear
- SG_ Flow_Sensor : 7|16@0+ (1.0,0) [0.0|100.0] "L/m" Vector__XXX
- SG_ Temp_1 : 23|16@0- (0.001,0) [-10.0|100.0] "degC" Vector__XXX
- SG_ Temp_2 : 39|16@0- (0.001,0) [-10.0|100.0] "degC" Vector__XXX
+ SG_ Flow_Sensor : 7|16@0+ (1.0,0) [0.0|1000.0] "mL/s" Vector__XXX
+ SG_ Temp_1 : 23|16@0- (0.01,0) [-40.0|125.0] "degC" Vector__XXX
+ SG_ Temp_2 : 39|16@0- (0.01,0) [-40.0|125.0] "degC" Vector__XXX
 BO_ 191 GR_Software_Status: 8 Gateway_Rear
  SG_ GR_Current_State : 7|8@0+ (1.0,0) [0.0|255.0] "hex" Vector__XXX
  SG_ GR_Previous_Reason : 15|8@0+ (1.0,0) [0.0|255.0] "hex" Vector__XXX
