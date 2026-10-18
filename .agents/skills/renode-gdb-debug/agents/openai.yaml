@@ -1,0 +1,4 @@
+interface:
+  display_name: "Renode Testing and GDB"
+  short_description: "Run Robot regressions and debug emulated firmware"
+  default_prompt: "Use $renode-gdb-debug to author or run Renode Robot tests and diagnose firmware failures with Renode and GDB."
