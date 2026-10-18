@@ -58,25 +58,31 @@ void ge1935_update(GE1935_t* s, uint16_t filtered_adc) {
     }
     s->generic_sensor.filtered_value = filtered_adc;
 
-    // Disconnected / short to GND guard (prevent division by zero)
+    // Disconnected (open circuit -> pulled to Vref) / short to GND guard
     if (filtered_adc == 0U) {
-        s->temperature = -4000;
+        s->temperature = 12000;
         return;
     }
     if (filtered_adc >= 4095U) {
-        s->temperature = 12000;
+        s->temperature = -4000;
         return;
     }
 
     // convert ADC to voltage
     float v = ((float)filtered_adc) * (s->v_ref / 4095.0f);
     if (v <= 0.001f) {
+        s->temperature = 12000;
+        return;
+    }
+
+    float ratio = (s->v_ref / v) - 1.0f;
+    if (ratio <= 0.0001f) {
         s->temperature = -4000;
         return;
     }
 
-    // compute thermistor resistance
-    float r_therm = s->r_fixed * ((s->v_ref / v) - 1.0f);
+    // compute thermistor resistance for low-side NTC (NTC to GND, pull-up to Vref)
+    float r_therm = s->r_fixed / ratio;
     if (r_therm < 0.0f) {
         r_therm = 0.0f;
     }

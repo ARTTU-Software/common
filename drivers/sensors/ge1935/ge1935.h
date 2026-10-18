@@ -7,7 +7,7 @@
 typedef struct {
     Generic_Sensor_t generic_sensor;
     float v_ref;       // reference voltage
-    float r_fixed;     // series resistor in divider (need to put on cable)
+    float r_fixed;     // pull-up resistor in divider (e.g. 10k to v_ref)
     int16_t temperature;
 } GE1935_t;
 
