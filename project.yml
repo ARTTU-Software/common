@@ -104,12 +104,14 @@
     - drivers/can/**
     - drivers/sensors/**
     - drivers/misc/**
+    - drivers/structs/**
     - math/**
   :include:
     - drivers/fsm/**
     - drivers/can/**
     - drivers/sensors/**
     - drivers/misc/**
+    - drivers/structs/**
     - math/**
   :support:
     - test/support

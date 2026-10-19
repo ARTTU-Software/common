@@ -3,18 +3,34 @@ title: Common - CAN
 description: Generated CAN definitions and the generic CAN driver.
 ---
 
-# CAN
+# CAN <Badge type="info" text="FDCAN / Classic CAN" /> <Badge type="tip" text="Generic Driver" />
 
-## Definitions (generated)
-Generated from MAIN_DBC.dbc by dbc_to_c_builder.py.
+## Overview
 
-- can_signal_defs.h provides per-message structs, message IDs, DLC, and factor macros.
-- can_board_defs.h groups transmit messages by sender board.
+The CAN subsystem has two layers:
 
-> [!NOTE]
-> Do not edit the generated headers by hand.
+1. **Generated definitions**: structs and macros auto-generated from the DBC file. These define CAN message structures, IDs, and scaling factors.
+2. **Generic CAN driver**: hardware-agnostic driver handling TX scheduling, TX queuing, and RX ring buffering. Interfaced to HAL via function pointers provided at initialization.
 
-### Usage
+Each board project provides two files to integrate the driver:
+- **`can_driver.c`**: allocates buffers, configures TX frame slots, sets up HAL callbacks, and initializes the generic driver.
+- **`can_comm.c`**: contains the RX message handler (`process_can_frames`) and the TX payload packer (`set_can_frames`).
+
+> [!TIP]
+> See the [CAN Integration Guide](/shared/common/modules/drivers/can-integration) for a step-by-step walkthrough of setting this up on a new board using ECU examples.
+
+---
+
+## Generated Definitions
+
+Generated from `MAIN_DBC.dbc` by `dbc_to_c_builder.py`.
+
+- **`can_signal_defs.h`**: per-message structs, message IDs, DLC constants, and signal scaling factor macros.
+- **`can_board_defs.h`**: groups messages by sender board into convenience structs.
+
+> [!WARNING]
+> Do not edit the generated headers by hand. Re-run `dbc_to_c_builder.py` instead.
+
 ```c
 #include "can_signal_defs.h"
 #include "can_board_defs.h"
@@ -26,19 +42,168 @@ gf.Wheel_Speed_FR = 1200;
 ecu.ECU_Inverter_Sig.Calculated_Speed = 42.0f;
 ```
 
-## Generic CAN Driver (generic_can_driver.h)
-Ring-buffered CAN TX scheduling and RX queueing with user-supplied HAL callbacks. The driver keeps only the newest queued frame per CAN ID and rotates the scheduler start index to avoid fixed-priority bias.
+---
+
+## Generic CAN Driver
+
+### Architecture and Execution Flow
+
+The driver manages two ring buffers and a periodic scheduler:
+
+<div data-zoom="0.95">
+
+```mermaid
+%%{init: {
+  'theme': 'dark',
+  'themeVariables': {
+    'fontSize': '14px',
+    'fontFamily': 'system-ui, sans-serif'
+  },
+  'flowchart': {
+    'nodeSpacing': 25,
+    'rankSpacing': 35,
+    'padding': 15,
+    'curve': 'basis'
+  }
+}}%%
+flowchart LR
+    classDef isrNode fill:#2e1065,stroke:#a855f7,stroke-width:1px,color:#fff;
+    classDef loopNode fill:#064e3b,stroke:#10b981,stroke-width:1px,color:#fff;
+    classDef bufNode fill:#1e293b,stroke:#3b82f6,stroke-width:2px,color:#fff;
+    classDef hwNode fill:#7c2d12,stroke:#f97316,stroke-width:1px,color:#fff;
+
+    subgraph ISR_Context ["ISR Context (Hardware Interrupts)"]
+        direction TB
+        rx_irq["HAL RX Interrupt<br/>(RxFifo0Callback)"]:::isrNode
+        rx_cb["CAN_driver_rx_callback()"]:::isrNode
+        rx_irq --> rx_cb
+    end
+
+    subgraph Buffers ["Driver Ring Buffers (Software RAM)"]
+        direction TB
+        rx_buf[("RX Ring Buffer<br/>Depth: 128 frames")]:::bufNode
+        tx_buf[("TX Ring Buffer<br/>Depth: 64 frames")]:::bufNode
+    end
+
+    subgraph Main_Loop ["Main Loop Context (Application Task)"]
+        direction TB
+        send_frames["CAN_send_frames()<br/>(Schedules due periodic frames)"]:::loopNode
+        drain_queue["CAN_process_tx_queue()<br/>(Drains SW queue to HW FIFO)"]:::loopNode
+        proc_frames["process_can_frames()<br/>(Reads frames tail -> head)"]:::loopNode
+    end
+
+    subgraph HW_Peripheral ["Hardware Controller"]
+        direction TB
+        hw_fifo["Peripheral Hardware TX FIFO<br/>(add_to_fifo_fn)"]:::hwNode
+    end
+
+    rx_cb -->|"Write Frame"| rx_buf
+    rx_buf -->|"Read Frame"| proc_frames
+
+    send_frames -->|"Enqueue Frame"| tx_buf
+    tx_buf -->|"Pop Frame"| drain_queue
+    drain_queue -->|"Flush to FIFO"| hw_fifo
+
+    style ISR_Context fill:#0f172a,stroke:#a855f7,stroke-width:1px,color:#fff
+    style Buffers fill:#0f172a,stroke:#3b82f6,stroke-width:1px,color:#fff
+    style Main_Loop fill:#0f172a,stroke:#10b981,stroke-width:1px,color:#fff
+    style HW_Peripheral fill:#0f172a,stroke:#f97316,stroke-width:1px,color:#fff
+```
+
+</div>
+
+**TX scheduling**: Each TX frame slot specifies a `scheduler_timer_value` in ms. `CAN_send_frames()` checks which frames are due and enqueues them. Frames marked `CAN_DRIVER_NON_PERIODIC_FRAME` are skipped by the scheduler and sent manually via `CAN_send_single_frame()`.
+
+**TX deduplication**: If a frame with a matching CAN ID is already queued in the software ring buffer, the driver overwrites it with the newest frame payload instead of appending.
+
+**RX flow**: The ISR callback writes incoming frames into the RX ring buffer. `process_can_frames()` in the main loop reads them out by iterating from `tail` to `head`.
 
 > [!NOTE]
-> This driver uses HAL function callbacks to keep the driver truly generic. 
+> The driver uses `void*` for the HAL handle and TX headers to remain hardware-agnostic. Cast to platform-specific types (e.g., `FDCAN_HandleTypeDef*`) inside `can_driver.c`.
 
-## Structure
-> [!NOTE]
-> You should have a `can_driver.c` and `can_comm.c` pair of files to manage the driver functions/initialization and the actual CAN communication handling.
+### Key Types
 
-## State and Flow Diagram
+| Type | Purpose |
+|------|---------|
+| `CAN_Driver_t` | Main driver instance holding buffer pointers, frame configs, and HAL function pointers |
+| `CAN_Tx_Message_Frame_t` | TX frame slot configuration (ID, payload, scheduler timer, HAL header pointer) |
+| `CAN_Rx_Message_Frame_t` | RX frame structure (ID, payload, timestamp) |
+| `CAN_Tx_Ring_Buffer_t` | Circular buffer for queued TX frames |
+| `CAN_Rx_Ring_Buffer_t` | Circular buffer for received RX frames |
 
-<div data-zoom="0.3">>
+### Utility Macros
+
+```c
+LOW_BYTE(x)                  // Extract bits [7:0]
+HIGH_BYTE(x)                 // Extract bits [15:8]
+CAN_COMBINE_16(high, low)    // Reconstruct uint16 from two bytes
+CAN_COMBINE_32(b3,b2,b1,b0) // Reconstruct uint32 from four bytes
+CAN_DRIVER_NON_PERIODIC_FRAME // Scheduler ignore flag for manual transmission
+```
+
+---
+
+## API Reference
+
+#### `void CAN_set_structures(driver, add_to_fifo_fn, get_tx_fifo_level_fn, hfdcan_instance)`
+
+Initializes internal indices and sets up function pointers. Must be called after configuring `tx_message_frames`, `rx_ring_buffer`, and `tx_ring_buffer` pointers and sizes.
+
+| Parameter | Description |
+|-----------|-------------|
+| `driver` | `CAN_Driver_t*` pointer to driver instance |
+| `add_to_fifo_fn` | `CanTxFn_t` HAL callback to push frame into HW FIFO (e.g. `HAL_FDCAN_AddMessageToTxFifoQ`) |
+| `get_tx_fifo_level_fn` | `CanTxFifoLevelFn_t` HAL callback to check free space in HW TX FIFO |
+| `hfdcan_instance` | `void*` pointer to peripheral HAL handle |
+
+#### `void CAN_driver_rx_callback(driver, data, hdr_rx, msg_id, num_values, timestamp)`
+
+ISR-safe callback. Pushes incoming frame into the RX ring buffer and sets `can_new_message_flag`. Call from peripheral RX interrupt (e.g. `HAL_FDCAN_RxFifo0Callback`).
+
+> [!WARNING]
+> Runs in interrupt context. Do not perform complex processing inside this function.
+
+| Parameter | Description |
+|-----------|-------------|
+| `data` | `uint8_t*` received payload buffer |
+| `hdr_rx` | `void*` RX header handle |
+| `msg_id` | CAN message ID |
+| `num_values` | Data length in bytes |
+| `timestamp` | System tick timestamp (`HAL_GetTick()`) |
+
+#### `void CAN_send_frames(driver, current_tick)`
+
+Checks all registered periodic TX frame slots and enqueues due frames into the TX ring buffer. Call from main loop context.
+
+Rotates starting index on each call to prevent fixed-priority scheduling bias.
+
+#### `uint16_t CAN_process_tx_queue(driver, amount)`
+
+Pushes queued frames from the software TX ring buffer to the hardware FIFO until FIFO is full or `amount` frames are processed (pass `0` to process all queued frames).
+
+Returns the number of frames transmitted to the hardware FIFO.
+
+#### `uint32_t CAN_send_single_frame(driver, frame)`
+
+Enqueues a non-periodic frame into the TX ring buffer for transmission.
+
+Returns `0` on success, `1` if the TX ring buffer is full.
+
+```c
+if (CAN_send_single_frame(&can_driver, &frame) != 0) {
+    CAN_process_tx_queue(&can_driver, 5);
+    CAN_send_single_frame(&can_driver, &frame);
+}
+```
+
+---
+
+## Internal Flow Diagram
+
+<details>
+<summary>Click to expand state and flow diagram</summary>
+
+<div data-zoom="0.85">
 
 ```mermaid
 %%{init: {
@@ -55,7 +220,6 @@ Ring-buffered CAN TX scheduling and RX queueing with user-supplied HAL callbacks
   }
 }}%%
 flowchart TB
-    %% Subgraph Styles
     classDef initStyle fill:#1e293b,stroke:#3b82f6,stroke-width:2px,color:#fff;
     classDef rxStyle fill:#2e1065,stroke:#a855f7,stroke-width:2px,color:#fff;
     classDef txStyle fill:#064e3b,stroke:#10b981,stroke-width:2px,color:#fff;
@@ -64,7 +228,6 @@ flowchart TB
     classDef helperStyle fill:#1e293b,stroke:#64748b,stroke-width:2px,color:#fff;
     classDef dlcStyle fill:#083344,stroke:#06b6d4,stroke-width:2px,color:#fff;
 
-    %% Node Styles
     classDef startNode fill:#1d4ed8,stroke:#3b82f6,stroke-width:1px,color:#fff;
     classDef decisionNode fill:#c2410c,stroke:#ea580c,stroke-width:1px,color:#fff;
     classDef errorNode fill:#991b1b,stroke:#ef4444,stroke-width:1px,color:#fff;
@@ -173,7 +336,7 @@ flowchart TB
         single_check{"Single driver null?"}:::decisionNode
         single_ret(["Single return early"]):::errorNode
         single_enqueue["Enqueue single frame"]:::singleActionNode
-        single_flush["Flush after enqueue"]:::singleActionNode
+        single_flush["Request TX queue drain"]:::singleActionNode
         single_done(["Single frame complete"]):::successNode
 
         single_start --> single_check
@@ -248,7 +411,6 @@ flowchart TB
         end
     end
 
-    %% Cross-group connections (simplified/styled to prevent layout chaos)
     sched_enqueue -.-> enq_start
     single_enqueue -.-> enq_start
     
@@ -259,7 +421,6 @@ flowchart TB
     rx_dlc -.-> dlc_to_size_start
     enq_dlc -.-> size_to_dlc_start
 
-    %% Subgraph Styling Assignments
     style Initialization fill:#0f172a,stroke:#3b82f6,stroke-width:2px,color:#fff
     style RX_Interrupt fill:#0f172a,stroke:#a855f7,stroke-width:2px,color:#fff
     style Periodic_TX fill:#0f172a,stroke:#10b981,stroke-width:2px,color:#fff
@@ -275,190 +436,19 @@ flowchart TB
 
 </div>
 
-## Functions
-#### `void CAN_set_structures`
-Initializes the driver with the hardware handle and callback functions.
+</details>
 
-#### `void CAN_driver_rx_callback`
-ISR-safe RX callback that writes a received frame into the RX ring buffer.
+---
 
-#### `void CAN_send_frames`
-Schedules periodic frames based on per-frame scheduler timers.
-```c
-static void process_can_helper(void){
-    process_can_frames(&can_driver);
-    CAN_send_frames(&can_driver, HAL_GetTick());
-    if (can_driver.tx_queue_drain_requested) {
-      CAN_process_tx_queue(&can_driver, 0);
-    }
-}
-```
+## Diagnostics & Profiling
 
-#### `uint16_t CAN_process_tx_queue`
-Drains queued TX frames into the hardware FIFO while space is available.
+The generic driver provides built-in instrumentation variables in `generic_can_driver.c` to monitor runtime performance, buffer health, and scheduler jitter. These can be inspected via debugger watch windows or exported into telemetry frames:
 
-#### `uint32_t CAN_send_single_frame`
-Queues a single frame for transmission. Returns 0 on success, 1 on failure.
-```c
-if(CAN_send_single_frame(&can_driver, &status_frame) != 0){
-    CAN_process_tx_queue(&can_driver, 5);
-    CAN_send_single_frame(&can_driver, &status_frame);
-}
-```
-
-## can_driver.c usage example
-For an example can_driver.c file:
-```c
-#include "can_driver.h"
-#include "generic_can_driver.h"
-
-#define HZ_TO_MS(hz) (1000 / (hz))
-
-FDCAN_TxHeaderTypeDef tx_header_templates[NR_OF_CAN_TX_FRAMES];
-CAN_Tx_Message_Frame_t tx_message_frames[NR_OF_CAN_TX_FRAMES];
-CAN_Tx_Message_Frame_t tx_queue_frames[NR_OF_CAN_TX_BUFFER_FRAMES];
-CAN_Rx_Message_Frame_t rx_message_frame[NR_OF_CAN_RX_BUFFER_FRAMES];
-
-CAN_Driver_t can_driver;
-
-void init_canbus_driver(CAN_Driver_t* driver, CanTxFn_t add_to_fifo_fn, CanTxFifoLevelFn_t fifo_level_fn, void* hfdcan_instance){
-    driver->rx_frame_number = NR_OF_CAN_RX_BUFFER_FRAMES;
-    driver->tx_frame_number = NR_OF_CAN_TX_FRAMES;
-    driver->tx_message_frames = tx_message_frames;
-    driver->tx_ring_buffer.frame = tx_queue_frames;
-    driver->tx_ring_buffer.size = NR_OF_CAN_TX_BUFFER_FRAMES;
-    driver->rx_ring_buffer.frame = rx_message_frame;
-
-    set_tx_configs(driver);
-
-    for(int i = 0; i < NR_OF_CAN_TX_FRAMES; i++){
-        tx_header_templates[i].IdType = FDCAN_STANDARD_ID;
-        tx_header_templates[i].TxFrameType = FDCAN_DATA_FRAME;
-        tx_header_templates[i].ErrorStateIndicator = FDCAN_ESI_ACTIVE;
-        tx_header_templates[i].BitRateSwitch = FDCAN_BRS_OFF;
-        tx_header_templates[i].FDFormat = FDCAN_CLASSIC_CAN;
-        tx_header_templates[i].TxEventFifoControl = FDCAN_NO_TX_EVENTS;
-        tx_header_templates[i].MessageMarker = 0;
-        tx_header_templates[i].DataLength = driver->tx_message_frames[i].num_values;
-        tx_header_templates[i].Identifier = driver->tx_message_frames[i].msg_id;
-
-        driver->tx_message_frames[i].hdr = &tx_header_templates[i];
-    }
-
-    CAN_set_structures(driver, add_to_fifo_fn, fifo_level_fn, hfdcan_instance);
-}
-
-static void set_tx_configs(CAN_Driver_t* driver){
-    // This sets the frame configurations
-    driver->tx_message_frames[0].msg_id = 0x0A0;
-    driver->tx_message_frames[0].num_values = FDCAN_DLC_BYTES_8;
-    driver->tx_message_frames[0].previous_tick = 0;
-    driver->tx_message_frames[0].scheduler_timer_value = HZ_TO_MS(100);
-
-    driver->tx_message_frames[1].msg_id = 0x0A1;
-    driver->tx_message_frames[1].num_values = FDCAN_DLC_BYTES_8;
-    driver->tx_message_frames[1].previous_tick = 0;
-    driver->tx_message_frames[1].scheduler_timer_value = HZ_TO_MS(100);
-
-    driver->tx_message_frames[2].msg_id = 0x0AF;
-    driver->tx_message_frames[2].num_values = FDCAN_DLC_BYTES_8;
-    driver->tx_message_frames[2].previous_tick = 0;
-    // Non-periodic = scheduler skips the frame entirely, is sent via CAN_send_single_frame
-    driver->tx_message_frames[2].scheduler_timer_value = CAN_DRIVER_NON_PERIODIC_FRAME;
-}
-
-void HAL_FDCAN_RxFifo0Callback(FDCAN_HandleTypeDef *hfdcan, uint32_t RxFifo0ITs){
-    while(HAL_FDCAN_GetRxFifoFillLevel(hfdcan, FDCAN_RX_FIFO0) > 0){
-        if((RxFifo0ITs & FDCAN_IT_RX_FIFO0_NEW_MESSAGE) != 0){
-            FDCAN_RxHeaderTypeDef can_rx_hdr;
-            uint8_t data[8];
-            HAL_StatusTypeDef status = HAL_FDCAN_GetRxMessage(hfdcan, FDCAN_RX_FIFO0, &can_rx_hdr, data);
-            if (status != HAL_OK){
-                // do nothing
-            }
-            // Pass received message to CAN driver callback for processing and storage in ring buffer
-            CAN_driver_rx_callback(&can_driver, 
-                data, 
-                (void*)&can_rx_hdr, 
-                can_rx_hdr.Identifier, 
-                can_rx_hdr.DataLength,
-                HAL_GetTick());
-        }
-    }
-}
-
-// For TX FIFO callback functionality (draining part)
-void HAL_FDCAN_TxFifoEmptyCallback(FDCAN_HandleTypeDef *hfdcan)
-{
-    if (hfdcan == &hfdcan2) {
-        can_driver.tx_queue_drain_requested = 1;
-    }
-}
-
-void HAL_FDCAN_TxBufferCompleteCallback(FDCAN_HandleTypeDef *hfdcan, uint32_t BufferIndexes)
-{
-    (void)BufferIndexes;
-
-    if (hfdcan == &hfdcan2) {
-        can_driver.tx_queue_drain_requested = 1;
-    }
-}
-void HAL_FDCAN_ErrorStatusCallback(FDCAN_HandleTypeDef *hfdcan, uint32_t ErrorStatusITs)
-{
-  if((ErrorStatusITs & FDCAN_IT_BUS_OFF) != 0)  /* If Bus-Off error occured */
-  {
-     hfdcan->Instance->CCCR &= ~FDCAN_CCCR_INIT; /* Recover from Bus-Off */
-  }
-}
-```
-
-> [!WARNING]
-> `CAN_driver_rx_callback` is intended for ISR context; do not do heavy work inside it.
-
-## can_comm.c usage example
-For an example can_comm.c file:
-```c
-#include "can_comm.h"
-#include "can_driver.h"
-
-void process_can_frames(CAN_Driver_t* driver){
-    while (driver->rx_ring_buffer.head != driver->rx_ring_buffer.tail) {
-        // Snapshot frame so that it is not overwritten at some point
-        CAN_Rx_Message_Frame_t current_frame = driver->rx_ring_buffer.frame[driver->rx_ring_buffer.tail];
-        driver->rx_ring_buffer.tail = (driver->rx_ring_buffer.tail + 1) % driver->rx_ring_buffer.size;
-
-        switch(current_frame.msg_id){
-            case 0x0A2:
-                // do something
-                can_input_data.front_nmos.R2D_LED_Delay = current_frame.payload[0];
-                break;
-            case 0x0A3:
-                // do something else
-                break;
-            default:
-                // Unknown ID, ignore
-                break;
-        }
-    }
-
-    driver->can_new_message_flag = 0;
-}
-
-void set_can_frames(CAN_Driver_t* driver){
-    // Wheel Speed FR
-    driver->tx_message_frames[0].payload[0] = HIGH_BYTE((uint16_t)mx5051_1.rpm);
-    driver->tx_message_frames[0].payload[1] = LOW_BYTE((uint16_t)mx5051_1.rpm);
-
-    // // Wheel Speed FL
-    driver->tx_message_frames[0].payload[2] = HIGH_BYTE((uint16_t)mx5051_2.rpm);
-    driver->tx_message_frames[0].payload[3] = LOW_BYTE((uint16_t)mx5051_2.rpm);
-
-    // // Suspension Travel FR
-    driver->tx_message_frames[0].payload[4] = HIGH_BYTE((uint16_t)kpm12j1.displacement * 1000);
-    driver->tx_message_frames[0].payload[5] = LOW_BYTE((uint16_t)kpm12j1.displacement * 1000);
-
-    // // Suspension Travel FL
-    driver->tx_message_frames[0].payload[6] = HIGH_BYTE((uint16_t)kpm12j2.displacement * 1000);
-    driver->tx_message_frames[0].payload[7] = LOW_BYTE((uint16_t)kpm12j2.displacement * 1000);
-}
-```
+| Variable | Type | Description |
+| :--- | :--- | :--- |
+| `can_dbg_tx_enqueue_full_count` | `volatile uint32_t` | Count of outgoing frames dropped due to an exhausted software TX ring buffer |
+| `can_dbg_tx_id_replace_count` | `volatile uint32_t` | Count of deduplication events where older queued frames were overwritten with newer payloads |
+| `can_dbg_tx_processed_count` | `volatile uint32_t` | Total number of frames successfully flushed from software ring buffer to peripheral HW FIFO |
+| `can_dbg_tx_queue_high_watermark`| `volatile uint16_t` | Peak concurrent frame utilization reached by the software TX ring buffer |
+| `can_dbg_tx_catchup_count` | `volatile uint32_t` | Count of scheduler catch-up iterations executed following loop latency spikes |
+| `can_dbg_tx_phase_resync_count` | `volatile uint32_t` | Count of hard phase resynchronizations when loop jitter exceeded `CAN_TX_MAX_CATCHUP_PER_CALL` |

@@ -5,16 +5,28 @@ description: Generic finite state machine driver.
 
 # FSM Driver
 
-The FSM driver provides a small framework for state transitions with entry, exit, and action callbacks. The application owns the state enum, reason enum, and event snapshot.
+## Overview
 
-> [!NOTE]
-> This pattern is used in CAN-Gateway through `board_fsm.c` and `task_board_fsm_actions.c`.
+The FSM driver provides generic state machine management. Implementation requires three components:
 
-## Structure
-> [!NOTE]
-> You should have a `task_board_fsm.c` and `task_board_fsm_actions.c` pair of files to manage the driver setup and the state-specific actions.
+1. **Decision function**: evaluates current state and event snapshot data to determine state transitions.
+2. **Event snapshot builder**: aggregates hardware, timer, and communication flags into a state snapshot before evaluation.
+3. **State configuration table**: defines `entry`, `exit`, and `action` callback pointers per state.
+
+During each cycle (`FSM_step`):
+1. Snapshot builder updates event data.
+2. Decision function evaluates next state.
+3. If state change occurs: executes current state `exit` callback, updates active state tracking, and executes new state `entry` callback.
+4. Executes active state `action` callback every step.
+
+Cross-FSM requests are supported via `FSM_request_mode_change()`. An FSM can request state transitions on a target FSM, evaluated on the target FSM's next step.
+
+---
 
 ## State and Flow Diagram
+
+<details>
+<summary>Click to expand FSM cycle diagram</summary>
 
 <div data-zoom="0.9">
 
@@ -33,12 +45,10 @@ The FSM driver provides a small framework for state transitions with entry, exit
   }
 }}%%
 flowchart TB
-    %% Subgraph Styles
     style Transition_Path fill:#0f172a,stroke:#10b981,stroke-width:2px,color:#fff
     style No_Transition_Path fill:#0f172a,stroke:#64748b,stroke-width:2px,color:#fff
     style Optional_Branches fill:#0f172a,stroke:#a1a1aa,stroke-width:2px,color:#fff
 
-    %% Node Styles
     classDef genericLogic fill:#1d4ed8,stroke:#3b82f6,stroke-width:1px,color:#fff;
     classDef appLogic fill:#701a75,stroke:#d946ef,stroke-width:1px,color:#fff;
     classDef transPath fill:#065f46,stroke:#10b981,stroke-width:1px,color:#fff;
@@ -95,7 +105,6 @@ flowchart TB
 
     exec_action --> fault_check
 
-    %% Feedback loop back to FSM_step()
     handle_fault -->|Repeat Next Cycle| begin_cycle
     trigger_boot -->|Repeat Next Cycle| begin_cycle
     boot_req -- No --> begin_cycle
@@ -103,149 +112,217 @@ flowchart TB
 
 </div>
 
-## Functions
-#### `void FSM_init(FSM_Driver_t* driver, FSM_DecisionFn_t decide_fn, FSM_SnapshotBuildFn_t build_snapshot_fn, FSM_State_Config_t* state_configs, uint8_t num_states, FSM_State_t initial_state, FSM_Event_Snapshot_t event_snapshot)`
-Initializes the FSM driver with decision logic, state callbacks, and the event snapshot storage.
+</details>
 
-#### `uint8_t FSM_step(FSM_Driver_t* driver)`
-Runs one FSM cycle. It builds events, decides the next state, runs exit and entry hooks when needed, and then runs the current state's action.
+---
 
-#### `FSM_State_t FSM_get_current_state(const FSM_Driver_t* driver)`
-Returns the current FSM state.
+## API Reference
 
-#### `FSM_Reason_t FSM_get_last_reason(const FSM_Driver_t* driver)`
-Returns the last transition reason.
+#### `void FSM_init(driver, decide_fn, build_snapshot_fn, state_configs, num_states, initial_state, event_snapshot)`
 
-#### `uint32_t FSM_get_transition_count(const FSM_Driver_t* driver)`
-Returns the number of transitions that have occurred.
+Initializes the FSM instance. `event_snapshot` expects a pointer to application snapshot memory (cast to `FSM_Event_Snapshot_t`).
 
-#### `void FSM_set_fault_latch(FSM_Driver_t* driver)`
-Sets the fault latch until reset.
+#### `uint8_t FSM_step(driver)`
 
-#### `uint8_t FSM_is_fault_latched(const FSM_Driver_t* driver)`
-Returns 1 if a fault is latched.
+Executes single FSM step: updates events, evaluates transitions, runs entry/exit callbacks when state changes occur, and calls active state action callback. Returns `1` on transition, `0` otherwise.
 
-#### `void FSM_reset_fault_latch(FSM_Driver_t* driver)`
-Clears the fault latch.
+#### `FSM_State_t FSM_get_current_state(driver)`
 
-#### `void FSM_request_bootloader(FSM_Driver_t* driver)`
-Flags a bootloader request for the next cycle.
+Returns active FSM state.
 
-#### `void FSM_request_mode_change(FSM_Driver_t* driver, FSM_State_t requested_mode, FSM_Reason_t reason)`
-Requests a mode change with a reason code.
+#### `FSM_Reason_t FSM_get_last_reason(driver)`
 
-## CAN-Gateway example
-For an example `task_board_fsm.c` file:
+Returns reason code associated with the most recent transition.
+
+#### `uint32_t FSM_get_transition_count(driver)`
+
+Returns total transition count since initialization.
+
+#### `void FSM_set_fault_latch(driver)` / `uint8_t FSM_is_fault_latched(driver)` / `void FSM_reset_fault_latch(driver)`
+
+Manages fault latch flag. Once latched, flag remains active until explicitly cleared via `FSM_reset_fault_latch()`.
+
+#### `void FSM_request_bootloader(driver)`
+
+Sets bootloader request flag on tracking structure.
+
+#### `void FSM_request_mode_change(driver, requested_mode, reason)`
+
+Queues an external transition request to `requested_mode` with reason code.
+
+---
+
+## Integration Pattern
+
+FSM implementations utilize two source files per state machine:
+
+| File | Contents |
+|------|----------|
+| `board_fsm.c` | State enum, snapshot struct, decision function, snapshot builder, init routine |
+| `board_fsm_actions.c` | Entry, exit, and action callback implementations |
+
+### FSM Configuration Example
+
 ```c
-FSM_Driver_t board_fsm_driver;
+typedef enum {
+    STATE_IDLE,
+    STATE_ACTIVE,
+    STATE_FAULT,
+    STATE_COUNT
+} My_State_t;
 
-static Board_FSM_Event_Snapshot_t board_fsm_event_snapshot;
+typedef struct {
+    uint8_t sensor_ready;
+    uint8_t fault_detected;
+} My_Event_Snapshot_t;
 
-static FSM_State_Config_t board_fsm_state_configs[BOARD_FSM_MODE_COUNT] = {
-    [BOARD_FSM_MODE_INIT] = {NULL, NULL, NULL},
-    [BOARD_FSM_MODE_IDLE] = {board_fsm_mode_idle_entry, board_fsm_mode_idle_exit, board_fsm_mode_idle_action},
-    [BOARD_FSM_MODE_PROCESS_SENSORS] = {board_fsm_mode_process_sensors_entry, board_fsm_mode_process_sensors_exit, board_fsm_mode_process_sensors_action},
-    [BOARD_FSM_MODE_OUTPUT_SENSORS] = {board_fsm_mode_output_sensors_entry, board_fsm_mode_output_sensors_exit, board_fsm_mode_output_sensors_action},
-    [BOARD_FSM_MODE_BOOTLOADER] = {board_fsm_mode_bootloader_entry, board_fsm_mode_bootloader_exit, board_fsm_mode_bootloader_action},
-    [BOARD_FSM_MODE_FAULT] = {board_fsm_mode_fault_entry, board_fsm_mode_fault_exit, board_fsm_mode_fault_action},
+static FSM_State_Config_t state_configs[STATE_COUNT] = {
+    [STATE_IDLE]   = { idle_entry,   NULL, idle_action   },
+    [STATE_ACTIVE] = { active_entry, NULL, active_action },
+    [STATE_FAULT]  = { fault_entry,  NULL, fault_action  },
 };
 
-void board_fsm_init(void)
-{
-    FSM_init(&board_fsm_driver,
-        board_fsm_decide_mode,
-        board_fsm_build_events,
-        board_fsm_state_configs,
-        BOARD_FSM_MODE_COUNT,
-        BOARD_FSM_MODE_INIT,
-        (FSM_Event_Snapshot_t)&board_fsm_event_snapshot);
+static FSM_State_t decide(FSM_State_t current, const FSM_Event_Snapshot_t *events, FSM_Reason_t *reason) {
+    My_Event_Snapshot_t *snap = (My_Event_Snapshot_t *)(*events);
+
+    if (snap->fault_detected) {
+        *reason = REASON_FAULT;
+        return STATE_FAULT;
+    }
+    if (current == STATE_IDLE && snap->sensor_ready) {
+        *reason = REASON_SENSOR_READY;
+        return STATE_ACTIVE;
+    }
+    return current;
 }
+
+static My_Event_Snapshot_t snapshot;
+FSM_Driver_t my_fsm;
+
+void my_fsm_init(void) {
+    FSM_init(&my_fsm, decide, build_events, state_configs,
+             STATE_COUNT, STATE_IDLE, (FSM_Event_Snapshot_t)&snapshot);
+}
+
+// Main loop step:
+FSM_step(&my_fsm);
 ```
 
-### CAN-Gateway decision logic
-The board FSM is driven from the generic layer, but the CAN-Gateway decides transitions with board-specific events.
+---
+
+## Example: CAN-Gateway FSM
+
+Single FSM implementation cycling through operational modes:
+
+```
+INIT -> IDLE -> PROCESS_SENSORS -> OUTPUT_SENSORS -> IDLE
+```
+
+<details>
+<summary>CAN-Gateway decision function</summary>
 
 ```c
-FSM_State_t board_fsm_decide_mode(FSM_State_t current_mode, const FSM_Event_Snapshot_t *events, FSM_Reason_t *reason)
+FSM_State_t board_fsm_decide_mode(FSM_State_t current_mode,
+    const FSM_Event_Snapshot_t *events, FSM_Reason_t *reason)
 {
     if (FSM_is_fault_latched(&board_fsm_driver))
-    {
         return BOARD_FSM_MODE_FAULT;
-    }
 
-    if (events == NULL || *events == NULL)
-    {
-        if (reason != NULL)
-        {
-            *reason = BOARD_FSM_REASON_INVALID_EVENT;
-        }
-        return BOARD_FSM_MODE_FAULT;
-    }
+    const Board_FSM_Event_Snapshot_t *snap = (const Board_FSM_Event_Snapshot_t *)(*events);
 
-    const Board_FSM_Event_Snapshot_t *board_events = (const Board_FSM_Event_Snapshot_t *)(*events);
-
-    if (board_events->bootloader_requested != 0U)
-    {
-        if (reason != NULL)
-        {
-            *reason = BOARD_FSM_REASON_BOOTLOADER_REQUEST;
-        }
+    if (snap->bootloader_requested) {
+        *reason = BOARD_FSM_REASON_BOOTLOADER_REQUEST;
         return BOARD_FSM_MODE_BOOTLOADER;
     }
 
-    switch ((Board_FSM_Mode_t)current_mode)
-    {
+    switch ((Board_FSM_Mode_t)current_mode) {
         case BOARD_FSM_MODE_INIT:
-            if (reason != NULL)
-            {
-                *reason = BOARD_FSM_REASON_INIT_COMPLETE;
-            }
+            *reason = BOARD_FSM_REASON_INIT_COMPLETE;
             return BOARD_FSM_MODE_IDLE;
 
         case BOARD_FSM_MODE_IDLE:
-            if (board_events->adc_ready != 0U)
-            {
-                if (reason != NULL)
-                {
-                    *reason = BOARD_FSM_REASON_ADC_READY;
-                }
+            if (snap->adc_ready) {
+                *reason = BOARD_FSM_REASON_ADC_READY;
                 return BOARD_FSM_MODE_PROCESS_SENSORS;
             }
             return BOARD_FSM_MODE_IDLE;
 
         case BOARD_FSM_MODE_PROCESS_SENSORS:
-            if (reason != NULL)
-            {
-                *reason = BOARD_FSM_REASON_PROCESS_SENSORS_DONE;
-            }
+            *reason = BOARD_FSM_REASON_PROCESS_SENSORS_DONE;
             return BOARD_FSM_MODE_OUTPUT_SENSORS;
 
         case BOARD_FSM_MODE_OUTPUT_SENSORS:
-            if (reason != NULL)
-            {
-                *reason = BOARD_FSM_REASON_OUTPUT_SENSORS_COMPLETE;
-            }
+            *reason = BOARD_FSM_REASON_OUTPUT_SENSORS_COMPLETE;
             return BOARD_FSM_MODE_IDLE;
 
-        case BOARD_FSM_MODE_BOOTLOADER:
-            return BOARD_FSM_MODE_BOOTLOADER;
-
-        case BOARD_FSM_MODE_FAULT:
         default:
             return BOARD_FSM_MODE_FAULT;
     }
 }
 ```
 
-### Main loop usage
-For the CAN-Gateway main loop, the FSM is stepped after the CAN processing task:
+</details>
+
+---
+
+## Example: ECU Multi-FSM Architecture
+
+The ECU uses sub-FSM controllers managed by a master ECU state machine:
+
+```
+ECU FSM:  IDLE -> R2D -> CONTROL -> SHUTDOWN
+                  |        |
+                  v        v
+            R2D FSM    Control FSM    Shutdown FSM
+```
+
+Master FSM entry callbacks request state changes on child FSM instances:
 
 ```c
-board_fsm_init();
+// Master ECU FSM entry action for R2D state
+void ecu_fsm_state_r2d_entry(FSM_State_t state) {
+    (void)state;
+    ecu_send_software_frame();
+    FSM_request_mode_change(&r2d_fsm_driver, SYSTEM_R2D_FIRST_BTN, R2D_FSM_REASON_NONE);
+}
 
-while (1)
+// Master ECU FSM decision function
+static FSM_State_t ecu_fsm_decide(FSM_State_t current_state,
+    const FSM_Event_Snapshot_t *events, FSM_Reason_t *reason)
 {
-    process_can_helper();
-    FSM_step(&board_fsm_driver);
+    ECU_FSM_Event_Snapshot_t *snap = (ECU_FSM_Event_Snapshot_t *)(*events);
+    FSM_State_Tracking_t *tracking = &ecu_fsm_driver.tracking;
+
+    if (snap->can_sdc_fault_requested) {
+        *reason = ECU_FSM_REASON_FAULT_CAN_SDC;
+        FSM_request_mode_change(&shutdown_fsm_driver,
+            SYSTEM_SHUTDOWN_START, SHUTDOWN_FSM_REASON_SDC_FAULT);
+        return SYSTEM_SHUTDOWN;
+    }
+
+    if (tracking->mode_change_requested) {
+        *reason = tracking->mode_change_reason;
+        tracking->mode_change_requested = 0U;
+        return tracking->mode_change_state;
+    }
+
+    return current_state;
+}
+```
+
+### Main Loop Execution
+
+```c
+r2d_fsm_init();
+control_fsm_init();
+shutdown_fsm_init();
+ecu_fsm_init();
+
+while (1) {
+    process_can_frames(&can_driver);
+    set_can_frames(&can_driver);
+    service_can_tx();
+
+    FSM_step(&ecu_fsm_driver);
 }
 ```

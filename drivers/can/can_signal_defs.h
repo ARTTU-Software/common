@@ -13,15 +13,15 @@
 
 #define CAN_MSG_GF_WHEEL_SENSORS_SIG_WHEEL_SPEED_FL_FACTOR 1.0f
 
-#define CAN_MSG_GF_WHEEL_SENSORS_SIG_SUSP_TRAVEL_FR_FACTOR 0.001f
+#define CAN_MSG_GF_WHEEL_SENSORS_SIG_SUSP_TRAVEL_FR_FACTOR 0.01f
 
-#define CAN_MSG_GF_WHEEL_SENSORS_SIG_SUSP_TRAVEL_FL_FACTOR 0.001f
+#define CAN_MSG_GF_WHEEL_SENSORS_SIG_SUSP_TRAVEL_FL_FACTOR 0.01f
 
 typedef struct {
     uint16_t Wheel_Speed_FR; /* start_bit=7; length=16; factor=1.0; offset=0.0; unit="rpm" */
     uint16_t Wheel_Speed_FL; /* start_bit=23; length=16; factor=1.0; offset=0.0; unit="rpm" */
-    float Susp_Travel_FR; /* start_bit=39; length=16; factor=0.001; offset=0.0; unit="mm" */
-    float Susp_Travel_FL; /* start_bit=55; length=16; factor=0.001; offset=0.0; unit="mm" */
+    float Susp_Travel_FR; /* start_bit=39; length=16; factor=0.01; offset=0.0; unit="mm" */
+    float Susp_Travel_FL; /* start_bit=55; length=16; factor=0.01; offset=0.0; unit="mm" */
 } can_msg_GF_Wheel_Sensors_t;
 
 #define CAN_MSG_GF_MISC_SENSORS_ID 161U
@@ -36,11 +36,14 @@ typedef struct {
 
 #define CAN_MSG_GF_MISC_SENSORS_SIG_R2D_BTN_FACTOR 1.0f
 
+#define CAN_MSG_GF_MISC_SENSORS_SIG_LAP_COUNT_START_BTN_FACTOR 1.0f
+
 typedef struct {
     uint8_t APPS1; /* start_bit=7; length=8; factor=1.0; offset=0.0; unit="%" */
     uint8_t APPS2; /* start_bit=15; length=8; factor=1.0; offset=0.0; unit="%" */
     float Steering; /* start_bit=23; length=16; factor=0.01; offset=0.0; unit="deg" */
     uint8_t R2D_BTN; /* start_bit=39; length=8; factor=1.0; offset=0.0; unit="bool" */
+    uint8_t LAP_COUNT_START_BTN; /* start_bit=47; length=8; factor=1.0; offset=0.0; unit="bool" */
 } can_msg_GF_Misc_Sensors_t;
 
 #define CAN_MSG_GF_SOFTWARE_STATUS_ID 175U
@@ -95,15 +98,15 @@ typedef struct {
 
 #define CAN_MSG_GR_WHEEL_SENSORS_SIG_WHEEL_SPEED_RL_FACTOR 1.0f
 
-#define CAN_MSG_GR_WHEEL_SENSORS_SIG_SUSP_TRAVEL_RR_FACTOR 0.001f
+#define CAN_MSG_GR_WHEEL_SENSORS_SIG_SUSP_TRAVEL_RR_FACTOR 0.01f
 
-#define CAN_MSG_GR_WHEEL_SENSORS_SIG_SUSP_TRAVEL_RL_FACTOR 0.001f
+#define CAN_MSG_GR_WHEEL_SENSORS_SIG_SUSP_TRAVEL_RL_FACTOR 0.01f
 
 typedef struct {
     uint16_t Wheel_Speed_RR; /* start_bit=7; length=16; factor=1.0; offset=0.0; unit="rpm" */
     uint16_t Wheel_Speed_RL; /* start_bit=23; length=16; factor=1.0; offset=0.0; unit="rpm" */
-    float Susp_Travel_RR; /* start_bit=39; length=16; factor=0.001; offset=0.0; unit="mm" */
-    float Susp_Travel_RL; /* start_bit=55; length=16; factor=0.001; offset=0.0; unit="mm" */
+    float Susp_Travel_RR; /* start_bit=39; length=16; factor=0.01; offset=0.0; unit="mm" */
+    float Susp_Travel_RL; /* start_bit=55; length=16; factor=0.01; offset=0.0; unit="mm" */
 } can_msg_GR_Wheel_Sensors_t;
 
 #define CAN_MSG_GR_MISC_SENSORS_ID 177U
@@ -540,8 +543,8 @@ typedef struct {
     float Low_Cell_Resistance; /* start_bit=7; length=16; factor=0.01; offset=0.0; unit="mOhm" */
     float High_Cell_Resistance; /* start_bit=23; length=16; factor=0.01; offset=0.0; unit="mOhm" */
     float Avg_Cell_Resistance; /* start_bit=39; length=16; factor=0.01; offset=0.0; unit="mOhm" */
-    uint8_t High_Intres_ID; /* start_bit=15; length=8; factor=1.0; offset=0.0; unit="ID" */
-    uint8_t Low_Intres_ID; /* start_bit=23; length=8; factor=1.0; offset=0.0; unit="ID" */
+    uint8_t High_Intres_ID; /* start_bit=55; length=8; factor=1.0; offset=0.0; unit="ID" */
+    uint8_t Low_Intres_ID; /* start_bit=63; length=8; factor=1.0; offset=0.0; unit="ID" */
 } can_msg_BMS_Cell_Resistance_t;
 
 #define CAN_MSG_BMS_CURRENT_ID 21U
@@ -723,6 +726,10 @@ typedef struct {
 
 #define CAN_MSG_DASH_INPUTS_SIG_MOTOR_CONTROL_MODE_TOGGLE_FACTOR 1.0f
 
+#define CAN_MSG_DASH_INPUTS_SIG_SLIP_CONTROL_ON_OFF_FACTOR 1.0f
+
+#define CAN_MSG_DASH_INPUTS_SIG_LAP_RESET_BTN_FACTOR 1.0f
+
 typedef struct {
     uint8_t APPS_Recal; /* start_bit=0; length=1; factor=1.0; offset=0.0; unit="bool" */
     uint8_t Steering_Recal; /* start_bit=1; length=1; factor=1.0; offset=0.0; unit="bool" */
@@ -733,6 +740,8 @@ typedef struct {
     uint8_t Telemetry_SD_Toggle; /* start_bit=6; length=1; factor=1.0; offset=0.0; unit="bool" */
     uint8_t Telemetry_UDP_Toggle; /* start_bit=7; length=1; factor=1.0; offset=0.0; unit="bool" */
     uint8_t Motor_Control_Mode_Toggle; /* start_bit=15; length=8; factor=1.0; offset=0.0; unit="enum" */
+    uint8_t Slip_Control_On_Off; /* start_bit=16; length=1; factor=1.0; offset=0.0; unit="bool" */
+    uint8_t Lap_Reset_Btn; /* start_bit=17; length=1; factor=1.0; offset=0.0; unit="bool" */
 } can_msg_DASH_Inputs_t;
 
 #define CAN_MSG_DASH_PID_TUNE_1_ID 209U
@@ -786,6 +795,19 @@ typedef struct {
     float GPS_Yaw_Angle; /* start_bit=32; length=16; factor=0.0001; offset=0.0; unit="rad" */
 } can_msg_GPS_Angles_t;
 
+#define CAN_MSG_LAP_COMPLETED_ID 241U
+#define CAN_MSG_LAP_COMPLETED_DLC 8U
+#define CAN_MSG_LAP_COMPLETED_CYCLE_TIME_MS 0U
+
+#define CAN_MSG_LAP_COMPLETED_SIG_LAP_COMPLETED_FLAG_FACTOR 1.0f
+
+#define CAN_MSG_LAP_COMPLETED_SIG_LAP_COUNT_FACTOR 1.0f
+
+typedef struct {
+    uint8_t Lap_Completed_Flag; /* start_bit=0; length=8; factor=1.0; offset=0.0; unit="bool" */
+    uint16_t Lap_Count; /* start_bit=8; length=16; factor=1.0; offset=0.0; unit="dec" */
+} can_msg_Lap_Completed_t;
+
 #define CAN_MSG_IMU_DATA_ID 80U
 #define CAN_MSG_IMU_DATA_DLC 8U
 #define CAN_MSG_IMU_DATA_CYCLE_TIME_MS 0U
@@ -826,77 +848,53 @@ typedef struct {
     float Angle_Yaw; /* start_bit=55; length=16; factor=0.0054931640625; offset=0.0; mux=m83; unit="deg" */
 } can_msg_IMU_Data_t;
 
-#define CAN_MSG_IMU_RECAL_ID 80U
-#define CAN_MSG_IMU_RECAL_DLC 8U
-#define CAN_MSG_IMU_RECAL_CYCLE_TIME_MS 0U
-
-#define CAN_MSG_IMU_RECAL_SIG_PROTOCOL_HEADER_1_FACTOR 1.0f
-
-#define CAN_MSG_IMU_RECAL_SIG_PROTOCOL_HEADER_2_FACTOR 1.0f
-
-#define CAN_MSG_IMU_RECAL_SIG_ADDRESS_FACTOR 1.0f
-
-#define CAN_MSG_IMU_RECAL_SIG_KEY_LOW_FACTOR 1.0f
-
-#define CAN_MSG_IMU_RECAL_SIG_KEY_HIGH_FACTOR 1.0f
-
-#define CAN_MSG_IMU_RECAL_SIG_CALSW_LOW_FACTOR 1.0f
-
-#define CAN_MSG_IMU_RECAL_SIG_CALSW_HIGH_FACTOR 1.0f
-
-#define CAN_MSG_IMU_RECAL_SIG_SAVE_LOW_FACTOR 1.0f
-
-#define CAN_MSG_IMU_RECAL_SIG_SAVE_HIGH_FACTOR 1.0f
-
-typedef struct {
-    uint8_t Protocol_Header_1; /* start_bit=7; length=8; factor=1.0; offset=0.0; unit="const_0xff" */
-    uint8_t Protocol_Header_2; /* start_bit=15; length=8; factor=1.0; offset=0.0; unit="const_0xaa" */
-    uint8_t Address; /* start_bit=23; length=8; factor=1.0; offset=0.0; mux=M; unit="hex" */
-    uint8_t KEY_Low; /* start_bit=31; length=8; factor=1.0; offset=0.0; mux=m105; unit="hex" */
-    uint8_t KEY_High; /* start_bit=39; length=8; factor=1.0; offset=0.0; mux=m105; unit="hex" */
-    uint8_t CALSW_Low; /* start_bit=31; length=8; factor=1.0; offset=0.0; mux=m1; unit="hex" */
-    uint8_t CALSW_High; /* start_bit=39; length=8; factor=1.0; offset=0.0; mux=m1; unit="hex" */
-    uint8_t SAVE_Low; /* start_bit=31; length=8; factor=1.0; offset=0.0; mux=m0; unit="hex" */
-    uint8_t SAVE_High; /* start_bit=39; length=8; factor=1.0; offset=0.0; mux=m0; unit="hex" */
-} can_msg_IMU_Recal_t;
-
 #define CAN_MSG_LVSOC_STATUS_1_ID 768U
 #define CAN_MSG_LVSOC_STATUS_1_DLC 8U
 #define CAN_MSG_LVSOC_STATUS_1_CYCLE_TIME_MS 0U
 
-#define CAN_MSG_LVSOC_STATUS_1_SIG_BAT_VOLTAGE_FACTOR 0.001f
+#define CAN_MSG_LVSOC_STATUS_1_SIG_LVSOC_BAT_VOLTAGE_FACTOR 0.001f
 
-#define CAN_MSG_LVSOC_STATUS_1_SIG_CURRENT_FACTOR 0.01f
+#define CAN_MSG_LVSOC_STATUS_1_SIG_LVSOC_CURRENT_FACTOR 0.01f
 
-#define CAN_MSG_LVSOC_STATUS_1_SIG_SOC_FACTOR 0.1f
+#define CAN_MSG_LVSOC_STATUS_1_SIG_LVSOC_SOC_FACTOR 0.1f
 
-#define CAN_MSG_LVSOC_STATUS_1_SIG_PEAK_CURRENT_10S_FACTOR 0.1f
+#define CAN_MSG_LVSOC_STATUS_1_SIG_LVSOC_PEAK_CURRENT_10S_FACTOR 0.01f
 
 typedef struct {
-    float Bat_Voltage; /* start_bit=7; length=16; factor=0.001; offset=0.0; unit="V" */
-    float Current; /* start_bit=23; length=16; factor=0.01; offset=0.0; unit="A" */
-    float SoC; /* start_bit=39; length=16; factor=0.1; offset=0.0; unit="%" */
-    float Peak_Current_10s; /* start_bit=55; length=16; factor=0.1; offset=0.0; unit="A" */
+    float LVSOC_Bat_Voltage; /* start_bit=7; length=16; factor=0.001; offset=0.0; unit="V" */
+    float LVSOC_Current; /* start_bit=23; length=16; factor=0.01; offset=0.0; unit="A" */
+    float LVSOC_SoC; /* start_bit=39; length=16; factor=0.1; offset=0.0; unit="%" */
+    float LVSOC_Peak_Current_10s; /* start_bit=55; length=16; factor=0.01; offset=0.0; unit="A" */
 } can_msg_LVSOC_Status_1_t;
 
 #define CAN_MSG_LVSOC_STATUS_2_ID 769U
 #define CAN_MSG_LVSOC_STATUS_2_DLC 8U
 #define CAN_MSG_LVSOC_STATUS_2_CYCLE_TIME_MS 0U
 
-#define CAN_MSG_LVSOC_STATUS_2_SIG_CAPACITY_FACTOR 1.0f
+#define CAN_MSG_LVSOC_STATUS_2_SIG_LVSOC_CAPACITY_FACTOR 1.0f
 
-#define CAN_MSG_LVSOC_STATUS_2_SIG_SUDO_POWEROFF_FACTOR 1.0f
+#define CAN_MSG_LVSOC_STATUS_2_SIG_LVSOC_STATE_OF_OPERATION_FACTOR 1.0f
 
-#define CAN_MSG_LVSOC_STATUS_2_SIG_TIME_REMAINING_TTE_TTF_FACTOR 1.0f
+#define CAN_MSG_LVSOC_STATUS_2_SIG_LVSOC_TIME_REMAINING_TTE_TTF_FACTOR 1.0f
 
-#define CAN_MSG_LVSOC_STATUS_2_SIG_AVG_CURRENT_10S_FACTOR 0.01f
+#define CAN_MSG_LVSOC_STATUS_2_SIG_LVSOC_AVG_CURRENT_10S_FACTOR 0.01f
 
 typedef struct {
-    uint16_t Capacity; /* start_bit=7; length=16; factor=1.0; offset=0.0; unit="mAh" */
-    uint16_t sudo_poweroff; /* start_bit=23; length=16; factor=1.0; offset=0.0 */
-    uint16_t Time_Remaining_TTE_TTF; /* start_bit=39; length=16; factor=1.0; offset=0.0; unit="min" */
-    float Avg_Current_10s; /* start_bit=55; length=16; factor=0.01; offset=0.0; unit="A" */
+    uint16_t LVSOC_Capacity; /* start_bit=7; length=16; factor=1.0; offset=0.0; unit="mAh" */
+    uint8_t LVSOC_State_of_Operation; /* start_bit=23; length=8; factor=1.0; offset=0.0; unit="enum" */
+    uint16_t LVSOC_Time_Remaining_TTE_TTF; /* start_bit=39; length=16; factor=1.0; offset=0.0; unit="min" */
+    float LVSOC_Avg_Current_10s; /* start_bit=55; length=16; factor=0.01; offset=0.0; unit="A" */
 } can_msg_LVSOC_Status_2_t;
+
+#define CAN_MSG_LVSOC_STATUS_3_ID 770U
+#define CAN_MSG_LVSOC_STATUS_3_DLC 8U
+#define CAN_MSG_LVSOC_STATUS_3_CYCLE_TIME_MS 0U
+
+#define CAN_MSG_LVSOC_STATUS_3_SIG_LVSOC_OCV_FACTOR 0.001f
+
+typedef struct {
+    float LVSOC_OCV; /* start_bit=7; length=16; factor=0.001; offset=0.0; unit="V" */
+} can_msg_LVSOC_Status_3_t;
 
 #define CAN_MSG_PRG_BOOTLOADER_ID 1264U
 #define CAN_MSG_PRG_BOOTLOADER_DLC 8U
