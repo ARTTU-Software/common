@@ -1,6 +1,8 @@
 #include "unity.h"
 #include "dhabs134.h"
 #include <string.h>
+#include <limits.h>
+#include <math.h>
 
 static DHAB_S134_t test_sensor;
 
@@ -22,6 +24,46 @@ void setUp(void)
 
 void tearDown(void)
 {
+}
+
+void test_legacy_reinit_clears_previous_adc_and_filter_state(void)
+{
+    memset(&test_sensor, 0x55, sizeof(test_sensor));
+    dhab_s134_init(&test_sensor, SUPPLY_V, ADC_VREF, DIVIDER_GAIN,
+        DIODE_DROP_CH50, DIODE_DROP_CH200, ALPHA_NO_SMOOTHING, 1, 2,
+        (Generic_Kalman_Settings_t){0}, (Generic_Kalman_Settings_t){0});
+    TEST_ASSERT_EQUAL_FLOAT(0.0f, test_sensor.ch50.generic_sensor.filtered_value);
+    TEST_ASSERT_EQUAL_FLOAT(0.0f, test_sensor.ch200.generic_sensor.raw_value);
+}
+
+void test_legacy_invalid_adc_does_not_cast_nan_or_accept_16_bit_counts(void)
+{
+    dhab_s134_init(&test_sensor, SUPPLY_V, ADC_VREF, DIVIDER_GAIN,
+        DIODE_DROP_CH50, DIODE_DROP_CH200, ALPHA_NO_SMOOTHING, 1, 2,
+        (Generic_Kalman_Settings_t){0}, (Generic_Kalman_Settings_t){0});
+    test_sensor.ch50.generic_sensor.filtered_value = NAN;
+    dhab_s134_update_50A(&test_sensor);
+    TEST_ASSERT_EQUAL_INT16(0, test_sensor.ch50.current);
+    test_sensor.ch200.generic_sensor.filtered_value = 33098.0f;
+    dhab_s134_update_200A(&test_sensor);
+    TEST_ASSERT_EQUAL_INT16(0, test_sensor.ch200.current);
+    dhab_s134_update_50A(NULL);
+    dhab_s134_init(NULL, 5.0f, 3.3f, 1.5f, 0.0f, 0.0f, 1.0f, 0u, 1u,
+        (Generic_Kalman_Settings_t){0}, (Generic_Kalman_Settings_t){0});
+}
+
+void test_legacy_current_encoding_saturates_instead_of_overflowing(void)
+{
+    dhab_s134_init(&test_sensor, SUPPLY_V, ADC_VREF, DIVIDER_GAIN,
+        0.0f, 0.0f, ALPHA_NO_SMOOTHING, 1, 2,
+        (Generic_Kalman_Settings_t){0}, (Generic_Kalman_Settings_t){0});
+    test_sensor.ch200.sensitivity_v_per_a = 0.0057f;
+    test_sensor.ch200.generic_sensor.filtered_value = 4095.0f;
+    dhab_s134_update_200A(&test_sensor);
+    TEST_ASSERT_EQUAL_INT16(INT16_MAX, test_sensor.ch200.current);
+    test_sensor.ch200.generic_sensor.filtered_value = 0.0f;
+    dhab_s134_update_200A(&test_sensor);
+    TEST_ASSERT_EQUAL_INT16(INT16_MIN, test_sensor.ch200.current);
 }
 
 /**

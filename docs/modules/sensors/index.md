@@ -8,9 +8,11 @@ description: Sensor drivers and calibration helpers.
 Most sensor drivers wrap the generic sensor and linear sensor helpers, then add scaling or decode helpers.
 
 ## Modules
+
 - [Generic Sensor Base](/shared/common/modules/sensors/generic)
 - [APPS](/shared/common/modules/sensors/apps)
 - [DHABS134](/shared/common/modules/sensors/dhabs134)
+- [LEM DHAB low/high ranges](/shared/common/modules/sensors/dhab)
 - [Debouncer](/shared/common/modules/sensors/debouncer)
 - [Debit 2061](/shared/common/modules/sensors/debit-2061)
 - [GE1935](/shared/common/modules/sensors/ge1935)
