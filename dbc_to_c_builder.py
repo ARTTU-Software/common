@@ -101,6 +101,7 @@ class MessageDef:
 	sender: str
 	signals: list[SignalDef] = field(default_factory=list)
 	cycle_time_ms: int = 0
+	is_extended: bool = False
 
 
 @dataclass
@@ -153,11 +154,12 @@ def parse_dbc(text: str) -> DbcModel:
 		message_match = _RE_MESSAGE_LINE.match(line)
 		if message_match:
 			current_message = MessageDef(
-				frame_id=int(message_match.group("frame_id")),
+				frame_id=int(message_match.group("frame_id")) & 0x1FFFFFFF,
 				name=message_match.group("name").strip(),
 				dlc=int(message_match.group("dlc")),
 				sender=message_match.group("sender"),
 				cycle_time_ms=cycle_times.get(int(message_match.group("frame_id")), 0),
+				is_extended=bool(int(message_match.group("frame_id")) & 0x80000000),
 			)
 			messages.append(current_message)
 			continue
@@ -240,6 +242,8 @@ def generate_signal_header(model: DbcModel, source_path: Path) -> str:
 	for message in model.messages:
 		message_tag = sanitize_identifier(message.name, upper=True)
 		lines.append(f"#define CAN_MSG_{message_tag}_ID {message.frame_id}U")
+		if message.is_extended:
+			lines.append(f"#define CAN_MSG_{message_tag}_IS_EXTENDED 1U")
 		lines.append(f"#define CAN_MSG_{message_tag}_DLC {message.dlc}U")
 		lines.append(f"#define CAN_MSG_{message_tag}_CYCLE_TIME_MS {message.cycle_time_ms}U")
 		lines.append("")

@@ -99,10 +99,14 @@ def convert(workbook_path):
     try:
         for sheet in workbook:
             rows = sheet.iter_rows(values_only=True)
-            headings = next(rows, ())
+            headings = [str(value).strip() if value is not None else "" for value in next(rows, ())]
             if "Type" not in headings:
-                continue  # Diagnostics/instruction tabs, including CAN Plan.
-            headings = [str(value).strip() if value is not None else "" for value in headings]
+                continue
+            data_rows = list(rows)
+            type_column = headings.index("Type")
+            if not any(type_column < len(row) and str(row[type_column] or "").strip().upper()
+                       in ("BO_", "SG_") for row in data_rows):
+                continue  # Empty board templates and unrelated tables are not CAN nodes.
             required = {"Type", "Msg Name", "ID (Hex)", "DLC", "Signal Name", "Start Bit",
                         "Length", "Byte Order", "Data Type"}
             if not required.issubset(headings) or len(set(filter(None, headings))) != len(list(filter(None, headings))):
@@ -112,7 +116,7 @@ def convert(workbook_path):
                 raise WorkbookError(f"Duplicate normalized board name: {node}")
             nodes.append(node)
             current_id, inherited, signals = None, "Vector__XXX", set()
-            for index, values in enumerate(rows, 2):
+            for index, values in enumerate(data_rows, 2):
                 row = dict(zip(headings, values))
                 if not any(value is not None and str(value).strip() for key, value in row.items() if key):
                     continue
@@ -125,8 +129,10 @@ def convert(workbook_path):
                         raw_id = row.get("ID (Hex)")
                         current_id = int(raw_id.strip(), 16) if isinstance(raw_id, str) else number(row, "ID (Hex)", integer=True)
                         dlc = number(row, "DLC", integer=True)
-                        if not 0 <= current_id <= 0x7FF or not 0 <= dlc <= 8:
-                            raise WorkbookError("Expected Classic CAN ID 0x000..0x7FF and DLC 0..8")
+                        if not 0 <= current_id <= 0x1FFFFFFF or not 0 <= dlc <= 8:
+                            raise WorkbookError("Expected 11/29-bit CAN ID 0x000..0x1FFFFFFF and DLC 0..8")
+                        # DBC uses bit 31 to distinguish extended frame identifiers.
+                        current_id |= 0x80000000 if current_id > 0x7FF else 0
                         if current_id in ids or name in names:
                             raise WorkbookError(f"Duplicate message ID 0x{current_id:X} or name {name}")
                         ids.add(current_id)

@@ -98,12 +98,41 @@ class WorkbookTests(unittest.TestCase):
         cases = [[message(), signal(), message()], [message(), signal(), signal()],
                  [message(), signal(), signal(**{"Signal Name": "Other"})],
                  [message(**{"ID (Hex)": "garbage"}), signal()],
-                 [message(**{"ID (Hex)": "0x800"}), signal()], [signal()]]
+                 [message(**{"ID (Hex)": "0x20000000"}), signal()], [signal()]]
         for rows in cases:
             with self.subTest(rows=rows):
                 workbook(self.path, rows)
                 with self.assertRaises(WorkbookError):
                     convert(self.path)
+
+    def test_discovers_message_tabs_in_any_position_and_ignores_empty_templates(self):
+        workbook(self.path, [message(), signal()])
+        book = load_workbook(self.path)
+        book.create_sheet("PDM").append(HEADINGS)
+        book.create_sheet("Notes").append(["Type", "Description"])
+        notes = book["Notes"]
+        notes.append(["Information", "No CAN messages here"])
+        dash = book.create_sheet("Last Arbitrary Board")
+        dash.append(list(reversed(HEADINGS)))
+        for row in [message(**{"Msg Name": "Last_Message", "ID (Hex)": "0x0D0"}), signal()]:
+            dash.append([row.get(key) for key in reversed(HEADINGS)])
+        book.save(self.path)
+        book.close()
+        db = cantools.database.load_string(convert(self.path), database_format="dbc")
+        self.assertEqual({msg.name for msg in db.messages}, {"BM_Status", "Last_Message"})
+        self.assertEqual({node.name for node in db.nodes}, {"BMS_Master", "Last_Arbitrary_Board"})
+
+    def test_extended_id_and_event_frequency(self):
+        workbook(self.path, [message(**{"ID (Hex)": "0x1806E5F4", "Frequency (Hz)": "On Demand"}), signal()])
+        msg = cantools.database.load_string(convert(self.path), database_format="dbc").messages[0]
+        self.assertEqual(msg.frame_id, 0x1806E5F4)
+        self.assertTrue(msg.is_extended_frame)
+        self.assertIsNone(msg.cycle_time)
+        artifacts = Path(self.temp.name) / "extended"
+        prepare(self.path, artifacts)
+        header = (artifacts / "can_signal_defs.h").read_text()
+        self.assertIn("#define CAN_MSG_BM_STATUS_ID 403105268U", header)
+        self.assertIn("#define CAN_MSG_BM_STATUS_IS_EXTENDED 1U", header)
 
     def test_formatting_only_edit_does_not_stage_or_bump(self):
         workbook(self.path, [message(), signal()])

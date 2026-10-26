@@ -61,11 +61,16 @@ missing DBC release attachment without creating another commit/tag.
 
 The converter accepts board tabs with `Type`, `Msg Name`, `ID (Hex)`, `DLC`,
 `Signal Name`, `Start Bit`, `Length`, `Byte Order`, and `Data Type` headings.
-Columns can be reordered. Tabs without `Type`, including CAN Plan, are skipped.
+Columns can be reordered. Tabs are discovered from their `BO_`/`SG_` rows, in any
+position and under any name. Tabs without `Type` or message/signal rows are
+skipped, including diagnostics tables and empty board templates such as PDM.
 Board and signal names use spaces as underscores, matching the previous tool.
 
-Message rows use `BO_`; following signal rows use `SG_`. Classic CAN IDs must
-be `0x000..0x7FF`, with DLC `0..8`. Bit order is `Intel` or `Motorola`; signal
+Message rows use `BO_`; following signal rows use `SG_`. Classic CAN supports
+standard IDs `0x000..0x7FF` and extended IDs up to `0x1FFFFFFF`, with DLC `0..8`.
+The converter encodes extended IDs using DBC bit 31; the header generator emits
+the actual 29-bit ID and an `IS_EXTENDED` macro for those frames. Bit order is
+`Intel` or `Motorola`; signal
 types are `Signed`, `Unsigned`, or `Bool`. Optional columns include
 `Frequency (Hz)`, `Factor`, `Offset`, `Minimum`, `Maximum`, `Unit`, `Receivers`,
 `Value Table`, and `Multiplex` (`M`, `m0`, `m1`, or a numeric branch ID).
