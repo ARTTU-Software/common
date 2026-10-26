@@ -20,26 +20,14 @@ typedef struct {
 } can_board_Gateway_Rear_t;
 
 typedef struct {
-    can_msg_ECU_Inverter_Sig_t ECU_Inverter_Sig;
-    can_msg_ECU_Rear_NMOS_t ECU_Rear_NMOS;
-    can_msg_ECU_Front_NMOS_t ECU_Front_NMOS;
-    can_msg_ECU_Software_Status_Main_t ECU_Software_Status_Main;
-    can_msg_ECU_Software_Status_R2D_t ECU_Software_Status_R2D;
-    can_msg_ECU_Software_Status_CTRL_t ECU_Software_Status_CTRL;
-    can_msg_ECU_UKF_Output_1_t ECU_UKF_Output_1;
-    can_msg_ECU_UKF_Output_2_t ECU_UKF_Output_2;
-    can_msg_ECU_TV_Output_1_t ECU_TV_Output_1;
-    can_msg_ECU_TV_Output_2_t ECU_TV_Output_2;
-} can_board_ECU_t;
-
-typedef struct {
-    can_msg_BMS_Errors_Temps_t BMS_Errors_Temps;
-    can_msg_BMS_SoC_Voltage_t BMS_SoC_Voltage;
-    can_msg_BMS_Cell_Open_t BMS_Cell_Open;
-    can_msg_BMS_Cell_Voltage_t BMS_Cell_Voltage;
-    can_msg_BMS_Cell_Resistance_t BMS_Cell_Resistance;
-    can_msg_BMS_Current_t BMS_Current;
-} can_board_BMS_t;
+    can_msg_BM_Battery_Status_t BM_Battery_Status;
+    can_msg_BM_Charger_Status_t BM_Charger_Status;
+    can_msg_BM_Vehicle_Status_t BM_Vehicle_Status;
+    can_msg_BM_Inverter_Command_t BM_Inverter_Command;
+    can_msg_BM_Rear_Buzzer_t BM_Rear_Buzzer;
+    can_msg_BM_TC_Command_t BM_TC_Command;
+    can_msg_BM_Settings_Reply_t BM_Settings_Reply;
+} can_board_BMS_Master_t;
 
 typedef struct {
     can_msg_GIL_Inv_Data_1_t GIL_Inv_Data_1;
@@ -65,18 +53,28 @@ typedef struct {
 } can_board_Telemetry_t;
 
 typedef struct {
-    can_msg_IMU_Data_t IMU_Data;
-} can_board_IMU_t;
-
-typedef struct {
-    can_msg_LVSOC_Status_1_t LVSOC_Status_1;
-    can_msg_LVSOC_Status_2_t LVSOC_Status_2;
-    can_msg_LVSOC_Status_3_t LVSOC_Status_3;
-} can_board_LV_SOC_t;
+    can_msg_SBG_ECAN_MSG_STATUS_03_t SBG_ECAN_MSG_STATUS_03;
+    can_msg_SBG_ECAN_MSG_UTC_1_t SBG_ECAN_MSG_UTC_1;
+    can_msg_SBG_ECAN_MSG_IMU_ACCEL_t SBG_ECAN_MSG_IMU_ACCEL;
+    can_msg_SBG_ECAN_MSG_IMU_GYRO_t SBG_ECAN_MSG_IMU_GYRO;
+    can_msg_SBG_ECAN_MSG_EKF_EULER_t SBG_ECAN_MSG_EKF_EULER;
+    can_msg_SBG_ECAN_MSG_EKF_POS_t SBG_ECAN_MSG_EKF_POS;
+    can_msg_SBG_ECAN_MSG_EKF_ALTITUDE_t SBG_ECAN_MSG_EKF_ALTITUDE;
+    can_msg_SBG_ECAN_MSG_EKF_VEL_NED_t SBG_ECAN_MSG_EKF_VEL_NED;
+    can_msg_SBG_ECAN_MSG_EKF_VEL_BODY_t SBG_ECAN_MSG_EKF_VEL_BODY;
+    can_msg_SBG_ECAN_MSG_GPS1_POS_INFO_t SBG_ECAN_MSG_GPS1_POS_INFO;
+    can_msg_SBG_ECAN_MSG_GPS1_POS_ALT_t SBG_ECAN_MSG_GPS1_POS_ALT;
+} can_board_INS_t;
 
 typedef struct {
     can_msg_PRG_Bootloader_t PRG_Bootloader;
     can_msg_PRG_Inverter_t PRG_Inverter;
+    can_msg_BM_Settings_Request_t BM_Settings_Request;
 } can_board_Programming_t;
+
+typedef struct {
+    can_msg_TIC_Switch_SDC_t TIC_Switch_SDC;
+    can_msg_TC_Charger_Feedback_t TC_Charger_Feedback;
+} can_board_Charger_t;
 
 #endif /* INC_CAN_BOARD_DEFS_H */
