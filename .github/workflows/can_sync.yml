@@ -26,7 +26,6 @@ jobs:
         run: |
           mkdir -p "$RUNNER_TEMP/can-sync"
           echo "CAN_ARTIFACTS=$RUNNER_TEMP/can-sync/artifacts" >> "$GITHUB_ENV"
-          echo "BUNDLE_GEMFILE=$RUNNER_TEMP/can-sync/Gemfile" >> "$GITHUB_ENV"
 
       - name: Check out main
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
@@ -76,6 +75,8 @@ jobs:
 
       - name: Run C regression tests before publishing
         if: steps.generated.outputs.changed == 'true'
+        env:
+          BUNDLE_GEMFILE: ${{ runner.temp }}/can-sync/Gemfile
         run: |
           # Keep Bundler's generated lockfile outside the checkout.
           cp Gemfile "$BUNDLE_GEMFILE"
