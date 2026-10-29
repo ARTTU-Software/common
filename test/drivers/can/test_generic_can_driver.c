@@ -206,3 +206,33 @@ void test_CAN_send_frames_should_enqueue_periodic_message_and_request_drain(void
     TEST_ASSERT_EQUAL_UINT32(0x777U, test_driver.tx_ring_buffer.frame[0].msg_id);
     TEST_ASSERT_EQUAL_UINT8(1U, test_driver.tx_queue_drain_requested);
 }
+
+void test_legacy_rx_rejects_oversized_payload_and_null_data(void)
+{
+    uint8_t payload[9] = {0};
+    CAN_driver_rx_callback(&test_driver, payload, NULL, 1U, 9U, 0U);
+    CAN_driver_rx_callback(&test_driver, NULL, NULL, 1U, 8U, 0U);
+    TEST_ASSERT_EQUAL_UINT16(0U, test_driver.rx_ring_buffer.head);
+    CAN_driver_rx_callback(&test_driver, payload, NULL, 1U, 8U, 123U);
+    TEST_ASSERT_EQUAL_UINT16(1U, test_driver.rx_ring_buffer.head);
+    TEST_ASSERT_EQUAL_UINT32(123U, rx_queue_storage[0].previous_tick);
+}
+
+void test_legacy_init_accepts_null_driver_without_dereferencing(void)
+{
+    CAN_set_structures(NULL, test_add_to_fifo, test_get_tx_fifo_free_level, NULL);
+}
+
+void test_legacy_drain_guard_is_per_instance(void)
+{
+    CAN_Driver_t other_driver = {0};
+    CAN_Tx_Message_Frame_t other_queue[1];
+    other_driver.tx_ring_buffer.frame = other_queue;
+    other_driver.tx_ring_buffer.size = 1U;
+    CAN_set_structures(&other_driver, test_add_to_fifo, NULL, NULL);
+    const CAN_Tx_Message_Frame_t frame = make_frame(0x123U, 0U);
+    other_queue[0] = frame;
+    other_driver.tx_ring_buffer.count = 1U;
+    test_driver.tx_drain_in_progress = true;
+    TEST_ASSERT_EQUAL_UINT16(1U, CAN_process_tx_queue(&other_driver, 1U));
+}

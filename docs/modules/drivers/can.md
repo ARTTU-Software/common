@@ -7,6 +7,11 @@ description: Generated CAN definitions and the generic CAN driver.
 
 ## Overview
 
+New integrations should use the [portable CAN driver](can-portable). It provides
+separate periodic and immediate send functions, a typed frame API and an optional
+STM32 FDCAN adapter. The sections below document generated definitions and the
+legacy `generic_can_driver.h` API retained for existing boards.
+
 The CAN subsystem has two layers:
 
 1. **Generated definitions**: structs and macros auto-generated from the DBC file. These define CAN message structures, IDs, and scaling factors.

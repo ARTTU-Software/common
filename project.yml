@@ -102,6 +102,7 @@
   :source:
     - drivers/fsm/**
     - drivers/can/**
+    - test/fixtures
     - drivers/sensors/**
     - drivers/misc/**
     - drivers/structs/**
@@ -109,6 +110,7 @@
   :include:
     - drivers/fsm/**
     - drivers/can/**
+    - test/fixtures
     - drivers/sensors/**
     - drivers/misc/**
     - drivers/structs/**
@@ -162,6 +164,8 @@
 :flags:
   :test:
     :compile:
+      test_can_stm32_fdcan:
+        - -include test/support/can_fdcan_test_hal.h
       :*:
         - -Wno-int-to-pointer-cast
         - -Wno-pointer-to-int-cast
@@ -257,7 +261,8 @@
   :placement: :end
   :flag: "-l${1}"
   :path_flag: "-L ${1}"
-  :system: []    # for example, you might list 'm' to grab the math library
+  :system:
+    - m         # DHAB uses roundf; Linux native/coverage links require libm.
   :test: []
   :release: []
 
