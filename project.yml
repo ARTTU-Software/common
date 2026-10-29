@@ -164,6 +164,8 @@
 :flags:
   :test:
     :compile:
+      test_can_stm32_fdcan:
+        - -include test/support/can_fdcan_test_hal.h
       :*:
         - -Wno-int-to-pointer-cast
         - -Wno-pointer-to-int-cast
