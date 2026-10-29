@@ -2,6 +2,14 @@ cmake_minimum_required(VERSION 3.16)
 project(common C)
 option(BUILD_COMMON_LIBRARY "Build a static library from common sources" ON)
 option(BUILD_COMMON_TESTS   "Build and run tests"                        OFF)
+
+# Small standalone target for projects that only need the portable CAN core.
+# The optional STM32 adapter is compiled by the board with its own HAL includes.
+add_library(common_can STATIC drivers/can/can_driver_core.c)
+target_include_directories(common_can PUBLIC
+    ${CMAKE_CURRENT_LIST_DIR}/drivers/can
+    ${CMAKE_CURRENT_LIST_DIR}/drivers/can/ports)
+target_compile_features(common_can PUBLIC c_std_11)
 # ---------------------------------------------------------------------------
 # Recursively collect all directories containing .h files under a given root
 # and add them as PUBLIC include directories on a target.

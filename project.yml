@@ -102,6 +102,7 @@
   :source:
     - drivers/fsm/**
     - drivers/can/**
+    - test/fixtures
     - drivers/sensors/**
     - drivers/misc/**
     - drivers/structs/**
@@ -109,6 +110,7 @@
   :include:
     - drivers/fsm/**
     - drivers/can/**
+    - test/fixtures
     - drivers/sensors/**
     - drivers/misc/**
     - drivers/structs/**
