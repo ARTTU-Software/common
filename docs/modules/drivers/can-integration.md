@@ -5,6 +5,10 @@ description: Step-by-step guide to integrating the generic CAN driver on a new b
 
 # CAN Integration Guide <Badge type="tip" text="Board Bring-Up" /> <Badge type="info" text="STM32 HAL" />
 
+This is the legacy `generic_can_driver.h` integration guide. For a new project,
+use the [portable driver setup](can-portable), which supplies separate periodic
+and immediate send functions without application-owned ring manipulation.
+
 This guide details setting up the generic CAN driver on a board, using implementation details from the ECU project as a reference.
 
 ## File Structure
@@ -30,7 +34,6 @@ Define frame slot counts and ring buffer dimensions:
 ```c
 #include "generic_can_driver.h"
 
-#define HZ_TO_MS(hz) (1000 / (hz))
 
 #define NR_OF_CAN_TX_FRAMES        10   // Number of distinct TX messages this board sends
 #define NR_OF_CAN_RX_BUFFER_FRAMES 128  // RX ring buffer depth
