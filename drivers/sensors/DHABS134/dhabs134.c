@@ -1,4 +1,7 @@
 #include "dhabs134.h"
+#include <limits.h>
+#include <math.h>
+#include <stddef.h>
 
 static void init_channel(DHAB_Channel_t* ch,
                          float supply_v,
@@ -10,6 +13,7 @@ static void init_channel(DHAB_Channel_t* ch,
                          uint8_t port,
                          Generic_Kalman_Settings_t kalman){
 
+    *ch = (DHAB_Channel_t){0};
     ch->supply_v = supply_v;
     ch->offset_v = supply_v * 0.5f;            
     ch->adc_vref = adc_vref;
@@ -41,6 +45,9 @@ void dhab_s134_init(DHAB_S134_t* s,
                     Generic_Kalman_Settings_t kalman_cfg_50,
                     Generic_Kalman_Settings_t kalman_cfg_200){
 
+    if (s == NULL) {
+        return;
+    }
     // Channel 1 = ±50 A, 40 mV/A nominal
     init_channel(&s->ch50,
                  supply_v,
@@ -65,6 +72,17 @@ void dhab_s134_init(DHAB_S134_t* s,
 }
 
 static int16_t update_channel(DHAB_Channel_t* ch){
+    if (!isfinite(ch->generic_sensor.filtered_value)
+        || ch->generic_sensor.filtered_value < 0.0f
+        || ch->generic_sensor.filtered_value > 4095.0f
+        || !isfinite(ch->adc_vref) || ch->adc_vref <= 0.0f
+        || !isfinite(ch->divider_gain) || ch->divider_gain < 1.0f
+        || !isfinite(ch->diode_drop) || !isfinite(ch->offset_v)
+        || !isfinite(ch->sensitivity_v_per_a) || ch->sensitivity_v_per_a <= 0.0f
+        || !isfinite(ch->alpha) || ch->alpha < 0.0f || ch->alpha > 1.0f) {
+        ch->current = 0;
+        return ch->current;
+    }
     // Convert ADC counts to MCU pin voltage
     ch->voltage_raw = ch->generic_sensor.filtered_value * (ch->adc_vref / 4095.0f);
 
@@ -80,17 +98,32 @@ static int16_t update_channel(DHAB_Channel_t* ch){
                              ((1.0f - ch->alpha) * (ch->current / 100.0f));
 
     // Store as x100 integer (e.g. 25.14 A -> 2514)
-    ch->current = (int16_t)(filtered_current * 100.0f);
+    /* Keep the legacy wire type, but never perform an overflowing float cast.
+     * New models with ranges above 327 A use dhab.h and signed 32-bit mA. */
+    const float scaled_current = filtered_current * 100.0f;
+    if (!isfinite(scaled_current)) {
+        ch->current = 0;
+    } else if (scaled_current >= (float)INT16_MAX) {
+        ch->current = INT16_MAX;
+    } else if (scaled_current <= (float)INT16_MIN) {
+        ch->current = INT16_MIN;
+    } else {
+        ch->current = (int16_t)scaled_current;
+    }
 
     return ch->current;
 }
 
 void dhab_s134_update_50A(DHAB_S134_t* s){
-    update_channel(&s->ch50);
+    if (s != NULL) {
+        update_channel(&s->ch50);
+    }
 }
 
 void dhab_s134_update_200A(DHAB_S134_t* s){
-    update_channel(&s->ch200);
+    if (s != NULL) {
+        update_channel(&s->ch200);
+    }
 }
 
 float dhab_s134_decode(uint8_t high_byte, uint8_t low_byte){
