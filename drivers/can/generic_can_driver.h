@@ -2,14 +2,15 @@
 #define INC_GENERIC_CAN_DRIVER_H
 
 #include <stdint.h>
+#include <stdbool.h>
+#include "can_helpers.h"
+
+/* Legacy API retained for existing boards. New integrations use can_driver_core.h.
+ * TX has one serialized task owner. RX consumers must protect their direct
+ * ring access; use the new API to avoid manipulating indices in application code.
+ */
 
 #define CAN_DRIVER_NON_PERIODIC_FRAME 0xFFFF
-
-#define LOW_BYTE(x) ((uint8_t)((x) & 0xFF))
-#define HIGH_BYTE(x) ((uint8_t)(((x) >> 8) & 0xFF))
-#define CAN_COMBINE_16(high, low) ((uint16_t)(((high) << 8) | (low)))
-#define CAN_COMBINE_32(b3, b2, b1, b0) ((uint32_t)(((b3) << 24) | ((b2) << 16) | ((b1) << 8) | (b0)))
-
 
 /**
  * @brief Function pointer for transmitting CAN messages.
@@ -77,6 +78,7 @@ typedef struct {
     volatile uint8_t can_new_message_flag; // Flag to indicate a new message has been received
     volatile uint8_t tx_queue_drain_requested; // Flag to request TX queue draining from main context
     uint8_t tx_scheduler_start_index; // Rotating start index to avoid fixed-priority scheduling bias
+    bool tx_drain_in_progress; // Reentry guard belongs to this bus, not every instance
 
     CanTxFn_t add_to_fifo_fn; // Function pointer for adding messages to the CAN Tx FIFO
     CanTxFifoLevelFn_t get_tx_fifo_level_fn; // Function pointer for checking CAN Tx FIFO level

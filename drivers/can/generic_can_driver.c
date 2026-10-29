@@ -8,7 +8,6 @@ volatile uint32_t can_dbg_tx_processed_count = 0U;
 volatile uint16_t can_dbg_tx_queue_high_watermark = 0U;
 volatile uint32_t can_dbg_tx_catchup_count = 0U;
 volatile uint32_t can_dbg_tx_phase_resync_count = 0U;
-static volatile uint8_t can_tx_drain_in_progress = 0U;
 
 #define CAN_TX_MAX_CATCHUP_PER_CALL 2U
 
@@ -53,6 +52,9 @@ void CAN_set_structures(CAN_Driver_t* driver,
     CanTxFifoLevelFn_t get_tx_fifo_level_fn, 
     void* hfdcan_instance)
 {
+    if (driver == NULL) {
+        return;
+    }
     driver->add_to_fifo_fn = add_to_fifo_fn;
     driver->get_tx_fifo_level_fn = get_tx_fifo_level_fn;
 
@@ -60,6 +62,7 @@ void CAN_set_structures(CAN_Driver_t* driver,
     driver->can_new_message_flag = 0;
     driver->tx_queue_drain_requested = 0;
     driver->tx_scheduler_start_index = 0;
+    driver->tx_drain_in_progress = false;
 
     // Init ring buffer values
     driver->tx_ring_buffer.head = 0;
@@ -69,7 +72,7 @@ void CAN_set_structures(CAN_Driver_t* driver,
     driver->rx_ring_buffer.head = 0;
     driver->rx_ring_buffer.tail = 0;
 
-    for(uint32_t i = 0; i < driver->tx_frame_number; i++){
+    for(uint32_t i = 0; driver->tx_message_frames != NULL && i < driver->tx_frame_number; i++){
         driver->tx_message_frames[i].previous_tick = 0;
     }
 }
@@ -77,7 +80,9 @@ void CAN_set_structures(CAN_Driver_t* driver,
 void CAN_driver_rx_callback(CAN_Driver_t* driver, uint8_t* data, void* hdr_rx, uint32_t msg_id, uint8_t num_values, uint32_t timestamp) {
     uint16_t write_index;
 
-    if (driver == NULL || driver->rx_ring_buffer.frame == NULL || driver->rx_ring_buffer.size == 0)
+    if (driver == NULL || driver->rx_ring_buffer.frame == NULL || driver->rx_ring_buffer.size < 2U
+        || num_values > sizeof(driver->rx_ring_buffer.frame[0].payload)
+        || (num_values != 0U && data == NULL))
         return;
 
     // overflow check
@@ -90,7 +95,9 @@ void CAN_driver_rx_callback(CAN_Driver_t* driver, uint8_t* data, void* hdr_rx, u
 
     // Uses the ring buffer in the driver structure to store incoming messages
     write_index = driver->rx_ring_buffer.head;
-    memcpy(driver->rx_ring_buffer.frame[write_index].payload, data, num_values);
+    if (num_values != 0U) {
+        memcpy(driver->rx_ring_buffer.frame[write_index].payload, data, num_values);
+    }
     driver->rx_ring_buffer.frame[write_index].msg_id = msg_id;
     driver->rx_ring_buffer.frame[write_index].num_values = num_values;
     driver->rx_ring_buffer.frame[write_index].previous_tick = timestamp;
@@ -155,11 +162,11 @@ uint16_t CAN_process_tx_queue(CAN_Driver_t* driver, uint16_t amount)
         return 0U;
     }
 
-    if (can_tx_drain_in_progress != 0U) {
+    if (driver->tx_drain_in_progress) {
         return 0U;
     }
 
-    can_tx_drain_in_progress = 1U;
+    driver->tx_drain_in_progress = true;
 
     max_to_process = (amount == 0U || amount > driver->tx_ring_buffer.count) ? driver->tx_ring_buffer.count : amount;
 
@@ -186,7 +193,7 @@ uint16_t CAN_process_tx_queue(CAN_Driver_t* driver, uint16_t amount)
     }
 
     driver->tx_queue_drain_requested = (driver->tx_ring_buffer.count > 0U) ? 1U : 0U;
-    can_tx_drain_in_progress = 0U;
+    driver->tx_drain_in_progress = false;
 
     return processed_count;
 }
