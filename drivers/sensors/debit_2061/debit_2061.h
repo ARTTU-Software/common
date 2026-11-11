@@ -7,9 +7,9 @@
 typedef struct {
     float pulses_per_litre;
     uint16_t flow_ml_s;     // output in ml/s
-    uint16_t last_count; // count measured in one interval
+    uint32_t last_count; // count measured in one interval
     uint8_t port;
-    uint32_t pulse_count;
+    volatile uint32_t pulse_count;
     uint32_t last_update_tick;
     Generic_Sensor_t generic_sensor;
 } FlowSensor_t;

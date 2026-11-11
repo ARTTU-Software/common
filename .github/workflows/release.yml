@@ -10,6 +10,7 @@ jobs:
   # 1. Create Release
   publish-release:
     name: Publish Release
+    secrets: inherit
     permissions:
       contents: write
     uses: ARTTU-Software/.github/.github/workflows/create-release.yml@main

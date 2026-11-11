@@ -69,8 +69,7 @@ void test_timer_calc_pwm_low_frequency(void)
 {
     uint16_t psc, arr, ccr;
     // Freq = 10Hz, Duty = 25%, Bus = 42MHz
-    // period_ms = 1000 / 10 = 100ms
-    // total_ticks = 100 * 42 * 1000 = 4200000
+    // total_ticks = (42 * 1000000) / 10 = 4200000
     // psc_val = ceil(4200000 / 65536) = 65
     // psc = 64
     // arr_val = 4200000 / 65 = 64615
@@ -82,3 +81,48 @@ void test_timer_calc_pwm_low_frequency(void)
     TEST_ASSERT_EQUAL_UINT16(64614, arr);
     TEST_ASSERT_EQUAL_UINT16(16153, ccr);
 }
+
+void test_timer_calc_pwm_high_frequency_10khz(void)
+{
+    uint16_t psc, arr, ccr;
+    // Freq = 10kHz, Duty = 50%, Bus = 84MHz
+    // total_ticks = 84,000,000 / 10,000 = 8400 ticks (fits directly in 16-bit ARR)
+    // psc = 0
+    // arr = 8399
+    // ccr = 8399 * 50 / 100 = 4199
+    bool result = timer_calc_pwm(10000, 50, 84, &psc, &arr, &ccr);
+    TEST_ASSERT_TRUE(result);
+    TEST_ASSERT_EQUAL_UINT16(0, psc);
+    TEST_ASSERT_EQUAL_UINT16(8399, arr);
+    TEST_ASSERT_EQUAL_UINT16(4199, ccr);
+}
+
+void test_timer_calc_pwm_high_frequency_20khz(void)
+{
+    uint16_t psc, arr, ccr;
+    // Freq = 20kHz, Duty = 75%, Bus = 170MHz
+    // total_ticks = 170,000,000 / 20,000 = 8500 ticks
+    // psc = 0
+    // arr = 8499
+    // ccr = 8499 * 75 / 100 = 6374
+    bool result = timer_calc_pwm(20000, 75, 170, &psc, &arr, &ccr);
+    TEST_ASSERT_TRUE(result);
+    TEST_ASSERT_EQUAL_UINT16(0, psc);
+    TEST_ASSERT_EQUAL_UINT16(8499, arr);
+    TEST_ASSERT_EQUAL_UINT16(6374, ccr);
+}
+
+void test_timer_calculate_freq_psc_arr(void)
+{
+    uint16_t psc, arr;
+    // 5 kHz on 170 MHz bus -> total_ticks = 170,000,000 / 5,000 = 34,000
+    bool result = timer_calculate_freq_psc_arr(5000, 170, &psc, &arr);
+    TEST_ASSERT_TRUE(result);
+    TEST_ASSERT_EQUAL_UINT16(0, psc);
+    TEST_ASSERT_EQUAL_UINT16(33999, arr);
+
+    // Invalid parameters
+    TEST_ASSERT_FALSE(timer_calculate_freq_psc_arr(0, 170, &psc, &arr));
+    TEST_ASSERT_FALSE(timer_calculate_freq_psc_arr(5000, 0, &psc, &arr));
+    TEST_ASSERT_FALSE(timer_calculate_freq_psc_arr(5000, 170, NULL, &arr));
+}

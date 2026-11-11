@@ -61,16 +61,17 @@ typedef struct {
 
 typedef struct {
     can_msg_GPS_Angles_t GPS_Angles;
+    can_msg_Lap_Completed_t Lap_Completed;
 } can_board_Telemetry_t;
 
 typedef struct {
     can_msg_IMU_Data_t IMU_Data;
-    can_msg_IMU_Recal_t IMU_Recal;
 } can_board_IMU_t;
 
 typedef struct {
     can_msg_LVSOC_Status_1_t LVSOC_Status_1;
     can_msg_LVSOC_Status_2_t LVSOC_Status_2;
+    can_msg_LVSOC_Status_3_t LVSOC_Status_3;
 } can_board_LV_SOC_t;
 
 typedef struct {

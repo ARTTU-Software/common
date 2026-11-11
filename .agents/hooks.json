@@ -1,0 +1,23 @@
+{
+  "arttu-guardrails": {
+    "PreToolUse": [
+      {
+        "matcher": ".*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python hooks/pre_tool_enforcer.py --vendor antigravity",
+            "timeout": 15
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "type": "command",
+        "command": "python hooks/stop_gate.py --vendor antigravity",
+        "timeout": 300
+      }
+    ]
+  }
+}

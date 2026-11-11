@@ -16,6 +16,7 @@ This section mirrors the folder structure under common/drivers and groups module
 - [FSM](/shared/common/modules/drivers/fsm)
 - [Misc Helpers](/shared/common/modules/drivers/misc)
 - [Structs](/shared/common/modules/drivers/structs)
+- [Recalibration](/shared/common/modules/drivers/recalibration)
 
 ## Sensors
 - [Overview](/shared/common/modules/sensors/)
@@ -29,4 +30,3 @@ This section mirrors the folder structure under common/drivers and groups module
 - [MX5051](/shared/common/modules/sensors/mx5051)
 - [PU8702](/shared/common/modules/sensors/pu8702)
 - [Steering](/shared/common/modules/sensors/steering)
-- [Recalibration](/shared/common/modules/sensors/recalibration)

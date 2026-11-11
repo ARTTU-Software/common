@@ -1,12 +1,12 @@
 #include "KPM12J.h"
 
-static const float KPM12J_ENCODING_RESOLUTION = 100.0f; // mm -> encoded units
+static const float KPM12J_ENCODING_RESOLUTION = 100.0f; // mm -> encoded units (0.01 mm resolution, max 655.35 mm)
 
-void kpm12j_init(Generic_Linear_Sensor_t* s, uint16_t min_adc, uint16_t max_adc, uint8_t port, Generic_Kalman_Settings_t k){
+void kpm12j_init(Generic_Linear_Sensor_t* s, uint16_t min_adc, uint16_t max_adc, float max_real, uint8_t port, Generic_Kalman_Settings_t k){
     s->max_adc = max_adc;
     s->min_adc = min_adc;
     s->min_real = 0.0f;
-    s->max_real = 75.0f;                  // range in mm
+    s->max_real = max_real;                  // range in mm
     s->generic_sensor.port = port;
     s->generic_sensor.kalman_settings = k;
 }
@@ -24,6 +24,6 @@ void kpm12j_update(Generic_Linear_Sensor_t* s, uint16_t raw_adc) {
 
 
 float kpm12j_decode(uint8_t high_byte, uint8_t low_byte){
-    uint16_t value = (high_byte << 8) | low_byte;
-    return value / KPM12J_ENCODING_RESOLUTION;
+    uint16_t value = (uint16_t)(((uint16_t)high_byte << 8) | (uint16_t)low_byte);
+    return (float)value / KPM12J_ENCODING_RESOLUTION;
 }
