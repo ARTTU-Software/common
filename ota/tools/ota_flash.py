@@ -29,6 +29,7 @@ PROTOCOL_VERSION = 2
 NODES = {
     "ECU": 0x01, "GF": 0x02, "GR": 0x03, "GIL": 0x04,
     "GIR": 0x05, "DASH": 0x06, "TELEM": 0x07, "LVSOC": 0x08,
+    "PDM": 0x09, "TEMP": 0x0A,
 }
 NODE_NAMES = {v: k for k, v in NODES.items()}
 

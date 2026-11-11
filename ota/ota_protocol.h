@@ -32,6 +32,8 @@
 #define OTA_NODE_DASH               0x06U   /* Dashboard */
 #define OTA_NODE_TELEM              0x07U   /* Telemetry */
 #define OTA_NODE_LVSOC              0x08U   /* LV SoC */
+#define OTA_NODE_PDM                0x09U   /* Power Distribution Module (not in MAIN_DBC yet) */
+#define OTA_NODE_TEMP               0x0AU   /* Temperature sensor board (not in MAIN_DBC yet) */
 
 /* ── CAN IDs ──────────────────────────────────────────────────── */
 #define OTA_ID_ENTER_REQUEST        0x4F0U  /* == CAN_MSG_PRG_BOOTLOADER_ID */

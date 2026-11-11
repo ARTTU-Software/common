@@ -2,7 +2,7 @@
 #define INC_OTA_STM32_H
 
 /*
- * STM32 + FDCAN port of the OTA driver (G4, H5, L5).
+ * STM32 + FDCAN port of the OTA driver (G4, H5, L5, U5).
  *
  * The family is detected from the HAL that is on the include path, so a
  * board only needs its normal CubeMX include directories. Everything that
@@ -29,10 +29,13 @@
 #  elif __has_include("stm32l5xx_hal.h")
 #    include "stm32l5xx_hal.h"
 #    define OTA_STM32_L5 1
+#  elif __has_include("stm32u5xx_hal.h")
+#    include "stm32u5xx_hal.h"
+#    define OTA_STM32_U5 1
 #  endif
 #endif
 
-#if defined(OTA_STM32_H5) || defined(OTA_STM32_G4) || defined(OTA_STM32_L5)
+#if defined(OTA_STM32_H5) || defined(OTA_STM32_G4) || defined(OTA_STM32_L5) || defined(OTA_STM32_U5)
 #define OTA_STM32_SUPPORTED 1
 
 #include <stdbool.h>
@@ -73,7 +76,7 @@ bool     ota_stm32_flash_erase(uint32_t addr);   /* erase the erase unit that co
 bool     ota_stm32_flash_program(uint32_t addr, const uint8_t *data, uint32_t len);
 uint32_t ota_stm32_flash_end(void);              /* FLASH_BASE + real flash size */
 uint32_t ota_stm32_flash_erase_unit(void);       /* sector / page size of this part */
-uint32_t ota_stm32_flash_program_unit(void);     /* 16 (H5 quad-word) or 8 (G4/L5 double-word) */
+uint32_t ota_stm32_flash_program_unit(void);     /* 16 (H5/U5 quad-word) or 8 (G4/L5 double-word) */
 
 #endif /* family supported */
 

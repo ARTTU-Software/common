@@ -5,7 +5,7 @@
 #   ota_add_app(${CMAKE_PROJECT_NAME})          # application: enter/ping hook (ota_app + STM32 glue)
 #   ota_add_bootloader(${CMAKE_PROJECT_NAME})   # bootloader:  core + STM32 runner + flash back-end
 #
-# The STM32 family (G4/H5/L5) is picked from the HAL headers already on the
+# The STM32 family (G4/H5/L5/U5) is picked from the HAL headers already on the
 # target's include path, so all family back-ends are added and only the
 # matching one compiles to code.
 
@@ -41,6 +41,7 @@ function(ota_add_bootloader target)
         ${OTA_DIR}/port/ota_flash_stm32g4.c
         ${OTA_DIR}/port/ota_flash_stm32h5.c
         ${OTA_DIR}/port/ota_flash_stm32l5.c
+        ${OTA_DIR}/port/ota_flash_stm32u5.c
     )
     _ota_add_includes(${target})
 endfunction()

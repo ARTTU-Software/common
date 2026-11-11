@@ -77,19 +77,35 @@ static void ota_stm32_backup_access(void)
     HAL_PWR_EnableBkUpAccess();
 }
 
+/*
+ * The request flag lives in the LAST backup register (G4, H5 and L5 all have
+ * BKP0R..BKP31R): applications tend to use the first ones, e.g. Telemetry keeps
+ * its "RTC already set" marker in BKP0R. A register is only ever written when
+ * it holds our magic, so foreign values are never clobbered.
+ */
+#define OTA_BOOT_FLAG_REG          (TAMP->BKP31R)
+#define OTA_BOOT_FLAG_LEGACY_REG   (TAMP->BKP0R)   /* apps built before the flag moved */
+
 void ota_stm32_boot_flag_set(void)
 {
     ota_stm32_backup_access();
-    TAMP->BKP0R = OTA_BOOT_FLAG_MAGIC;
+    OTA_BOOT_FLAG_REG = OTA_BOOT_FLAG_MAGIC;
 }
 
 bool ota_stm32_boot_flag_take(void)
 {
-    bool requested;
+    bool requested = false;
 
     ota_stm32_backup_access();
-    requested = (TAMP->BKP0R == OTA_BOOT_FLAG_MAGIC);
-    TAMP->BKP0R = 0U; /* one-shot: a later plain reset boots the app again */
+    /* One-shot: clear it so a later plain reset boots the app again. */
+    if (OTA_BOOT_FLAG_REG == OTA_BOOT_FLAG_MAGIC) {
+        OTA_BOOT_FLAG_REG = 0U;
+        requested = true;
+    }
+    if (OTA_BOOT_FLAG_LEGACY_REG == OTA_BOOT_FLAG_MAGIC) {
+        OTA_BOOT_FLAG_LEGACY_REG = 0U;
+        requested = true;
+    }
     return requested;
 }
 
