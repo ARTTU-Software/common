@@ -108,6 +108,9 @@ static void ota_layout_fixup(const ota_layout_t *board)
     if (ota_layout.app_end > flash_end) {
         ota_layout.app_end = flash_end;
     }
+    /* Erasing is done in whole units: never let the last one reach past the board's app end
+     * (e.g. into an EEPROM page that follows the app area). */
+    ota_layout.app_end -= ota_layout.app_end % unit;
     ota_flash_writable = ((ota_layout.meta_addr % unit) == 0U) && ((ota_layout.app_start % unit) == 0U) &&
                          ((ota_layout.meta_addr + unit) <= ota_layout.app_start) &&
                          (ota_layout.app_end > ota_layout.app_start);

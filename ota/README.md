@@ -2,7 +2,7 @@
 
 Firmware update for every STM32 node over the car's CAN bus, through a small
 bootloader in the first 24 KB of flash. One driver for all boards: the core is
-HAL-free, and a single STM32 port covers the G4, H5 and L5 families (picked
+HAL-free, and a single STM32 port covers the G4, H5, L5 and U5 families (picked
 automatically from the HAL on the include path).
 
 ```
@@ -17,7 +17,7 @@ ota/
 │   ├── ota_app_stm32.c     app glue: FDCAN send, boot flag, reset
 │   ├── ota_bootloader_stm32.c   bootloader runner: filters, listen window, jump
 │   ├── ota_stm32_common.c  shared FDCAN + TAMP backup-register helpers
-│   └── ota_flash_stm32{g4,h5,l5}.c   flash back-ends (only the matching one compiles)
+│   └── ota_flash_stm32{g4,h5,l5,u5}.c   flash back-ends (only the matching one compiles)
 ├── boards/ota_board_*.h    memory map + node ID per board (shared by app and bootloader)
 └── tools/
     ├── ota_flash.py        host CLI (python-can): scan, info, enter, flash, reset
@@ -28,14 +28,17 @@ ota/
 
 | Board | Header | MCU | Bootloader | Meta | App | Status |
 |---|---|---|---|---|---|---|
-| ECU | `ota_board_ecu.h` | H563xG 1 MB | 24 KB | `0x0800_6000` | `0x0800_8000`, 992 KB | **tested on hardware** |
-| Dashboard | `ota_board_dash.h` | H563RG 1 MB | 24 KB | `0x0800_6000` | `0x0800_8000`, 976 KB | header only; FDCAN2; verify flash-config area |
+| ECU | `ota_board_ecu.h` | H563 1 MB | 24 KB | `0x0800_6000` | `0x0800_8000`, 992 KB | **tested on hardware** |
+| Dashboard | `ota_board_dash.h` | H563ZI 2 MB | 24 KB | `0x0800_6000` | `0x0800_8000`, 2000 KB | header only; verify flash-config area |
 | Telemetry | `ota_board_telem.h` | H563RG 1 MB | 24 KB | `0x0800_6000` | `0x0800_8000`, 992 KB | header only |
-| Gateway F/R | `ota_board_gateway.h` | G431CB 128 KB | 24 KB | `0x0800_6000` | `0x0800_6800`, 100 KB | port compiles + links (8.5 KB) |
+| Gateway F/R | `ota_board_gateway.h` | G473CE 512 KB | 24 KB | `0x0800_6000` | `0x0800_6800`, 100 KB | FDCAN2; app ends at the EEPROM page `0x0801_F800` |
 | GI L/R | `ota_board_gi.h` | L562CE 512 KB | 24 KB | `0x0800_6000` | `0x0800_7000`, 484 KB | port compiles + links (9.7 KB) |
-| LV SoC | `ota_board_lvsoc.h` | L5 | 24 KB | `0x0800_6000` | `0x0800_7000` | header only; verify NVM/RAM |
+| LV SoC | `ota_board_lvsoc.h` | L562CE 512 KB | 24 KB | `0x0800_6000` | `0x0800_7000`, 484 KB | header only |
+| PDM | `ota_board_pdm.h` | U575CI 2 MB | 24 KB | `0x0800_6000` | `0x0800_8000`, 2016 KB | header only |
+| Temp sensor | `ota_board_temp.h` | U575CI 2 MB | 24 KB | `0x0800_6000` | `0x0800_8000`, 2016 KB | header only |
 
 Node IDs follow the DBC: ECU=1, GF=2, GR=3, GIL=4, GIR=5, DASH=6, TELEM=7, LVSOC=8.
+PDM=9 and TEMP=10 are new and not in MAIN_DBC yet.
 The port reads the erase/program unit from the part and clamps the app end to
 the real flash size. If a board's addresses don't fit the part's erase unit,
 the bootloader still boots the existing app but refuses to write flash.
@@ -118,13 +121,20 @@ CMake presets. Two nodes with the same ID on the bus will both answer.
 
 ### Family notes
 
-- **G4 (Gateways, GI_V1)**: the current gateway firmware jumps to the ST ROM bootloader on
-  `0x4F0` with byte 0 = `0x02`/`0x03`. Replace that `case 0x4F0` with the OTA dispatch above
-  when integrating. The host tool never sends `0x4F0` to a node that has not answered an OTA
-  PING, so it cannot trip old gateway firmware. The last 2 KB page stays the EEPROM.
+- **G4 (Gateways)**: G473CE in dual-bank mode (2 KB pages), CAN on FDCAN2. The old
+  firmware enters the ST ROM bootloader on `0x4F0` with byte 0 = `0x02`/`0x03`; replace that
+  `case 0x4F0` with the OTA dispatch. The host tool never sends `0x4F0` to a node that has not
+  answered an OTA PING, so it cannot trip old gateway firmware. Never full-erase a gateway: the
+  EEPROM page at `0x0801_F800` holds the sensor calibration.
 - **L5 (GI, LV SoC)**: TrustZone must be disabled (TZEN=0). Works with DBANK=0 or 1.
-- **H5 Dashboard**: CAN is FDCAN2 (`ota_app_stm32_init(&hfdcan2, ...)`), and the bootloader
-  needs FDCAN2 too.
+- **U5 (PDM, temperature sensor)**: TrustZone must be disabled (TZEN=0). 8 KB pages,
+  128-bit programming, like the H5.
+- **Any board**: pass the FDCAN instance the board really uses (`&hfdcan2` on the Gateway).
+- **`0x4F0` is shared**: every node receives the enter request. Firmware must check
+  byte 0 (node ID) before acting on it; the LV SoC dev firmware currently starts a capacity
+  relearn on any `0x4F0`.
+- **Backup register**: the app->bootloader request uses the last TAMP backup register
+  (BKP31R), so firmware can keep using BKP0R (Telemetry stores its RTC marker there).
 - **RTOS boards (Telemetry/ThreadX, Dashboard)**: call `ota_app_handle_frame()` from the CAN
   thread. A granted request waits up to 20 ms for the TX FIFO, then resets.
 
