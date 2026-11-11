@@ -30,6 +30,11 @@ function(ota_add_app target)
         ${OTA_DIR}/port/ota_app_stm32.c
     )
     _ota_add_includes(${target})
+    # The app starts behind the bootloader, often not on a 4 KB boundary (G4: 0x08006800).
+    # Without this, ld pulls the first load segment down to the 4 KB page and loads the ELF
+    # header there: flashing the .elf (CubeProgrammer, debugger) then writes that header into
+    # the OTA meta page. --nmagic turns page alignment off; the .bin is the same either way.
+    target_link_options(${target} PRIVATE "LINKER:--nmagic")
 endfunction()
 
 function(ota_add_bootloader target)
