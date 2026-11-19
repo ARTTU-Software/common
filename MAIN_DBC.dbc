@@ -44,10 +44,10 @@ BO_ 176 GR_Wheel_Sensors: 8 Gateway_Rear
  SG_ Susp_Travel_RL : 55|16@0+ (0.001, 0.0) [0.0|65.535] "mm" Telemetry,GI_Left,GI_Right,BMS_Master
 
 BO_ 177 GR_Misc_Sensors: 8 Gateway_Rear
- SG_ Brake : 7|16@0+ (0.01, 0.0) [0.0|100.0] "bar" Telemetry,GI_Left,GI_Right,BMS_Master
- SG_ JB_50A : 23|16@0- (0.01, 0.0) [-70.0|70.0] "A" Telemetry,GI_Left,GI_Right,BMS_Master
- SG_ JB_200A : 39|16@0- (0.01, 0.0) [-300.0|300.0] "A" Telemetry,GI_Left,GI_Right,BMS_Master
- SG_ SDC : 55|8@0+ (1.0, 0.0) [0.0|1.0] "Bool" Telemetry,GI_Left,GI_Right,BMS_Master
+ SG_ Brake : 7|16@0+ (0.01, 0.0) [0.0|100.0] "bar" Telemetry,GI_Left,GI_Right,BMS_Master,PDM
+ SG_ JB_50A : 23|16@0- (0.01, 0.0) [-70.0|70.0] "A" Telemetry,GI_Left,GI_Right,BMS_Master,PDM
+ SG_ JB_200A : 39|16@0- (0.01, 0.0) [-300.0|300.0] "A" Telemetry,GI_Left,GI_Right,BMS_Master,PDM
+ SG_ SDC : 55|8@0+ (1.0, 0.0) [0.0|1.0] "Bool" Telemetry,GI_Left,GI_Right,BMS_Master,PDM
 
 BO_ 178 GR_Liquid_Sensors: 8 Gateway_Rear
  SG_ Flow_Sensor : 7|16@0+ (1.0, 0.0) [0.0|100.0] "L/m" Telemetry

@@ -1,5 +1,5 @@
 {
-  "workbook_sha256": "0badb3b95d45a07cbfc5d76642d91d628589900e577091ad062d153c9f8e6d54",
+  "workbook_sha256": "39c2cf798271f03f11f7503ff6aca5f3fc237ec5b74c558e05ae39c1ea77742a",
   "generators": {
     "dbc_to_c_builder.py": "1365c80d04e2a577f820e4bedb0ed588905164e17ad0cf531d526ec73a1309ae",
     "tools/can_sync/download.py": "81da43dd01d4e0c837c5661aa0ab1760ebca3ee8b1fdf8cc1b008c22920647e5",
@@ -8,7 +8,7 @@
     "tools/can_sync/requirements.txt": "1cf30132f44e528c7708bc785838a3d6fcc80d92d13e32d0d7d841eccb7f205b"
   },
   "outputs": {
-    "MAIN_DBC.dbc": "04178efac3d608fc71852ea01ca37f7412bc42f8fb2e4d6a6388697772cd0314",
+    "MAIN_DBC.dbc": "84ff5aa6e1fda2992377dd2136bd56b6e2454ef8fabb663f7eaf8aa3e9837ef6",
     "drivers/can/can_signal_defs.h": "bf058a00d7fbe449311696b9a1c4c3568e2db7872b2f92f2d67b7725d0b05e81",
     "drivers/can/can_board_defs.h": "23ae3c9eedacf38bcf59f85cfd0e291c9e203fb54b49c311f7a85d8b8bda1f06"
   }
