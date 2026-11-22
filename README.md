@@ -9,6 +9,7 @@ an immediate DBC download and automatic patch release. See the
 ### Subfolders
 - [common/drivers/README.md](drivers/README.md)
 - [common/math/README.md](math/README.md)
+- [common/ota/README.md](ota/README.md): firmware update over CAN (bootloader + app hook, STM32 G4/H5/L5)
 - [common/utils/README.md](utils/README.md)
 
 ### Guidelines
