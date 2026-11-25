@@ -76,8 +76,8 @@ def stage(artifacts, root=ROOT):
 
 def publish(root=ROOT):
     # This command is called only AFTER generator and C tests have succeeded.
-    if git(root, "branch", "--show-current") != "main":
-        raise ValueError("Publishing requires the main branch")
+    if git(root, "branch", "--show-current") != "dev":
+        raise ValueError("Publishing requires the dev branch")
     if git(root, "diff", "--cached", "--name-only"):
         raise ValueError("Unexpected staged files; refusing to publish unrelated changes")
     allowed = set(GENERATED.values()) | {PROVENANCE}
@@ -87,17 +87,17 @@ def publish(root=ROOT):
         raise ValueError("Unexpected repository changes; refusing to publish unrelated files")
     if not (modified | untracked) & set(GENERATED.values()):
         raise ValueError("No generated changes to publish")
-    git(root, "fetch", "origin", "main", "--tags")
-    if git(root, "rev-parse", "HEAD") != git(root, "rev-parse", "origin/main"):
-        raise ValueError("main advanced during generation. Run the workflow again; nothing was pushed")
+    git(root, "fetch", "origin", "dev", "--tags")
+    if git(root, "rev-parse", "HEAD") != git(root, "rev-parse", "origin/dev"):
+        raise ValueError("dev advanced during generation. Run the workflow again; nothing was pushed")
     tag = next_tag(git(root, "tag", "--list").splitlines())
     git(root, "add", "--", *sorted(allowed))
     git(root, "-c", "user.name=github-actions[bot]", "-c",
         "user.email=41898282+github-actions[bot]@users.noreply.github.com",
         "commit", "-m", f"chore(can): sync SharePoint database ({tag})")
     git(root, "tag", tag)
-    # A competing main update/tag or a branch rule rejects BOTH refs; never force.
-    git(root, "push", "--atomic", "origin", "HEAD:refs/heads/main", f"refs/tags/{tag}")
+    # A competing dev update/tag or a branch rule rejects BOTH refs; never force.
+    git(root, "push", "--atomic", "origin", "HEAD:refs/heads/dev", f"refs/tags/{tag}")
     output("tag", tag)
 
 

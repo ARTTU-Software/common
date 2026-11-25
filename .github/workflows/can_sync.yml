@@ -7,7 +7,7 @@ on:
 
 # Manual and scheduled runs share a lock. Never cancel a run during publication.
 concurrency:
-  group: can-database-main
+  group: can-database-dev
   cancel-in-progress: false
 
 permissions:
@@ -16,7 +16,7 @@ permissions:
 
 jobs:
   sync:
-    if: github.ref == 'refs/heads/main' && (github.event_name == 'workflow_dispatch' || vars.CAN_SYNC_ENABLED == 'true')
+    if: (github.event_name == 'schedule' && vars.CAN_SYNC_ENABLED == 'true') || (github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/dev')
     runs-on: ubuntu-latest
     timeout-minutes: 20
     env:
@@ -27,10 +27,10 @@ jobs:
           mkdir -p "$RUNNER_TEMP/can-sync"
           echo "CAN_ARTIFACTS=$RUNNER_TEMP/can-sync/artifacts" >> "$GITHUB_ENV"
 
-      - name: Check out main
+      - name: Check out dev
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
-          ref: main
+          ref: dev
           fetch-depth: 0
 
       - name: Set up Python
@@ -83,7 +83,7 @@ jobs:
           bundle install
           bundle exec ceedling test:all
 
-      - name: Commit to main and increment patch tag
+      - name: Commit to dev and increment patch tag
         if: steps.generated.outputs.changed == 'true'
         run: python tools/can_sync/pipeline.py publish
 
@@ -110,7 +110,7 @@ jobs:
           CAN_TAG: ${{ steps.release.outputs.tag }}
         run: |
           if [ "$CHANGED" = 'true' ]; then
-            echo "Published CAN definitions to main with tag $CAN_TAG." >> "$GITHUB_STEP_SUMMARY"
+            echo "Published CAN definitions to dev with tag $CAN_TAG." >> "$GITHUB_STEP_SUMMARY"
           else
             echo 'Generated definitions are unchanged; no commit or version bump.' >> "$GITHUB_STEP_SUMMARY"
           fi

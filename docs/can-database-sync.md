@@ -10,11 +10,11 @@ by hand.
 
 1. Save your changes in SharePoint and wait for Excel to finish saving.
 2. Open **ARTTU-Software/common → Actions → Sync CAN database → Run workflow**.
-3. Select `main` and run it.
+3. Select `dev` and run it.
 4. When it succeeds, download the **can-database** artifact on the run page.
    It contains the DBC, both headers, and a source/generator hash manifest.
 
-If definitions changed, the workflow tests them, commits directly to `main`, and
+If definitions changed, the workflow tests them, commits directly to `dev`, and
 creates the next patch tag. For example, `v1.4.2` becomes `v1.4.3`. It fetches
 remote tags and increments the highest stable numeric version, ignoring
 prereleases. No initial version is invented if no stable version exists.
@@ -46,7 +46,7 @@ the manual button remains available.
 The workflow uses the repository's built-in `GITHUB_TOKEN`, with `contents: write`
 for commits/tags and `actions: write` to explicitly dispatch the release workflow.
 The repository must permit those workflow permissions and direct pushes to
-`main`. If branch or tag rules prohibit the push, the sync fails rather than
+`dev`. If branch or tag rules prohibit the push, the sync fails rather than
 forcing or bypassing those rules. No personal token or additional GitHub App
 secret is required.
 
@@ -87,13 +87,13 @@ the C definitions. It does not replace the firmware's CAN serialization code.
 
 Generation and Python regression tests must pass. If definitions changed, the
 workflow also runs `bundle exec ceedling test:all`; generated headers must compile
-as C11. Only then can it publish. Validation/test failures leave remote `main`
+as C11. Only then can it publish. Validation/test failures leave remote `dev`
 and tags unchanged. Check the failed step in Actions for the reason.
 
 Manual and scheduled runs share one concurrency group. The publisher rejects
-unrelated checkout changes and a `main` branch that advanced during generation.
+unrelated checkout changes and a `dev` branch that advanced during generation.
 It pushes the commit and tag atomically, without force. If another writer wins
-a branch/tag race, rerun to generate from the latest `main`.
+a branch/tag race, rerun to generate from the latest `dev`.
 
 The manifest records the workbook SHA256, generator hashes, and generated output
 hashes. It contains no sharing link. The workflow does not commit the XLSX.

@@ -1,4 +1,4 @@
-"""Regression tests for wire definitions and direct-to-main publication."""
+"""Regression tests for wire definitions and direct-to-dev publication."""
 
 import contextlib
 import io
@@ -219,7 +219,7 @@ class PublicationTests(unittest.TestCase):
         patch.dict(os.environ, {"GITHUB_OUTPUT": ""}).start()
         base = Path(self.temp.name)
         self.origin, self.root = base / "origin.git", base / "checkout"
-        self.run_git(base, "init", "--bare", "--initial-branch=main", str(self.origin))
+        self.run_git(base, "init", "--bare", "--initial-branch=dev", str(self.origin))
         self.run_git(base, "clone", str(self.origin), str(self.root))
         self.run_git(self.root, "config", "user.name", "Test")
         self.run_git(self.root, "config", "user.email", "test@example.invalid")
@@ -230,7 +230,7 @@ class PublicationTests(unittest.TestCase):
         self.run_git(self.root, "add", ".")
         self.run_git(self.root, "commit", "-m", "Initial")
         self.run_git(self.root, "tag", "v1.4.2")
-        self.run_git(self.root, "push", "origin", "main", "--tags")
+        self.run_git(self.root, "push", "origin", "dev", "--tags")
         (self.root / "MAIN_DBC.dbc").write_text("after")
         (self.root / PROVENANCE).write_text("new source")
 
@@ -247,9 +247,9 @@ class PublicationTests(unittest.TestCase):
     def test_atomic_commit_and_tag_and_release_recovery(self):
         with contextlib.redirect_stdout(io.StringIO()):
             publish(self.root)
-        head = self.run_git(self.origin, "rev-parse", "main")
+        head = self.run_git(self.origin, "rev-parse", "dev")
         self.assertEqual(head, self.run_git(self.origin, "rev-parse", "v1.4.3"))
-        self.assertEqual(self.run_git(self.origin, "show", "main:MAIN_DBC.dbc"), "after")
+        self.assertEqual(self.run_git(self.origin, "show", "dev:MAIN_DBC.dbc"), "after")
         self.assertEqual(self.run_git(self.root, "status", "--porcelain"), "")
         # A later unrelated commit must not lose the tag needed to retry a release.
         (self.root / "README.md").write_text("Later documentation")
@@ -266,23 +266,23 @@ class PublicationTests(unittest.TestCase):
             publish(self.root)
         self.assertEqual(self.run_git(self.origin, "tag", "--list"), "v1.4.2")
 
-    def test_refuses_main_that_advanced_while_generation_ran(self):
-        old = self.run_git(self.origin, "rev-parse", "main")
+    def test_refuses_dev_that_advanced_while_generation_ran(self):
+        old = self.run_git(self.origin, "rev-parse", "dev")
         self.run_git(self.origin, "config", "user.name", "Test")
         self.run_git(self.origin, "config", "user.email", "test@example.invalid")
         new = subprocess.check_output(["git", "-C", str(self.origin), "commit-tree",
-              "main^{tree}", "-p", old, "-m", "Concurrent change"], text=True).strip()
-        self.run_git(self.origin, "update-ref", "refs/heads/main", new)
-        with self.assertRaisesRegex(ValueError, "main advanced"):
+              "dev^{tree}", "-p", old, "-m", "Concurrent change"], text=True).strip()
+        self.run_git(self.origin, "update-ref", "refs/heads/dev", new)
+        with self.assertRaisesRegex(ValueError, "dev advanced"):
             publish(self.root)
         self.assertEqual(self.run_git(self.origin, "tag", "--list"), "v1.4.2")
 
-    def test_remote_tag_race_cannot_push_main_without_tag(self):
-        old = self.run_git(self.origin, "rev-parse", "main")
+    def test_remote_tag_race_cannot_push_dev_without_tag(self):
+        old = self.run_git(self.origin, "rev-parse", "dev")
         self.run_git(self.origin, "config", "user.name", "Test")
         self.run_git(self.origin, "config", "user.email", "test@example.invalid")
         other = subprocess.check_output(["git", "-C", str(self.origin), "commit-tree",
-                 "main^{tree}", "-m", "Other tag target"], text=True).strip()
+                 "dev^{tree}", "-m", "Other tag target"], text=True).strip()
         original = subprocess.check_output
 
         def race(command, **kwargs):
@@ -293,7 +293,7 @@ class PublicationTests(unittest.TestCase):
         with patch("pipeline.subprocess.check_output", side_effect=race):
             with self.assertRaises(subprocess.CalledProcessError):
                 publish(self.root)
-        self.assertEqual(self.run_git(self.origin, "rev-parse", "main"), old)
+        self.assertEqual(self.run_git(self.origin, "rev-parse", "dev"), old)
 
 
 if __name__ == "__main__":
